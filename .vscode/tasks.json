@@ -1,0 +1,19 @@
+{
+    "version": "2.0.0",
+    "tasks": 
+    [
+        {
+            "label": "bech_rust_gjk",
+            "command": "sh benchmarks/benchmark_rust_gjk.sh",
+            "type": "shell",
+        },
+
+        {
+            "label": "bech_python_gjk",
+            "command": "sh benchmarks/benchmark_python_gjk.sh",
+            "type": "shell",
+        },
+    ]
+}
+
+

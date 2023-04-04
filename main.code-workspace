@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "collision-comparison",
+			"path": "."
+		},
+		{
+			"name": "collision-rs",
+			"path": "collision-rs"
+		}
+	],
+	"settings": {}
+}
