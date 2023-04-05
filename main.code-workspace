@@ -9,5 +9,7 @@
 			"path": "collision-rs"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"rust-analyzer.showUnlinkedFileNotification": false
+	}
 }
