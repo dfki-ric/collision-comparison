@@ -7,6 +7,9 @@
 		{
 			"name": "collision-rs",
 			"path": "collision-rs"
+		},
+		{
+			"path": "gjk-rs"
 		}
 	],
 	"settings": {

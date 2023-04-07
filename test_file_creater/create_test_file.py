@@ -2,14 +2,14 @@ import json
 import os
 import numpy as np
 from distance3d import colliders, random
-from distance3d.gjk import gjk
+from distance3d.gjk import gjk, gjk_nesterov_accelerated_intersection
 
 iterations = 100
 shapes = []
 random_state = np.random.RandomState(84)
 shape_names = ["sphere", "capsule", "cylinder"]
 
-for _ in range(iterations):
+for i in range(iterations):
     shape1 = shape_names[random_state.randint(len(shape_names))]
     args1 = random.RANDOM_GENERATORS[shape1](random_state)
     shape2 = shape_names[random_state.randint(len(shape_names))]
@@ -18,6 +18,11 @@ for _ in range(iterations):
     collider2 = colliders.COLLIDERS[shape2](*args2)
 
     collide = gjk(collider1, collider2)[0]
+
+    if i == 97:
+        print("Debug")
+
+    gjk_nesterov_accelerated_intersection(collider1, collider2)
 
     data = {
         "collider1": collider1.to_dict(),
