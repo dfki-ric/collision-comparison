@@ -3,14 +3,32 @@
     "tasks": 
     [
         {
-            "label": "bech_rust_gjk",
-            "command": "sh benchmarks/benchmark_rust_gjk.sh",
+            "label": "bech_python_gjk",
+            "command": "sh benchmarks/benchmark_python_gjk.sh",
             "type": "shell",
         },
 
         {
-            "label": "bech_python_gjk",
-            "command": "sh benchmarks/benchmark_python_gjk.sh",
+            "label": "bech_rust_gjk-rs",
+            "command": "sh benchmarks/benchmark_rust_gjk-rs.sh",
+            "type": "shell",
+        },
+
+        {
+            "label": "bech_rust_collision-rs",
+            "command": "sh benchmarks/benchmark_rust_collision-rs.sh",
+            "type": "shell",
+        },
+
+        {
+            "label": "profile_gjk-rs",
+            "command": "sh profile/profile_gjk-rs.sh",
+            "type": "shell",
+        },
+
+        {
+            "label": "profile_collision-rs",
+            "command": "sh profile/profile_collision-rs.sh",
             "type": "shell",
         },
     ]
