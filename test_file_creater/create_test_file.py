@@ -2,7 +2,7 @@ import json
 import os
 import numpy as np
 from distance3d import colliders, random
-from distance3d.gjk import gjk, gjk_nesterov_accelerated_distance
+from distance3d.gjk import gjk_nesterov_accelerated_distance
 
 iterations = 100
 shapes = []
@@ -10,7 +10,7 @@ random_state = np.random.RandomState(84)
 shape_names = ["sphere", "capsule", "cylinder"]
 
 for i in range(iterations):
-    print("Interation:", i)
+    print("Case:", i)
 
     shape1 = shape_names[random_state.randint(len(shape_names))]
     args1 = random.RANDOM_GENERATORS[shape1](random_state)
@@ -21,7 +21,6 @@ for i in range(iterations):
 
     collider1.round_values(6)
     collider2.round_values(6)
-
     distance = gjk_nesterov_accelerated_distance(collider1, collider2)
 
     data = {
