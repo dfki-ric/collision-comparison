@@ -31,6 +31,12 @@
             "command": "sh profile/profile_collision-rs.sh",
             "type": "shell",
         },
+
+        {
+            "label": "compile-fcl",
+            "command": "sh compile_hpp-fcl.sh",
+            "type": "shell",
+        },
     ]
 }
 
