@@ -1,5 +1,3 @@
-import json
-import os
 import numpy as np
 from distance3d import colliders, random
 from distance3d.gjk._gjk_nesterov_accelerated import gjk_nesterov_accelerated
@@ -27,10 +25,5 @@ for i in range(iterations):
 
     if i == 3:
         print("Case:", i)
-        nasterov_iterations = gjk_nesterov_accelerated(collider1, collider2,
-                                                       ray_guess=None,
-                                                       max_interations=100,
-                                                       upper_bound=1.79769e+308,
-                                                       tolerance=1e-6,
-                                                       inflation=1.07485)[3]
+        nasterov_iterations = gjk_nesterov_accelerated(collider1, collider2)[3]
         print("Nasterov Intertions", nasterov_iterations)
