@@ -3,38 +3,44 @@
     "tasks": 
     [
         {
-            "label": "bech_python_gjk",
-            "command": "sh benchmarks/benchmark_python_gjk.sh",
+            "label": "bench-distance3d",
+            "command": "sh scripts/benchmarks/benchmark_python_gjk.sh",
             "type": "shell",
         },
 
         {
-            "label": "bech_rust_gjk-rs",
-            "command": "sh benchmarks/benchmark_rust_gjk-rs.sh",
+            "label": "bench-gjk-rs",
+            "command": "sh scripts/benchmarks/benchmark_rust_gjk-rs.sh",
             "type": "shell",
         },
 
         {
-            "label": "bech_rust_collision-rs",
-            "command": "sh benchmarks/benchmark_rust_collision-rs.sh",
+            "label": "bench-collision-rs",
+            "command": "sh scripts/benchmarks/benchmark_rust_collision-rs.sh",
             "type": "shell",
         },
 
         {
-            "label": "profile_gjk-rs",
-            "command": "sh profile/profile_gjk-rs.sh",
+            "label": "profile-gjk-rs",
+            "command": "sh scripts/profile/profile_gjk-rs.sh",
             "type": "shell",
         },
 
         {
-            "label": "profile_collision-rs",
-            "command": "sh profile/profile_collision-rs.sh",
+            "label": "profile-collision-rs",
+            "command": "sh scripts/profile/profile_collision-rs.sh",
             "type": "shell",
         },
 
         {
             "label": "compile-fcl",
-            "command": "sh compile_hpp-fcl.sh",
+            "command": "sh scripts/compile_hpp-fcl.sh",
+            "type": "shell",
+        },
+
+        {
+            "label": "run-fcl",
+            "command": "sh scripts/run_hpp-fcl.sh",
             "type": "shell",
         },
     ]
