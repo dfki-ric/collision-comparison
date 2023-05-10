@@ -23,7 +23,5 @@ for i in range(iterations):
     collider1.round_values(6)
     collider2.round_values(6)
 
-    if i == 3:
-        print("Case:", i)
-        nasterov_iterations = gjk_nesterov_accelerated(collider1, collider2)[3]
-        print("Nasterov Intertions", nasterov_iterations)
+    nasterov_iterations = gjk_nesterov_accelerated(collider1, collider2)[3]
+    print("Nasterov Intertions", nasterov_iterations)
