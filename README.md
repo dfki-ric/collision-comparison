@@ -29,14 +29,10 @@ cd ../..
 
 # Jolt
 git clone git@github.com:jrouwe/JoltPhysics.git
-cd Build/
-sh cmake_linux_clang_gcc.sh
-cd Linux_Debug/
-make -j 8
-cd ../../..
 
 
 cd compare/
+cmake-gui .. # Disable Python
 mkdir build/
 ```
 
