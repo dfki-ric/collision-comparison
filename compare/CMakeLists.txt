@@ -38,8 +38,8 @@ link_directories(${CMAKE_SOURCE_DIR}/build/fcl/)
 
 target_link_libraries(compare ${CMAKE_SOURCE_DIR}/build/fcl/src/libhpp-fcl.so)
 
-# Bullet3
 
+# Bullet3
 add_subdirectory(${CMAKE_SOURCE_DIR}/../bullet3 ${CMAKE_SOURCE_DIR}/build/bullet)
 set_property(DIRECTORY "${CMAKE_SOURCE_DIR}/../bullet3" APPEND
   PROPERTY COMPILE_DEFINITIONS "-DUSE_DOUBLE_PRECISION=ON -DBT_USE_EGL=ON -DCMAKE_BUILD_TYPE=Release")
@@ -49,7 +49,6 @@ add_library(libbullet3collsion STATIC IMPORTED)
 set_target_properties(libbullet3collsion PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/build/bullet/src/Bullet3Collision/libBullet3Collision.a)
 set_target_properties(libbullet3collsion PROPERTIES INTERFACE_INCLUDE_DIRECTORIES /usr/include)
 target_link_libraries(compare libbullet3collsion)
-
 
 add_library(libbulletcollsion STATIC IMPORTED)
 set_target_properties(libbulletcollsion PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/build/bullet/src/BulletCollision/libBulletCollision.a)
