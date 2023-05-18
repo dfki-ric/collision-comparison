@@ -1,4 +1,3 @@
 #!/bin/bash
 
-cd compare/build/
-./compare
+./compare/build/compare

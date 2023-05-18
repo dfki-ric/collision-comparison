@@ -17,23 +17,30 @@ git clone git@github.com:MaartenBehn/gjk-rs.git
 
 # fcl
 git clone git@github.com:MaartenBehn/hpp-fcl.git
-cd hpp-fcl/
-git submodule update --init
-mkdir build
-cd build/
-cmake-gui .. # Disable Python
-cmake ..
-make -j12
-cd ../..
+# Not needed anymore
+# cd hpp-fcl/
+# git submodule update --init
+# mkdir build
+# cd build/
+# cmake-gui .. # Disable Python
+# cmake ..
+# make -j12
+# cd ../..
 
 
 # Jolt
 git clone git@github.com:jrouwe/JoltPhysics.git
 
 
+# Bullet
+git clone git@github.com:bulletphysics/bullet3.git
+
 cd compare/
 cmake-gui .. # Disable Python
 mkdir build/
+mkdir include/
+cd include/
+git clone git@github.com:nlohmann/json.git
 ```
 
 Rust nightly is needed: 
