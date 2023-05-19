@@ -7,7 +7,7 @@ from distance3d.gjk import gjk_nesterov_accelerated_distance
 iterations = 100
 shapes = []
 random_state = np.random.RandomState(84)
-shape_names = ["sphere", "capsule", "cylinder"]
+shape_names = ["sphere", "capsule", "cylinder", "box"]
 
 for i in range(iterations):
     print("Case:", i)

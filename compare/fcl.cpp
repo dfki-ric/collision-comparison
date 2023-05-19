@@ -37,8 +37,10 @@
 /** \author Louis Montaut */
 
 #include <Eigen/Geometry>
-#include <hpp/fcl/narrowphase/narrowphase.h>
 #include <hpp/fcl/shape/geometric_shapes.h>
+#include <hpp/fcl/narrowphase/narrowphase.h>
+
+
 #include <hpp/fcl/internal/tools.h>
 
 #include "utility.h"
@@ -47,6 +49,10 @@ using hpp::fcl::Box;
 using hpp::fcl::Capsule;
 using hpp::fcl::Sphere;
 using hpp::fcl::Cylinder;
+using hpp::fcl::Transform3f;
+using hpp::fcl::ShapeBase;
+using hpp::fcl::details::MinkowskiDiff;
+
 using hpp::fcl::constructPolytopeFromEllipsoid;
 using hpp::fcl::Convex;
 using hpp::fcl::Ellipsoid;
@@ -59,68 +65,88 @@ using hpp::fcl::Transform3f;
 using hpp::fcl::Triangle;
 using hpp::fcl::Vec3f;
 using hpp::fcl::details::GJK;
-using hpp::fcl::details::MinkowskiDiff;
+
 using std::size_t;
 
 
-void test_nesterov_gjk(const ShapeBase& shape0, const ShapeBase& shape1, Transform3f& transform0, Transform3f& transform1) {
-  // Solvers
-  unsigned int max_iterations = 128;
-  FCL_REAL tolerance = 1e-6;
-  GJK gjk(max_iterations, tolerance);
-  gjk.gjk_variant = GJKVariant::NesterovAcceleration;
+using compare::Base::Collider;
+using compare::Base::ColliderType;
+using compare::Base::get_radius;
+using compare::Base::get_height;
+using compare::Base::get_size_x;
+using compare::Base::get_size_y;
+using compare::Base::get_size_z;
 
-  // Minkowski difference
-  MinkowskiDiff mink_diff;
+namespace compare::FCL {
+    Transform3f get_transform(Collider collider){
+        Transform3f transform;
+        Eigen::Matrix3d m;
+        m << collider.colliderToOrigen[0],  collider.colliderToOrigen[1], collider.colliderToOrigen[2],
+                collider.colliderToOrigen[4],  collider.colliderToOrigen[5],  collider.colliderToOrigen[6],
+                collider.colliderToOrigen[8], collider.colliderToOrigen[9],  collider.colliderToOrigen[10];
+        transform.setTransform(m, Vec3f(collider.colliderToOrigen[3], collider.colliderToOrigen[7], collider.colliderToOrigen[11]));
 
-  // Same init for both solvers
-  Vec3f init_guess = Vec3f(1, 0, 0);
-  support_func_guess_t init_support_guess;
-  init_support_guess.setZero();
+        return transform;
+    }
 
-  mink_diff.set(&shape0, &shape1, transform0, transform1);
+    FCLCollider get_collider(Collider collider){
+        FCLCollider fcl_collider;
 
-  // Evaluate both solvers twice, make sure they give the same solution
-  GJK::Status res_gjk_1 =
-      gjk.evaluate(mink_diff, init_guess, init_support_guess);
-  Vec3f ray_gjk = gjk.ray;
-  
-  
-  // Make sure GJK and Nesterov accelerated GJK find the same distance between
-  // the shapes
-  // BOOST_CHECK(res_nesterov_gjk_1 == res_gjk_1);
-  // BOOST_CHECK_SMALL(fabs(ray_gjk.norm() - ray_nesterov.norm()), 1e-4);
+        if (collider.type == ColliderType::Sphere){
+            fcl_collider.sphere = Sphere(get_radius(collider));
+            fcl_collider.shape = &fcl_collider.sphere;
+        }
 
-  // Make sure GJK and Nesterov accelerated GJK converges in a reasonable
-  // amount of iterations
-  // BOOST_CHECK(gjk.getIterations() < max_iterations);
-  std::cout << "gjk iterations:\n" << gjk.getIterations() << "\n";
+        if (collider.type == ColliderType::Cylinder){
+            fcl_collider.cylinder = Cylinder(get_radius(collider), get_height(collider));
+            fcl_collider.shape = &fcl_collider.cylinder;
+        }
 
-  std::cout << "gjk dist:\n" << gjk.distance << "\n";
+        if (collider.type == ColliderType::Capsule){
+            fcl_collider.capsule = Capsule(get_radius(collider), get_height(collider));
+            fcl_collider.shape = &fcl_collider.capsule;
+        }
+
+        if (collider.type == ColliderType::Box){
+            fcl_collider.box = Box(get_size_x(collider), get_size_y(collider), get_size_z(collider));
+            fcl_collider.shape = &fcl_collider.box;
+        }
+    }
+
+
+    FCLCase get_fcl_case(Collider collider0, Collider collider1){
+
+        FCLCase fcl_case;
+        Transform3f transform0 = get_transform(collider0);
+        Transform3f transform1 = get_transform(collider1);
+
+        fcl_case.collider0 = get_collider(collider0);
+        fcl_case.collider1 = get_collider(collider1);
+
+        fcl_case.mink_diff.set(fcl_case.collider0.shape, fcl_case.collider1.shape, transform0, transform1);
+
+        return fcl_case;
+    }
+
+    float get_fcl_distance(const FCLCase& fcl_case){
+        unsigned int max_iterations = 128;
+        FCL_REAL tolerance = 1e-6;
+        GJK gjk(max_iterations, tolerance);
+        gjk.gjk_variant = GJKVariant::NesterovAcceleration;
+
+        // Same init for both solvers
+        Vec3f init_guess = Vec3f(1, 0, 0);
+        support_func_guess_t init_support_guess;
+        init_support_guess.setZero();
+
+        // Evaluate both solvers twice, make sure they give the same solution
+        GJK::Status res_gjk = gjk.evaluate(fcl_case.mink_diff, init_guess, init_support_guess);
+
+        std::cout << "gjk iterations:\n" << gjk.getIterations() << "\n";
+
+        std::cout << "gjk dist:\n" << gjk.distance << "\n";
+
+        return  gjk.distance;
+    }
 }
 
-void fcl_hello_world() {
-
-    
-    std::cout << "cylinder vs cylinder\n";
-
-  Cylinder cylinder0 = Cylinder(0.510938, 0.127116);
-  Cylinder cylinder1 = Cylinder(0.903175, 0.456057);
-  
-
-  Transform3f transform0; 
-  Eigen::Matrix3d m0;
-  m0 << 0.365685,  0.898448, -0.243034,
-        -0.739601,  0.439027,  0.510143,
-        0.565035, -0.006803,  0.825039;
-  transform0.setTransform(m0, Vec3f(-1.556104, 0.765753, -0.834356));
-
-  Transform3f transform1; 
-  Eigen::Matrix3d m1;
-  m1 << 0.946613,  0.007576,  0.322282,
-        0.285324,  0.44562,  -0.848536,
-       -0.150044,  0.89519,   0.419668;
-  transform1.setTransform(m1, Vec3f(0.394209, 0.433601, 0.332314));
-
-  test_nesterov_gjk(cylinder0, cylinder1, transform0, transform1);
-}

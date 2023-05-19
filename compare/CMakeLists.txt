@@ -8,7 +8,7 @@ add_executable(compare
   jolt.cpp 
   fcl.cpp 
   bullet.cpp
-  utility.cpp bullet.cpp)
+  utility.cpp collider.h collider.cpp)
 
 
 # Json
