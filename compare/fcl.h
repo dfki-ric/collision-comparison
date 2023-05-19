@@ -7,6 +7,7 @@
 #include <hpp/fcl/narrowphase/narrowphase.h>
 
 using compare::Base::Collider;
+using compare::Base::Case;
 
 using hpp::fcl::Box;
 using hpp::fcl::Capsule;
@@ -28,13 +29,11 @@ namespace compare::FCL {
     };
 
     struct FCLCase{
-        FCLCollider collider0;
-        FCLCollider collider1;
-
         MinkowskiDiff mink_diff;
     };
 
-    FCLCase get_fcl_case(Collider collider0, Collider collider1);
+    void get_fcl_cases(Case* base_cases, FCLCase* fcl_cases, int length);
+
     float get_fcl_distance(const FCLCase& fcl_case);
 }
 

@@ -112,7 +112,7 @@ namespace compare::Base {
 
             i++;
 
-            if i >= length {
+            if (i >= length) {
                 break;
             }
         }
