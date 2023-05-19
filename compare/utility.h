@@ -35,6 +35,8 @@
 
 /** \author Jia Pan */
 
+#pragma once
+
 #ifndef TEST_HPP_FCL_UTILITY_H
 #define TEST_HPP_FCL_UTILITY_H
 

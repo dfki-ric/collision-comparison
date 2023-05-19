@@ -1,9 +1,10 @@
 
 #pragma once
 
+#include "collider.h"
+
 #include <hpp/fcl/shape/geometric_shapes.h>
 #include <hpp/fcl/narrowphase/narrowphase.h>
-#include "collider.h"
 
 using compare::Base::Collider;
 

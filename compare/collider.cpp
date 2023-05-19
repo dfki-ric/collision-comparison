@@ -10,6 +10,27 @@
 using json = nlohmann::json;
 
 namespace compare::Base {
+
+    float get_radius(Collider collider) {
+        return collider.data[0];
+    }
+
+    float get_height(Collider collider) {
+        return collider.data[1];
+    }
+
+    float get_size_x(Collider collider) {
+        return collider.data[0];
+    }
+
+    float get_size_y(Collider collider) {
+        return collider.data[1];
+    }
+
+    float get_size_z(Collider collider) {
+        return collider.data[2];
+    }
+
     Collider parseCollider(json collider_json) {
 
         Collider collider;
@@ -63,11 +84,12 @@ namespace compare::Base {
     }
 
 
-    void load() {
+    void load_cases(Case* cases, int length) {
 
         std::ifstream f("../../data/test_data.json");
         json data = json::parse(f);
 
+        int i = 0;
         for (auto collide_case: data) {
             auto case_index = collide_case["case"];
 
@@ -78,9 +100,22 @@ namespace compare::Base {
 
             std::cout << collider0.type << "\n";
             std::cout << collider1.type << "\n";
+
+
+            Case base_case;
+            base_case.case_index = case_index;
+            base_case.collider0 = collider0;
+            base_case.collider1 = collider1;
+            base_case.distance = distance;
+
+            cases[i] = base_case;
+
+            i++;
+
+            if i >= length {
+                break;
+            }
         }
-
-
     }
 
 }

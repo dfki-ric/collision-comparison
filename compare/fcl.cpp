@@ -36,6 +36,8 @@
 
 /** \author Louis Montaut */
 
+#include "collider.h"
+
 #include <Eigen/Geometry>
 #include <hpp/fcl/shape/geometric_shapes.h>
 #include <hpp/fcl/narrowphase/narrowphase.h>
@@ -111,6 +113,8 @@ namespace compare::FCL {
             fcl_collider.box = Box(get_size_x(collider), get_size_y(collider), get_size_z(collider));
             fcl_collider.shape = &fcl_collider.box;
         }
+
+        return fcl_collider;
     }
 
 
