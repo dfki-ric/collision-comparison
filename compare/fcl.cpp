@@ -54,7 +54,7 @@ namespace compare::FCL {
         return transform;
     }
 
-    FCLCollider get_collider(Collider collider, FCLCollider* fcl_collider){
+    void get_collider(Collider collider, FCLCollider* fcl_collider){
         if (collider.type == ColliderType::Sphere){
             fcl_collider->sphere = Sphere(get_radius(collider));
             fcl_collider->shape = &fcl_collider->sphere;

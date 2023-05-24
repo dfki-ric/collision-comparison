@@ -24,6 +24,7 @@ for i in range(iterations):
     distance = gjk_nesterov_accelerated_distance(collider1, collider2)
 
     data = {
+        "case": i,
         "collider1": collider1.to_dict(),
         "collider2": collider2.to_dict(),
         "distance": distance,
