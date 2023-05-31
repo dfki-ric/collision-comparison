@@ -32,9 +32,9 @@ namespace compare::FCL {
         MinkowskiDiff mink_diff;
     };
 
-    void get_fcl_cases(Case* base_cases, FCLCase* fcl_cases, int length);
-
-    float get_fcl_distance(const FCLCase& fcl_case);
+    FCLCase get_case(Collider collider0, Collider collider1);
+    void get_cases(Case* base_cases, FCLCase* fcl_cases, int length);
+    float get_distance(const FCLCase& fcl_case);
 }
 
 

@@ -77,7 +77,7 @@ namespace compare::FCL {
     }
 
 
-    FCLCase get_fcl_case(Collider collider0, Collider collider1){
+    FCLCase get_case(Collider collider0, Collider collider1){
 
         FCLCase fcl_case;
         Transform3f transform0 = get_transform(collider0);
@@ -94,17 +94,17 @@ namespace compare::FCL {
         return fcl_case;
     }
 
-    void get_fcl_cases(Case* base_cases, FCLCase* fcl_cases, int length){
+    void get_cases(Case* base_cases, FCLCase* fcl_cases, int length){
 
         for (int i = 0; i < length; i++) {
 
             auto base_case = base_cases[i];
-            fcl_cases[i] = get_fcl_case(base_case.collider0, base_case.collider1);
+            fcl_cases[i] = get_case(base_case.collider0, base_case.collider1);
 
         }
     }
 
-    float get_fcl_distance(const FCLCase& fcl_case){
+    float get_distance(const FCLCase& fcl_case){
         unsigned int max_iterations = 128;
         FCL_REAL tolerance = 1e-6;
         GJK gjk(max_iterations, tolerance);
@@ -118,9 +118,9 @@ namespace compare::FCL {
         // Evaluate both solvers twice, make sure they give the same solution
         GJK::Status res_gjk = gjk.evaluate(fcl_case.mink_diff, init_guess, init_support_guess);
 
-        std::cout << "gjk iterations:\n" << gjk.getIterations() << "\n";
+        // std::cout << "gjk iterations:\n" << gjk.getIterations() << "\n";
 
-        std::cout << "gjk dist:\n" << gjk.distance << "\n";
+        // std::cout << "gjk dist:\n" << gjk.distance << "\n";
 
         return  gjk.distance;
     }

@@ -6,41 +6,72 @@
 
 #include <iostream>
 
+#define ANKERL_NANOBENCH_IMPLEMENT
+#include <nanobench.h>
+
 using compare::Base::load_cases;
 using compare::Base::Case;
 
 using compare::FCL::FCLCase;
-using compare::FCL::get_fcl_cases;
-using compare::FCL::get_fcl_distance;
+using compare::Jolt::JoltCase;
+using compare::Bullet::BulletCase;
 
 int main(){
 
     int cases_length = 100;
-    Case base_cases[cases_length];
 
+    Case base_cases[cases_length];
     load_cases(&base_cases[0], cases_length);
 
-    FCLCase fcl_cases[cases_length];
 
-    get_fcl_cases(&base_cases[0], &fcl_cases[0], cases_length);
+    FCLCase fcl_cases[cases_length];
+    compare::FCL::get_cases(&base_cases[0], &fcl_cases[0], cases_length);
+
+    JoltCase jolt_cases[cases_length];
+    compare::Jolt::get_cases(&base_cases[0], &jolt_cases[0], cases_length);
+
+    BulletCase bullet_cases[cases_length];
+    compare::Bullet::get_cases(&base_cases[0], &bullet_cases[0], cases_length);
 
     for (int i = 0; i < cases_length; i++) {
 
-        float distance = get_fcl_distance(fcl_cases[i]);
+        float fcl_distance = compare::FCL::get_distance(fcl_cases[i]);
+        float jolt_distance = compare::Jolt::get_distance(jolt_cases[i]);
+        float bullet_distance = compare::Bullet::get_distance(bullet_cases[i]);
 
-        std::cout << distance;
+        bool fcl_correct = abs(get_distance(fcl_cases[i]) - fcl_distance) < 0.1;
+        bool jolt_correct = (get_distance(fcl_cases[i]) == 0.0) == (jolt_distance == 0.0);
+        bool bullet_correct = abs(get_distance(fcl_cases[i]) - bullet_distance) < 0.5;
 
+        if (!fcl_correct || !jolt_correct || !bullet_correct){
+            std::cout << "Not correct case: " << i << "\n"
+            << "FCL: " << fcl_distance << " -> " << fcl_correct <<  "\n"
+            << "Jolt: " << jolt_distance << " -> " << jolt_correct << "\n"
+            << "Bullet: " << bullet_distance << " -> " << bullet_correct << "\n";
+        }
     }
 
-    std::cout << base_cases;
+    std::cout << "\n\n";
 
-    // load();
+    ankerl::nanobench::Bench().minEpochIterations(100).run("FCL", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            compare::FCL::get_distance(fcl_cases[i]);
+        }
+    });
 
-	// jolt_hello_world();
+    ankerl::nanobench::Bench().minEpochIterations(100).run("Jolt", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            compare::Jolt::get_distance(jolt_cases[i]);
+        }
+    });
 
-	// fcl_hello_world();
+    ankerl::nanobench::Bench().minEpochIterations(100).run("Bullet", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            compare::Bullet::get_distance(bullet_cases[i]);
+        }
+    });
 
-	// bullet_hello_world();
+
 
 	return 0;
 }

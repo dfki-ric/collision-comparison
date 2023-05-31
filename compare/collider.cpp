@@ -98,10 +98,6 @@ namespace compare::Base {
 
             float distance = collide_case["distance"];
 
-            std::cout << collider0.type << "\n";
-            std::cout << collider1.type << "\n";
-
-
             Case base_case;
             base_case.case_index = case_index;
             base_case.collider0 = collider0;

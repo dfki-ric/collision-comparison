@@ -10,7 +10,9 @@
 #include <Jolt/Physics/Collision/Shape/BoxShape.h>
 #include <Jolt/Physics/Collision/Shape/Shape.h>
 
+using compare::Base::Collider;
 using compare::Base::ColliderType;
+using compare::Base::Case;
 
 using JPH::SphereShape;
 using JPH::CapsuleShape;
@@ -40,6 +42,9 @@ namespace compare::Jolt {
         JoltCollider collider1;
     };
 
+    void get_case(Collider collider0, Collider collider1, JoltCase* jolt_case);
+    void get_cases(Case* base_cases, JoltCase* jolt_cases, int length);
+    float get_distance(const JoltCase &jolt_case);
 }
 
 

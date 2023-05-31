@@ -41,6 +41,7 @@ mkdir build/
 mkdir include/
 cd include/
 git clone git@github.com:nlohmann/json.git
+git clone git@github.com:google/benchmark.git
 ```
 
 Rust nightly is needed: 

@@ -14,6 +14,8 @@ add_executable(compare
 # Json
 include_directories(${CMAKE_SOURCE_DIR}/include/json/include)
 
+# Benchmark
+include_directories(${CMAKE_SOURCE_DIR}/include/nanobench/src/include)
 
 # Jolt
 add_subdirectory(${CMAKE_SOURCE_DIR}/../JoltPhysics/Build ${CMAKE_SOURCE_DIR}/build/Jolt)
