@@ -1,6 +1,7 @@
 *.idea/
 data/
 
-compare/build/
+compare/build_debug/
+compare/build_release/
 
 *.pclprof
