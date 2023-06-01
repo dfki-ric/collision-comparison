@@ -33,7 +33,7 @@ mkdir build_release/
 mkdir include/
 cd include/
 git clone git@github.com:nlohmann/json.git
-git clone git@github.com:google/benchmark.git
+git clone git@github.com:martinus/nanobench.git
 ```
 
 Rust nightly is needed: 
