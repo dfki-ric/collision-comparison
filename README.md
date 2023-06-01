@@ -17,23 +17,13 @@ git clone git@github.com:MaartenBehn/gjk-rs.git
 
 # fcl
 git clone git@github.com:MaartenBehn/hpp-fcl.git
-# Not needed anymore
-# cd hpp-fcl/
-# git submodule update --init
-# mkdir build
-# cd build/
-# cmake-gui .. # Disable Python
-# cmake ..
-# make -j12
-# cd ../..
-
 
 # Jolt
-git clone git@github.com:jrouwe/JoltPhysics.git
+git clone git@github.com:MaartenBehn/JoltPhysics.git
 
 
 # Bullet
-git clone git@github.com:bulletphysics/bullet3.git
+git clone git@github.com:MaartenBehn/bullet3.git
 
 
 # Compare
