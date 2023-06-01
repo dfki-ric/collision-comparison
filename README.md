@@ -35,9 +35,11 @@ git clone git@github.com:jrouwe/JoltPhysics.git
 # Bullet
 git clone git@github.com:bulletphysics/bullet3.git
 
+
+# Compare
 cd compare/
-cmake-gui .. # Disable Python
-mkdir build/
+mkdir build_debug/
+mkdir build_release/
 mkdir include/
 cd include/
 git clone git@github.com:nlohmann/json.git

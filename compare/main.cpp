@@ -53,19 +53,19 @@ int main(){
 
     std::cout << "\n\n";
 
-    ankerl::nanobench::Bench().minEpochIterations(100).run("FCL", [&] {
+    ankerl::nanobench::Bench().minEpochIterations(10000).run("FCL", [&] {
         for (int i = 0; i < cases_length; i++) {
             compare::FCL::get_distance(fcl_cases[i]);
         }
     });
 
-    ankerl::nanobench::Bench().minEpochIterations(100).run("Jolt", [&] {
+    ankerl::nanobench::Bench().minEpochIterations(10000).run("Jolt", [&] {
         for (int i = 0; i < cases_length; i++) {
             compare::Jolt::get_distance(jolt_cases[i]);
         }
     });
 
-    ankerl::nanobench::Bench().minEpochIterations(100).run("Bullet", [&] {
+    ankerl::nanobench::Bench().minEpochIterations(10000).run("Bullet", [&] {
         for (int i = 0; i < cases_length; i++) {
             compare::Bullet::get_distance(bullet_cases[i]);
         }
