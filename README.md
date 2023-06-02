@@ -6,7 +6,6 @@
 git clone git@github.com:MaartenBehn/distance3d.git
 cd distance3d/
 git checkout feature/accelerated_GJK
-python3 -m pip install -e .
 cd ..
 
 # collision-rs
@@ -17,6 +16,9 @@ git clone git@github.com:MaartenBehn/gjk-rs.git
 
 # fcl
 git clone git@github.com:MaartenBehn/hpp-fcl.git
+cd hpp-fcl
+git submodule update --init
+cd ..
 
 # Jolt
 git clone git@github.com:MaartenBehn/JoltPhysics.git
