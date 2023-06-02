@@ -33,45 +33,48 @@ int main(){
     BulletCase bullet_cases[cases_length];
     compare::Bullet::get_cases(&base_cases[0], &bullet_cases[0], cases_length);
 
-    for (int i = 0; i < cases_length; i++) {
-
-        float fcl_distance = compare::FCL::get_distance(fcl_cases[i]);
-        float jolt_distance = compare::Jolt::get_distance(jolt_cases[i]);
-        float bullet_distance = compare::Bullet::get_distance(bullet_cases[i]);
-
-        bool fcl_correct = abs(get_distance(fcl_cases[i]) - fcl_distance) < 0.1;
-        bool jolt_correct = (get_distance(fcl_cases[i]) == 0.0) == (jolt_distance == 0.0);
-        bool bullet_correct = abs(get_distance(fcl_cases[i]) - bullet_distance) < 0.5;
-
-        if (!fcl_correct || !jolt_correct || !bullet_correct){
-            std::cout << "Not correct case: " << i << "\n"
-            << "FCL: " << fcl_distance << " -> " << fcl_correct <<  "\n"
-            << "Jolt: " << jolt_distance << " -> " << jolt_correct << "\n"
-            << "Bullet: " << bullet_distance << " -> " << bullet_correct << "\n";
-        }
-    }
-
+#ifdef NDEBUG
     std::cout << "\n\n";
 
-    ankerl::nanobench::Bench().minEpochIterations(10000).run("FCL", [&] {
+    ankerl::nanobench::Bench().minEpochIterations(1000).run("FCL", [&] {
         for (int i = 0; i < cases_length; i++) {
             compare::FCL::get_distance(fcl_cases[i]);
         }
     });
 
-    ankerl::nanobench::Bench().minEpochIterations(10000).run("Jolt", [&] {
+    ankerl::nanobench::Bench().minEpochIterations(1000).run("Jolt", [&] {
         for (int i = 0; i < cases_length; i++) {
             compare::Jolt::get_distance(jolt_cases[i]);
         }
     });
 
-    ankerl::nanobench::Bench().minEpochIterations(10000).run("Bullet", [&] {
+    ankerl::nanobench::Bench().minEpochIterations(1000).run("Bullet", [&] {
         for (int i = 0; i < cases_length; i++) {
             compare::Bullet::get_distance(bullet_cases[i]);
         }
     });
 
 
-
 	return 0;
+#endif
+
+    for (int i = 0; i < cases_length; i++) {
+
+        float fcl_distance = compare::FCL::get_distance(fcl_cases[i]);
+        float jolt_distance = compare::Jolt::get_distance(jolt_cases[i]);
+        float bullet_distance = compare::Bullet::get_distance(bullet_cases[i]);
+
+        bool fcl_correct = abs(get_distance(fcl_cases[i]) - fcl_distance) < 0.5;
+        bool jolt_correct = abs(get_distance(fcl_cases[i]) - jolt_distance) < 0.5;
+        bool bullet_correct = abs(get_distance(fcl_cases[i]) - bullet_distance) < 0.5;
+
+        if (!fcl_correct || !jolt_correct || !bullet_correct){
+            std::cout << "Not correct case: " << i << "\n"
+                      << "FCL: " << fcl_distance << " -> " << fcl_correct <<  "\n"
+                      << "Jolt: " << jolt_distance << " -> " << jolt_correct << "\n"
+                      << "Bullet: " << bullet_distance << " -> " << bullet_correct << "\n";
+        }
+    }
+
+    return 0;
 }

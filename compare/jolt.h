@@ -9,6 +9,7 @@
 #include <Jolt/Physics/Collision/Shape/CylinderShape.h>
 #include <Jolt/Physics/Collision/Shape/BoxShape.h>
 #include <Jolt/Physics/Collision/Shape/Shape.h>
+#include <Jolt/Geometry/ConvexSupport.h>
 
 using compare::Base::Collider;
 using compare::Base::ColliderType;
@@ -20,18 +21,15 @@ using JPH::CylinderShape;
 using JPH::BoxShape;
 using JPH::Shape;
 using JPH::ConvexShapeSettings;
+using JPH::TransformedConvexObject;
 
 using JPH::Mat44;
 
 namespace compare::Jolt {
 
     struct JoltCollider {
-        SphereShape sphere;
-        CapsuleShape capsule;
-        CylinderShape cylinder;
-        BoxShape box;
-
-        Shape* shape;
+        JPH::ConvexShape::SupportBuffer supportBuffer;
+        const JPH::ConvexShape::Support* support;
     };
 
     struct JoltCase {

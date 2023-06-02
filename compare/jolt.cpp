@@ -8,41 +8,12 @@
 #include <Jolt/Physics/PhysicsSystem.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/Body/BodyActivationListener.h>
-#include "Jolt/Physics/Collision/CollideShape.h"
+#include <Jolt/Physics/Collision/CollideShape.h>
+#include <Jolt/Geometry/GJKClosestPoint.h>
+#include <Jolt/Geometry/ConvexSupport.h>
 
-using JPH::SubShapeIDCreator;
-using JPH::CollideShapeSettings;
-
-using CollideShapeCollector = JPH::CollisionCollector<JPH::CollideShapeResult, JPH::CollisionCollectorTraitsCollideShape>;
-
-class Collector : public CollideShapeCollector {
-
-public:
-    bool has_hit = false;
-
-private:
-    void			Reset()											{  };
-
-    void			OnBody(const JPH::Body &inBody)						{ /* Collects nothing by default */ };
-
-    void			AddHit(const ResultType &inResult) {
-        has_hit = true;
-    }
-
-};
-
-class Filter : public JPH::ShapeFilter {
-
-    bool ShouldCollide(const Shape *inShape2, const JPH::SubShapeID &inSubShapeIDOfShape2) const
-    {
-        return true;
-    }
-
-    bool ShouldCollide(const Shape *inShape1, const JPH::SubShapeID &inSubShapeIDOfShape1, const Shape *inShape2, const JPH::SubShapeID &inSubShapeIDOfShape2) const
-    {
-        return true;
-    }
-};
+using JPH::GJKClosestPoint;
+using JPH::TransformedConvexObject;
 
 namespace compare::Jolt {
 
@@ -55,24 +26,27 @@ namespace compare::Jolt {
 
     void get_collider(Collider collider, JoltCollider* jolt_collider){
         if (collider.type == ColliderType::Sphere){
-            jolt_collider->sphere = SphereShape(get_radius(collider));
-            jolt_collider->shape = &jolt_collider->sphere;
+            auto sphere = SphereShape(get_radius(collider));
+            jolt_collider->support = sphere.GetSupportFunction(JPH::ConvexShape::ESupportMode::ExcludeConvexRadius, jolt_collider->supportBuffer, JPH::Vec3::sReplicate(1.0f));
         }
 
         if (collider.type == ColliderType::Cylinder){
-            jolt_collider->cylinder = CylinderShape(get_height(collider) / 2, get_radius(collider), JPH::min(get_height(collider) / 2, get_radius(collider)));
-            jolt_collider->shape = &jolt_collider->cylinder;
+            auto cylinder = CylinderShape(get_height(collider) / 2, get_radius(collider), JPH::min(get_height(collider) / 2, get_radius(collider)));
+            jolt_collider->support = cylinder.GetSupportFunction(JPH::ConvexShape::ESupportMode::ExcludeConvexRadius, jolt_collider->supportBuffer, JPH::Vec3::sReplicate(1.0f));
+
         }
 
         if (collider.type == ColliderType::Capsule){
-            jolt_collider->capsule = CapsuleShape(get_height(collider) / 2, get_radius(collider));
-            jolt_collider->shape = &jolt_collider->capsule;
+            auto capsule = CapsuleShape(get_height(collider) / 2, get_radius(collider));
+            jolt_collider->support = capsule.GetSupportFunction(JPH::ConvexShape::ESupportMode::ExcludeConvexRadius, jolt_collider->supportBuffer, JPH::Vec3::sReplicate(1.0f));
         }
 
         if (collider.type == ColliderType::Box){
-            jolt_collider->box = BoxShape(JPH::Vec3(get_size_x(collider) / 2, get_size_y(collider) / 2, get_size_z(collider) / 2),
+            auto box = BoxShape(JPH::Vec3(get_size_x(collider) / 2, get_size_y(collider) / 2, get_size_z(collider) / 2),
                                           JPH::min(get_size_x(collider) / 2, JPH::min(get_size_y(collider) / 2, get_size_z(collider) / 2)));
-            jolt_collider->shape = &jolt_collider->box;
+
+            jolt_collider->support = box.GetSupportFunction(JPH::ConvexShape::ESupportMode::ExcludeConvexRadius, jolt_collider->supportBuffer, JPH::Vec3::sReplicate(1.0f));
+
         }
     }
 
@@ -83,6 +57,7 @@ namespace compare::Jolt {
 
         get_collider(collider0, &jolt_case->collider0);
         get_collider(collider1, &jolt_case->collider1);
+
     }
 
 
@@ -97,22 +72,20 @@ namespace compare::Jolt {
 
     float get_distance(const JoltCase &jolt_case){
 
-        SubShapeIDCreator sub_shape_id_creator = SubShapeIDCreator();
-        CollideShapeSettings collide_settings = CollideShapeSettings();
-        Collector collision_collector = Collector();
-        Filter filter = Filter();
+        GJKClosestPoint gjk;
 
-        JPH::ConvexShape::sCollideConvexVsConvex(
-                jolt_case.collider0.shape, jolt_case.collider1.shape,
-                JPH::Vec3(1.0, 1.0, 1.0), JPH::Vec3(1.0, 1.0, 1.0),
-                jolt_case.transform0, jolt_case.transform1,
-                sub_shape_id_creator, sub_shape_id_creator,
-                collide_settings,
-                collision_collector,
-                filter
-        );
+        Mat44 inverse_transform0 = jolt_case.transform0.InversedRotationTranslation();
+        Mat44 transform_1_to_0 = inverse_transform0 * jolt_case.transform1;
+        TransformedConvexObject<JPH::ConvexShape::Support> support1(transform_1_to_0, *jolt_case.collider1.support);
 
-        return collision_collector.has_hit ? 0.0 : 1.0;
+        JPH::Vec3 pa, pb, v = JPH::Vec3::sZero();
+
+        float d = sqrt(gjk.GetClosestPoints(
+                *jolt_case.collider0.support,
+                support1,
+                1.0e-4f, FLT_MAX, v, pa, pb));
+
+        return d;
     }
 
 }
