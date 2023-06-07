@@ -1,28 +1,10 @@
 import json
-import os
-import numpy as np
-from distance3d.broad_phase import BoundingVolumeHierarchy
 from distance3d.gjk import gjk
-from pytransform3d.urdf import UrdfTransformManager
+from test_file_creater.load_nao import get_nao_bvh
 
 data_path = "../data/"
-urdf_file = "urdfs/nao_robot/nao_description/urdf/naoV40_generated_urdf/nao.urdf"
-urdf_working_dir = "urdfs/"
 
-shapes = []
-
-isExist = os.path.exists(data_path)
-if not isExist:
-   os.makedirs(data_path)
-
-tm = UrdfTransformManager()
-f = open(data_path + urdf_file, "r")
-urdf = f.read()
-tm.load_urdf(urdf, package_dir=data_path + urdf_working_dir)
-
-bvh = BoundingVolumeHierarchy(tm, "NaoH25V40")
-bvh.fill_tree_with_colliders(tm,  make_artists=True)
-
+bvh = get_nao_bvh(data_path)
 cases = bvh.aabb_overlapping_with_self()
 
 i = 0
