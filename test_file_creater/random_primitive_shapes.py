@@ -1,17 +1,16 @@
+import json
+import os
 import numpy as np
 from distance3d import colliders, random
-from distance3d.gjk._gjk_nesterov_accelerated import gjk_nesterov_accelerated
+from distance3d.gjk import gjk
 
 iterations = 100
+shapes = []
 random_state = np.random.RandomState(84)
-shape_names = ["sphere", "capsule", "cylinder"]
-
-original_iteration_sum = 0
-jolt_iteration_sum = 0
-nasterov_iteration_sum = 0
+shape_names = ["sphere", "capsule", "cylinder", "box"]
 
 for i in range(iterations):
-
+    print("Case:", i)
 
     shape1 = shape_names[random_state.randint(len(shape_names))]
     args1 = random.RANDOM_GENERATORS[shape1](random_state)
@@ -22,6 +21,25 @@ for i in range(iterations):
 
     collider1.round_values(6)
     collider2.round_values(6)
+    distance, _, _, _ = gjk(collider1, collider2)
 
-    nasterov_iterations = gjk_nesterov_accelerated(collider1, collider2)[3]
-    print("Nasterov Intertions", nasterov_iterations)
+    data = {
+        "case": i,
+        "collider1": collider1.to_dict(),
+        "collider2": collider2.to_dict(),
+        "distance": distance,
+    }
+    shapes.append(data)
+
+
+path = "../data/"
+isExist = os.path.exists(path)
+if not isExist:
+   os.makedirs(path)
+
+file = open(f"{path}test_data.json", "w")
+json.dump(shapes, file, indent=4)
+
+
+
+

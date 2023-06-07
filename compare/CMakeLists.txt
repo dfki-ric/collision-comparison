@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
 
-project(collision-comparison)
-
+project(collision-comparison VERSION 1.0.0)
+set_property(GLOBAL PROPERTY CXX_STANDARD 20)
 
 add_executable(compare 
   main.cpp 
@@ -10,6 +10,7 @@ add_executable(compare
   bullet.cpp
   utility.cpp collider.h collider.cpp)
 
+include_directories(/usr/include/assimp)
 
 # Json
 include_directories(${CMAKE_SOURCE_DIR}/include/json/include)

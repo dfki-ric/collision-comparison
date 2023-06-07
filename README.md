@@ -5,7 +5,7 @@
 # distance3d
 git clone git@github.com:MaartenBehn/distance3d.git
 cd distance3d/
-git checkout feature/accelerated_GJK
+git checkout feature/collider_to_dict
 cd ..
 
 # collision-rs
@@ -36,6 +36,28 @@ mkdir include/
 cd include/
 git clone git@github.com:nlohmann/json.git
 git clone git@github.com:martinus/nanobench.git
+cd ../..
+
+
+# Data
+mkdir data/
+cd data
+mkdir urdfs
+cd urdfs
+
+
+# This part is a bit hacky. We essently just want the urdf of the nao robot and its mesh files. 
+# This is nomally setup with ros so I modifieyed the cmake files to not have i crash.
+git clone git@github.com:ros-naoqi/nao_robot.git
+git clone git@github.com:MaartenBehn/nao_meshes.git
+cd nao_meshes
+mkdir build
+cd build
+cmake ..
+make make ._meshes # Follow the installer just press enter and say yes
+
+
+cd ../../../..
 ```
 
 Rust nightly is needed: 
