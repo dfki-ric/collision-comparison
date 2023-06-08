@@ -1,4 +1,6 @@
+import numpy as np
 from distance3d.gjk import gjk
+import matplotlib.pyplot as plt
 
 
 def get_collider_count(colliders):
@@ -25,19 +27,24 @@ def get_collider_count(colliders):
     return collider_count
 
 
-def get_average_dist(colliders):
+def get_distances(colliders):
+
+    distances = np.zeros([len(colliders), len(colliders)])
     dist_sum = 0
-    i = 0
-    for collider0 in colliders:
-        for collider1 in colliders:
+    counter = 0
+
+    for (i, collider0) in enumerate(colliders):
+        for (j, collider1) in enumerate(colliders):
             if collider0 == collider1:
                 continue
 
             distance, _, _, _ = gjk(collider0, collider1)
-            dist_sum += distance
-            i += 1
+            distances[i, j] = distance
 
-    return dist_sum / i
+            dist_sum += distance
+            counter += 1
+
+    return distances, dist_sum / counter
 
 
 def get_colliders_from_pairs(pairs):
@@ -64,3 +71,48 @@ def get_colliders_from_pairs(pairs):
 
         if not collider1_found:
             colliders.append(collider1)
+
+    return colliders
+
+
+def plot_distance_distribution(distances, label):
+
+    step = 0.02
+    max_dist = 0.0
+    for distance in distances.flatten():
+        if distance > max_dist:
+            max_dist = distance
+
+    counter = np.zeros([int(max_dist / step) + 1])
+    for distance in distances.flatten():
+        index = int(distance / step)
+        counter[index] += 1
+
+    import decimal
+    def drange(x, y, jump):
+        while x < y:
+            yield float(x)
+            x += decimal.Decimal(jump)
+
+    x = list(drange(0, max_dist, step))
+
+    # plot
+    fig, ax = plt.subplots()
+
+    ax.plot(x[1:], counter[1:], linewidth=2.0, label=label)
+
+
+    plt.show()
+
+
+def print_collider_distribution(colliders):
+    collider_sum = 0
+
+    for name in colliders:
+        collider_sum += colliders[name]
+
+    for name in colliders:
+        if colliders[name] == 0:
+            continue
+
+        print(name, ":", int((colliders[name] / collider_sum) * 100), "%")
