@@ -7,6 +7,8 @@ data_path = "../data/"
 bvh = get_nao_bvh(data_path)
 cases = bvh.aabb_overlapping_with_self()
 
+shapes = []
+
 i = 0
 for case in cases:
     print("Case: ", i)
