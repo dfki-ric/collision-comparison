@@ -70,18 +70,18 @@ namespace compare::Jolt {
         }
     }
 
-    float get_distance(const JoltCase &jolt_case){
+    float get_distance(JoltCase* jolt_case){
 
         GJKClosestPoint gjk;
 
-        Mat44 inverse_transform0 = jolt_case.transform0.InversedRotationTranslation();
-        Mat44 transform_1_to_0 = inverse_transform0 * jolt_case.transform1;
-        TransformedConvexObject<JPH::ConvexShape::Support> support1(transform_1_to_0, *jolt_case.collider1.support);
+        Mat44 inverse_transform0 = jolt_case->transform0.InversedRotationTranslation();
+        Mat44 transform_1_to_0 = inverse_transform0 * jolt_case->transform1;
+        TransformedConvexObject<JPH::ConvexShape::Support> support1(transform_1_to_0, *jolt_case->collider1.support);
 
         JPH::Vec3 pa, pb, v = JPH::Vec3::sZero();
 
         float d = sqrt(gjk.GetClosestPoints(
-                *jolt_case.collider0.support,
+                *jolt_case->collider0.support,
                 support1,
                 1.0e-4f, FLT_MAX, v, pa, pb));
 

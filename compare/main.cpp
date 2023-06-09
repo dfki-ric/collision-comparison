@@ -23,7 +23,6 @@ int main(){
     Case base_cases[cases_length];
     load_cases(&base_cases[0], cases_length);
 
-
     FCLCase fcl_cases[cases_length];
     compare::FCL::get_cases(&base_cases[0], &fcl_cases[0], cases_length);
 
@@ -60,13 +59,13 @@ int main(){
 
     for (int i = 0; i < cases_length; i++) {
 
-        float fcl_distance = compare::FCL::get_distance(fcl_cases[i]);
-        float jolt_distance = compare::Jolt::get_distance(jolt_cases[i]);
-        float bullet_distance = compare::Bullet::get_distance(bullet_cases[i]);
+        float fcl_distance = compare::FCL::get_distance(&fcl_cases[i]);
+        float jolt_distance = compare::Jolt::get_distance(&jolt_cases[i]);
+        float bullet_distance = compare::Bullet::get_distance(&bullet_cases[i]);
 
-        bool fcl_correct = abs(get_distance(fcl_cases[i]) - fcl_distance) < 0.5;
-        bool jolt_correct = abs(get_distance(fcl_cases[i]) - jolt_distance) < 0.5;
-        bool bullet_correct = abs(get_distance(fcl_cases[i]) - bullet_distance) < 0.5;
+        bool fcl_correct = abs(compare::Base::get_distance(&base_cases[i]) - fcl_distance) < 0.1;
+        bool jolt_correct = abs(compare::Base::get_distance(&base_cases[i]) - jolt_distance) < 0.1;
+        bool bullet_correct = abs(compare::Base::get_distance(&base_cases[i]) - bullet_distance) < 0.1;
 
         if (!fcl_correct || !jolt_correct || !bullet_correct){
             std::cout << "Not correct case: " << i << "\n"

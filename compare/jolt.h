@@ -42,7 +42,7 @@ namespace compare::Jolt {
 
     void get_case(Collider collider0, Collider collider1, JoltCase* jolt_case);
     void get_cases(Case* base_cases, JoltCase* jolt_cases, int length);
-    float get_distance(const JoltCase &jolt_case);
+    float get_distance(JoltCase* jolt_case);
 }
 
 

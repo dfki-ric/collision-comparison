@@ -80,20 +80,20 @@ namespace compare::Bullet {
 
     };
 
-    float get_distance(const BulletCase& bullet_case) {
+    float get_distance(BulletCase* bullet_case) {
         btVoronoiSimplexSolver voronoiSimplexSolver = btVoronoiSimplexSolver();
         btMinkowskiPenetrationDepthSolver convexPenetrationDepthSolver = btMinkowskiPenetrationDepthSolver();
 
         btDiscreteCollisionDetectorInterface::ClosestPointInput input;
-        input.m_transformA = bullet_case.transform0;
-        input.m_transformB = bullet_case.transform1;
+        input.m_transformA = bullet_case->transform0;
+        input.m_transformB = bullet_case->transform1;
         input.m_maximumDistanceSquared = 1000.0;
 
         btPointCollector result;
 
         Draw draw = Draw();
 
-        btGjkPairDetector pairDetector = btGjkPairDetector(bullet_case.collider0.shape, bullet_case.collider1.shape, &voronoiSimplexSolver, &convexPenetrationDepthSolver);
+        btGjkPairDetector pairDetector = btGjkPairDetector(bullet_case->collider0.shape, bullet_case->collider1.shape, &voronoiSimplexSolver, &convexPenetrationDepthSolver);
         pairDetector.getClosestPointsNonVirtual(input, result, &draw);
 
         return result.m_distance;

@@ -40,71 +40,88 @@ using compare::Base::get_height;
 using compare::Base::get_size_x;
 using compare::Base::get_size_y;
 using compare::Base::get_size_z;
+using compare::Base::get_vertex_count;
+using compare::Base::get_index_count;
 using compare::Base::Case;
 
 namespace compare::FCL {
-    Transform3f get_transform(Collider collider){
+    Transform3f get_transform(Collider* collider){
         Transform3f transform;
         Eigen::Matrix3d m;
-        m << collider.colliderToOrigen[0],  collider.colliderToOrigen[1], collider.colliderToOrigen[2],
-                collider.colliderToOrigen[4],  collider.colliderToOrigen[5],  collider.colliderToOrigen[6],
-                collider.colliderToOrigen[8], collider.colliderToOrigen[9],  collider.colliderToOrigen[10];
-        transform.setTransform(m, Vec3f(collider.colliderToOrigen[3], collider.colliderToOrigen[7], collider.colliderToOrigen[11]));
+        m << collider->colliderToOrigen[0],  collider->colliderToOrigen[1], collider->colliderToOrigen[2],
+                collider->colliderToOrigen[4],  collider->colliderToOrigen[5],  collider->colliderToOrigen[6],
+                collider->colliderToOrigen[8], collider->colliderToOrigen[9],  collider->colliderToOrigen[10];
+        transform.setTransform(m, Vec3f(collider->colliderToOrigen[3], collider->colliderToOrigen[7], collider->colliderToOrigen[11]));
 
         return transform;
     }
 
-    void get_collider(Collider collider, FCLCollider* fcl_collider){
-        if (collider.type == ColliderType::Sphere){
-            fcl_collider->sphere = Sphere(get_radius(collider));
+    void get_collider(Collider* collider, FCLCollider* fcl_collider){
+        if (collider->type == ColliderType::Sphere){
+            fcl_collider->sphere = Sphere(get_radius(*collider));
             fcl_collider->shape = &fcl_collider->sphere;
         }
 
-        if (collider.type == ColliderType::Cylinder){
-            fcl_collider->cylinder = Cylinder(get_radius(collider), get_height(collider));
+        if (collider->type == ColliderType::Cylinder){
+            fcl_collider->cylinder = Cylinder(get_radius(*collider), get_height(*collider));
             fcl_collider->shape = &fcl_collider->cylinder;
         }
 
-        if (collider.type == ColliderType::Capsule){
-            fcl_collider->capsule = Capsule(get_radius(collider), get_height(collider));
+        if (collider->type == ColliderType::Capsule){
+            fcl_collider->capsule = Capsule(get_radius(*collider), get_height(*collider));
             fcl_collider->shape = &fcl_collider->capsule;
         }
 
-        if (collider.type == ColliderType::Box){
-            fcl_collider->box = Box(get_size_x(collider), get_size_y(collider), get_size_z(collider));
+        if (collider->type == ColliderType::Box){
+            fcl_collider->box = Box(get_size_x(*collider), get_size_y(*collider), get_size_z(*collider));
             fcl_collider->shape = &fcl_collider->box;
+        }
+
+        if (collider->type == ColliderType::Mesh){
+
+            unsigned int vertex_count = get_vertex_count(*collider);
+            auto* vertecies = new Vec3f[vertex_count];
+            for (int i = 0; i < vertex_count; i++){
+                vertecies[i][0] = collider->vertecies[i].x;
+                vertecies[i][1] = collider->vertecies[i].y;
+                vertecies[i][2] = collider->vertecies[i].z;
+            }
+
+            unsigned int index_count = get_index_count(*collider);
+            unsigned int triangle_count = index_count / 3;
+            auto* triangles = new Triangle[triangle_count];
+            for (int i = 0; i < triangle_count; i++){
+                triangles[i][0] = collider->indicies[i * 3];
+                triangles[i][1] = collider->indicies[i * 3 + 1];
+                triangles[i][2] = collider->indicies[i * 3 + 2];
+            }
+
+            fcl_collider->convex = Convex<Triangle>(true, vertecies, vertex_count, triangles, triangle_count);
+            fcl_collider->shape = &fcl_collider->convex;
         }
     }
 
+    void get_case(Collider* collider0, Collider* collider1, FCLCase* fcl_case){
 
-    FCLCase get_case(Collider collider0, Collider collider1){
-
-        FCLCase fcl_case;
         Transform3f transform0 = get_transform(collider0);
         Transform3f transform1 = get_transform(collider1);
 
-        FCLCollider fcl_collider0;
-        FCLCollider fcl_collider1;
+        get_collider(collider0, &fcl_case->collider0);
+        get_collider(collider1, &fcl_case->collider1);
 
-        get_collider(collider0, &fcl_collider0);
-        get_collider(collider1, &fcl_collider1);
-
-        fcl_case.mink_diff.set(fcl_collider0.shape, fcl_collider1.shape, transform0, transform1);
-
-        return fcl_case;
+        fcl_case->mink_diff.set(fcl_case->collider0.shape, fcl_case->collider1.shape, transform0, transform1);
     }
 
     void get_cases(Case* base_cases, FCLCase* fcl_cases, int length){
 
         for (int i = 0; i < length; i++) {
 
-            auto base_case = base_cases[i];
-            fcl_cases[i] = get_case(base_case.collider0, base_case.collider1);
+            get_case(&base_cases[i].collider0, &base_cases[i].collider1, &fcl_cases[i]);
 
         }
     }
 
-    float get_distance(const FCLCase& fcl_case){
+    float get_distance(FCLCase* fcl_case){
         unsigned int max_iterations = 128;
         FCL_REAL tolerance = 1e-6;
         GJK gjk(max_iterations, tolerance);
@@ -116,7 +133,7 @@ namespace compare::FCL {
         init_support_guess.setZero();
 
         // Evaluate both solvers twice, make sure they give the same solution
-        GJK::Status res_gjk = gjk.evaluate(fcl_case.mink_diff, init_guess, init_support_guess);
+        GJK::Status res_gjk = gjk.evaluate(fcl_case->mink_diff, init_guess, init_support_guess);
 
         // std::cout << "gjk iterations:\n" << gjk.getIterations() << "\n";
 
