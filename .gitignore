@@ -5,3 +5,5 @@ compare/build_debug/
 compare/build_release/
 
 *.pclprof
+
+*pycache*

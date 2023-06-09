@@ -54,7 +54,7 @@ cd nao_meshes
 mkdir build
 cd build
 cmake ..
-make make ._meshes # Follow the installer just press enter and say yes
+make ._meshes # Follow the installer just press enter and say yes
 
 
 cd ../../../..
