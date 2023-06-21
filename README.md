@@ -45,7 +45,7 @@ cd data
 mkdir urdfs
 cd urdfs
 
-
+# -- Getting the Nao URDF --
 # This part is a bit hacky. We essently just want the urdf of the nao robot and its mesh files. 
 # This is nomally setup with ros so I modifieyed the cmake files to not have i crash.
 git clone git@github.com:ros-naoqi/nao_robot.git
@@ -55,9 +55,14 @@ mkdir build
 cd build
 cmake ..
 make ._meshes # Follow the installer just press enter and say yes
+cd ../..
+
+# -- Getting the Atlas URDF --
+git clone git@github.com:team-vigir/vigir_atlas_common.git
 
 
-cd ../../../..
+
+cd ../..
 ```
 
 Rust nightly is needed: 
