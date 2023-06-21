@@ -127,7 +127,7 @@ namespace compare::Base {
 
             Case* base_case = &cases[i];
             parseCollider(collide_case["collider1"], &base_case->collider0);
-            parseCollider(collide_case["collider2"], &base_case->collider0);
+            parseCollider(collide_case["collider2"], &base_case->collider1);
 
             float distance = collide_case["distance"];
 

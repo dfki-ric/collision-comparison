@@ -15,16 +15,20 @@ include_directories(/usr/include/assimp)
 # Json
 include_directories(${CMAKE_SOURCE_DIR}/include/json/include)
 
+
 # Benchmark
 include_directories(${CMAKE_SOURCE_DIR}/include/nanobench/src/include)
 
+
 # Jolt
+
 add_subdirectory(${CMAKE_SOURCE_DIR}/../JoltPhysics/Build ${CMAKE_BINARY_DIR}/Jolt)
 include_directories(${CMAKE_SOURCE_DIR}/../JoltPhysics)
 
 add_library(libjolt STATIC IMPORTED)
 set_target_properties(libjolt PROPERTIES IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/Jolt/libJolt.a)
 set_target_properties(libjolt PROPERTIES INTERFACE_INCLUDE_DIRECTORIES /usr/include)
+# set_target_properties(libjolt PROPERTIES COMPILE_DEFINITIONS "")
 
 target_link_libraries(compare libjolt)
 

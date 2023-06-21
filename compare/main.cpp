@@ -29,8 +29,8 @@ int main(){
     JoltCase jolt_cases[cases_length];
     compare::Jolt::get_cases(&base_cases[0], &jolt_cases[0], cases_length);
 
-    BulletCase bullet_cases[cases_length];
-    compare::Bullet::get_cases(&base_cases[0], &bullet_cases[0], cases_length);
+    // BulletCase bullet_cases[cases_length];
+    // compare::Bullet::get_cases(&base_cases[0], &bullet_cases[0], cases_length);
 
 #ifdef NDEBUG
     std::cout << "\n\n";
@@ -59,9 +59,9 @@ int main(){
 
     for (int i = 0; i < cases_length; i++) {
 
-        float fcl_distance = compare::FCL::get_distance(&fcl_cases[i]);
-        float jolt_distance = compare::Jolt::get_distance(&jolt_cases[i]);
-        float bullet_distance = compare::Bullet::get_distance(&bullet_cases[i]);
+        float fcl_distance = compare::FCL::get_distance(fcl_cases[i]);
+        float jolt_distance = compare::Jolt::get_distance(jolt_cases[i]);
+        float bullet_distance = 0; // compare::Bullet::get_distance(&bullet_cases[i]);
 
         bool fcl_correct = abs(compare::Base::get_distance(&base_cases[i]) - fcl_distance) < 0.1;
         bool jolt_correct = abs(compare::Base::get_distance(&base_cases[i]) - jolt_distance) < 0.1;
