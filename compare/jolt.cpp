@@ -71,8 +71,8 @@ namespace compare::Jolt {
             auto mesh = JPH::MeshShape(mesh_settings, result);
              */
 
-            auto polygon_support = new JPH::PolygonConvexSupport<JPH::VertexList>(jolt_collider.vertexList);
-            jolt_collider.support = reinterpret_cast<const JPH::ConvexShape::Support*>(polygon_support);
+            jolt_collider.polygon_support = new JPH::PolygonConvexSupport<JPH::VertexList>(jolt_collider.vertexList);
+            jolt_collider.support = (JPH::ConvexShape::Support*)(jolt_collider.polygon_support);
 
         }
     }

@@ -80,23 +80,23 @@ namespace compare::FCL {
         if (collider.type == ColliderType::Mesh){
 
             unsigned int vertex_count = get_vertex_count(collider);
-            auto* vertecies = new Vec3f[vertex_count];
+            fcl_collider.vertecies = new Vec3f[vertex_count];
             for (int i = 0; i < vertex_count; i++){
-                vertecies[i][0] = collider.vertecies[i].x;
-                vertecies[i][1] = collider.vertecies[i].y;
-                vertecies[i][2] = collider.vertecies[i].z;
+                fcl_collider.vertecies[i][0] = collider.vertecies[i].x;
+                fcl_collider.vertecies[i][1] = collider.vertecies[i].y;
+                fcl_collider.vertecies[i][2] = collider.vertecies[i].z;
             }
 
             unsigned int index_count = get_index_count(collider);
             unsigned int triangle_count = index_count / 3;
-            auto* triangles = new Triangle[triangle_count];
+            fcl_collider.triangles = new Triangle[triangle_count];
             for (int i = 0; i < triangle_count; i++){
-                triangles[i][0] = collider.indicies[i * 3];
-                triangles[i][1] = collider.indicies[i * 3 + 1];
-                triangles[i][2] = collider.indicies[i * 3 + 2];
+                fcl_collider.triangles[i][0] = collider.indicies[i * 3];
+                fcl_collider.triangles[i][1] = collider.indicies[i * 3 + 1];
+                fcl_collider.triangles[i][2] = collider.indicies[i * 3 + 2];
             }
 
-            fcl_collider.convex = Convex<Triangle>(true, vertecies, vertex_count, triangles, triangle_count);
+            fcl_collider.convex = Convex<Triangle>(true, fcl_collider.vertecies, vertex_count, fcl_collider.triangles, triangle_count);
             fcl_collider.shape = &fcl_collider.convex;
         }
     }

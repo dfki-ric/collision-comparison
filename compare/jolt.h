@@ -30,6 +30,7 @@ namespace compare::Jolt {
     struct JoltCollider {
         JPH::ConvexShape::SupportBuffer supportBuffer;
         JPH::VertexList vertexList;
+        JPH::PolygonConvexSupport<JPH::VertexList>* polygon_support;
         const JPH::ConvexShape::Support* support;
     };
 

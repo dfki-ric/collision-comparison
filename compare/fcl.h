@@ -19,6 +19,9 @@ using hpp::fcl::Triangle;
 using hpp::fcl::Convex;
 using hpp::fcl::ShapeBase;
 
+using hpp::fcl::Vec3f;
+using hpp::fcl::Triangle;
+
 using hpp::fcl::details::MinkowskiDiff;
 
 namespace compare::FCL {
@@ -28,6 +31,9 @@ namespace compare::FCL {
         Cylinder cylinder;
         Box box;
         Convex<Triangle> convex;
+
+        Vec3f* vertecies;
+        Triangle* triangles;
 
         ShapeBase* shape;
     };
