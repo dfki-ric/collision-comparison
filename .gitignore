@@ -1,5 +1,6 @@
+
 *.idea/
-data/
+data/*
 
 compare/build_debug/
 compare/build_release/
@@ -7,3 +8,5 @@ compare/build_release/
 *.pclprof
 
 *pycache*
+
+!data/nao_test_cases.json
