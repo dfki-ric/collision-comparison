@@ -19,34 +19,34 @@ namespace compare::Bullet {
                 btVector3(collider.colliderToOrigen[3], collider.colliderToOrigen[7], collider.colliderToOrigen[11]));
     }
 
-    void get_collider(Collider collider, BulletCollider* bullet_collider){
+    void get_collider(Collider collider, BulletCollider& bullet_collider){
         if (collider.type == ColliderType::Sphere){
-            bullet_collider->sphere = btSphereShape(get_radius(collider));
-            bullet_collider->shape = &bullet_collider->sphere;
+            bullet_collider.sphere = btSphereShape(get_radius(collider));
+            bullet_collider.shape = &bullet_collider.sphere;
         }
 
         if (collider.type == ColliderType::Cylinder){
-            bullet_collider->cylinder = btCylinderShapeX(btVector3(get_radius(collider), 0.0 , get_height(collider) / 2));
-            bullet_collider->shape = &bullet_collider->cylinder;
+            bullet_collider.cylinder = btCylinderShapeX(btVector3(get_radius(collider), 0.0 , get_height(collider) / 2));
+            bullet_collider.shape = &bullet_collider.cylinder;
         }
 
         if (collider.type == ColliderType::Capsule){
-            bullet_collider->capsule = btCapsuleShapeX(get_radius(collider), get_height(collider));
-            bullet_collider->shape = &bullet_collider->capsule;
+            bullet_collider.capsule = btCapsuleShapeX(get_radius(collider), get_height(collider));
+            bullet_collider.shape = &bullet_collider.capsule;
         }
 
         if (collider.type == ColliderType::Box){
-            bullet_collider->box = btBoxShape(btVector3(get_size_x(collider) / 2, get_size_y(collider) / 2, get_size_z(collider) / 2));
-            bullet_collider->shape = &bullet_collider->box;
+            bullet_collider.box = btBoxShape(btVector3(get_size_x(collider) / 2, get_size_y(collider) / 2, get_size_z(collider) / 2));
+            bullet_collider.shape = &bullet_collider.box;
         }
     }
 
-    void get_case(Collider collider0, Collider collider1, BulletCase* bullet_case){
-        bullet_case->transform0 = get_transform(collider0);
-        bullet_case->transform1 = get_transform(collider1);
+    void get_case(Collider collider0, Collider collider1, BulletCase& bullet_case){
+        bullet_case.transform0 = get_transform(collider0);
+        bullet_case.transform1 = get_transform(collider1);
 
-        get_collider(collider0, &bullet_case->collider0);
-        get_collider(collider1, &bullet_case->collider1);
+        get_collider(collider0, bullet_case.collider0);
+        get_collider(collider1, bullet_case.collider1);
     }
 
     void get_cases(Case* base_cases, BulletCase* bullet_cases, int length){
@@ -54,7 +54,7 @@ namespace compare::Bullet {
         for (int i = 0; i < length; i++) {
 
             auto base_case = base_cases[i];
-            get_case(base_case.collider0, base_case.collider1, &bullet_cases[i]);
+            get_case(base_case.collider0, base_case.collider1, bullet_cases[i]);
 
         }
     }
@@ -80,20 +80,20 @@ namespace compare::Bullet {
 
     };
 
-    float get_distance(BulletCase* bullet_case) {
+    float get_distance(BulletCase& bullet_case) {
         btVoronoiSimplexSolver voronoiSimplexSolver = btVoronoiSimplexSolver();
         btMinkowskiPenetrationDepthSolver convexPenetrationDepthSolver = btMinkowskiPenetrationDepthSolver();
 
         btDiscreteCollisionDetectorInterface::ClosestPointInput input;
-        input.m_transformA = bullet_case->transform0;
-        input.m_transformB = bullet_case->transform1;
+        input.m_transformA = bullet_case.transform0;
+        input.m_transformB = bullet_case.transform1;
         input.m_maximumDistanceSquared = 1000.0;
 
         btPointCollector result;
 
         Draw draw = Draw();
 
-        btGjkPairDetector pairDetector = btGjkPairDetector(bullet_case->collider0.shape, bullet_case->collider1.shape, &voronoiSimplexSolver, &convexPenetrationDepthSolver);
+        btGjkPairDetector pairDetector = btGjkPairDetector(bullet_case.collider0.shape, bullet_case.collider1.shape, &voronoiSimplexSolver, &convexPenetrationDepthSolver);
         pairDetector.getClosestPointsNonVirtual(input, result, &draw);
 
         return result.m_distance;

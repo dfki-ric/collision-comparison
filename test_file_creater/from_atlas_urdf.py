@@ -2,9 +2,9 @@ import json
 from distance3d.gjk import gjk
 from test_file_creater.load_atlas import get_atlas_bvh
 
-data_path = "../data/"
+data_path = "../data/urdfs/atlas/"
 
-bvh = get_atlas_bvh(data_path)
+tm, bvh = get_atlas_bvh(data_path)
 cases = bvh.aabb_overlapping_with_self()
 
 shapes = []

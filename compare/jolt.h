@@ -30,8 +30,7 @@ namespace compare::Jolt {
     struct JoltCollider {
         JPH::ConvexShape::SupportBuffer supportBuffer;
         JPH::VertexList vertexList;
-        JPH::PolygonConvexSupport<JPH::VertexList>* polygon_support;
-        const JPH::ConvexShape::Support* support;
+        const JPH::Shape* shape;
     };
 
     struct JoltCase {
@@ -42,6 +41,7 @@ namespace compare::Jolt {
         JoltCollider collider1;
     };
 
+    void init();
     void get_cases(Case* base_cases, JoltCase* jolt_cases, int length);
     float get_distance(JoltCase& jolt_case);
 }

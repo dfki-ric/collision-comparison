@@ -1,4 +1,5 @@
 #include "jolt.h"
+#include "Jolt/Physics/Character/CharacterVirtual.h"
 
 #include <iostream>
 
@@ -13,11 +14,39 @@
 #include <Jolt/Geometry/GJKClosestPoint.h>
 #include <Jolt/Geometry/ConvexSupport.h>
 #include <Jolt/Geometry/Sphere.h>
+#include <Jolt/Physics/Collision/CollisionDispatch.h>
+#include <Jolt/RegisterTypes.h>
+#include <Jolt/Core/Factory.h>
+#include <Jolt/Core/TempAllocator.h>
+#include <Jolt/Core/JobSystemThreadPool.h>
+#include <Jolt/Physics/PhysicsSettings.h>
+#include <Jolt/Physics/PhysicsSystem.h>
+#include <Jolt/Physics/Collision/Shape/BoxShape.h>
+#include <Jolt/Physics/Collision/Shape/SphereShape.h>
+#include <Jolt/Physics/Body/BodyCreationSettings.h>
+#include <Jolt/Physics/Body/BodyActivationListener.h>
 
 using JPH::GJKClosestPoint;
 using JPH::TransformedConvexObject;
 
 namespace compare::Jolt {
+
+    void init(){
+        JPH::RegisterDefaultAllocator();
+
+        // Create a factory
+        JPH::Factory::sInstance = new JPH::Factory();
+
+        // Register all Jolt physics types
+        JPH::RegisterTypes();
+
+        // We need a temp allocator for temporary allocations during the physics update. We're
+        // pre-allocating 10 MB to avoid having to do allocations during the physics update.
+        // B.t.w. 10 MB is way too much for this example but it is a typical value you can use.
+        // If you don't want to pre-allocate you can also use TempAllocatorMalloc to fall back to
+        // malloc / free.
+        JPH::TempAllocatorImpl temp_allocator(10 * 1024 * 1024);
+    }
 
     Mat44 get_transform(Collider collider){
         return Mat44(JPH::Vec4(collider.colliderToOrigen[0], collider.colliderToOrigen[4], collider.colliderToOrigen[8], collider.colliderToOrigen[12]),
@@ -28,26 +57,24 @@ namespace compare::Jolt {
 
     void get_collider(Collider collider, JoltCollider& jolt_collider){
         if (collider.type == ColliderType::Sphere){
-            auto sphere = SphereShape(get_radius(collider));
-            jolt_collider.support = sphere.GetSupportFunction(JPH::ConvexShape::ESupportMode::ExcludeConvexRadius, jolt_collider.supportBuffer, JPH::Vec3::sReplicate(1.0f));
+            auto sphere = new SphereShape(get_radius(collider));
+            jolt_collider.shape = sphere;
         }
 
         if (collider.type == ColliderType::Cylinder){
-            auto cylinder = CylinderShape(get_height(collider) / 2, get_radius(collider), JPH::min(get_height(collider) / 2, get_radius(collider)));
-            jolt_collider.support = cylinder.GetSupportFunction(JPH::ConvexShape::ESupportMode::ExcludeConvexRadius, jolt_collider.supportBuffer, JPH::Vec3::sReplicate(1.0f));
-
+            auto cylinder = new CylinderShape(get_height(collider) / 2, get_radius(collider), JPH::min(get_height(collider) / 2, get_radius(collider)));
+            jolt_collider.shape = cylinder;
         }
 
         if (collider.type == ColliderType::Capsule){
-            auto capsule = CapsuleShape(get_height(collider) / 2, get_radius(collider));
-            jolt_collider.support = capsule.GetSupportFunction(JPH::ConvexShape::ESupportMode::ExcludeConvexRadius, jolt_collider.supportBuffer, JPH::Vec3::sReplicate(1.0f));
+            auto capsule = new CapsuleShape(get_height(collider) / 2, get_radius(collider));
+            jolt_collider.shape = capsule;
         }
 
         if (collider.type == ColliderType::Box){
-            auto box = BoxShape(JPH::Vec3(get_size_x(collider) / 2, get_size_y(collider) / 2, get_size_z(collider) / 2),
+            auto box = new BoxShape(JPH::Vec3(get_size_x(collider) / 2, get_size_y(collider) / 2, get_size_z(collider) / 2),
                                           JPH::min(get_size_x(collider) / 2, JPH::min(get_size_y(collider) / 2, get_size_z(collider) / 2)));
-
-            jolt_collider.support = box.GetSupportFunction(JPH::ConvexShape::ESupportMode::ExcludeConvexRadius, jolt_collider.supportBuffer, JPH::Vec3::sReplicate(1.0f));
+            jolt_collider.shape = box;
         }
 
         if (collider.type == ColliderType::Mesh){
@@ -58,7 +85,7 @@ namespace compare::Jolt {
                 jolt_collider.vertexList.push_back(vertex);
             }
 
-            /*
+
             unsigned int index_count = get_index_count(collider);
             unsigned int triangle_count = index_count / 3;
             JPH::IndexedTriangleList indexedTriangleList;
@@ -66,13 +93,11 @@ namespace compare::Jolt {
                 indexedTriangleList.emplace_back(collider.indicies[i * 3], collider.indicies[i * 3 + 1], collider.indicies[i * 3 + 2]);
             }
 
-            auto mesh_settings = JPH::MeshShapeSettings(vertexList, indexedTriangleList);
-            auto result = JPH::Shape::ShapeResult();
-            auto mesh = JPH::MeshShape(mesh_settings, result);
-             */
+            auto mesh_settings = JPH::MeshShapeSettings(jolt_collider.vertexList, indexedTriangleList);
+            auto result = new JPH::Shape::ShapeResult();
+            auto mesh = new JPH::MeshShape(mesh_settings, *result);
 
-            jolt_collider.polygon_support = new JPH::PolygonConvexSupport<JPH::VertexList>(jolt_collider.vertexList);
-            jolt_collider.support = (JPH::ConvexShape::Support*)(jolt_collider.polygon_support);
+            jolt_collider.shape = mesh;
 
         }
     }
@@ -84,35 +109,39 @@ namespace compare::Jolt {
 
         get_collider(collider0, jolt_case.collider0);
         get_collider(collider1, jolt_case.collider1);
-
     }
 
-
+    
     void get_cases(Case* base_cases, JoltCase* jolt_cases, int length){
 
         for (int i = 0; i < length; i++) {
             auto base_case = base_cases[i];
             get_case(base_case.collider0, base_case.collider1, jolt_cases[i]);
 
+            get_distance(jolt_cases[i]);
         }
     }
 
+    class Collector : public JPH::CollideShapeCollector {
+        void AddHit(const ResultType &inResult){
+            std::cout << "Hit";
+        }
+    };
+
     float get_distance(JoltCase& jolt_case){
 
-        GJKClosestPoint gjk;
+        Collector collector = Collector();
+        JPH::CollideShapeSettings settings = JPH::CollideShapeSettings();
+        JPH::SubShapeIDCreator part1, part2;
+        JPH::CollisionDispatch::sCollideShapeVsShape(
+                jolt_case.collider0.shape,
+                jolt_case.collider1.shape,
+                JPH::Vec3::sReplicate(1.0f),
+                JPH::Vec3::sReplicate(1.0f),
+                jolt_case.transform0, jolt_case.transform1,
+                part1, part2, settings, collector);
 
-        Mat44 inverse_transform0 = jolt_case.transform0.InversedRotationTranslation();
-        Mat44 transform_1_to_0 = inverse_transform0 * jolt_case.transform1;
-        TransformedConvexObject<JPH::ConvexShape::Support> support1(transform_1_to_0, *jolt_case.collider1.support);
-
-        JPH::Vec3 pa, pb, v = JPH::Vec3::sZero();
-
-        float d = sqrt(gjk.GetClosestPoints(
-                *jolt_case.collider0.support,
-                support1,
-                1.0e-4f, FLT_MAX, v, pa, pb));
-
-        return d;
+        return 0;
     }
 
 }

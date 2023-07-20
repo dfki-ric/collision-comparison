@@ -42,22 +42,29 @@ cd ../..
 # Data
 mkdir data/
 cd data
-mkdir urdfs
+mkdir urdfs/
 cd urdfs
 
 # -- Getting the Nao URDF --
 # This part is a bit hacky. We essently just want the urdf of the nao robot and its mesh files. 
 # This is nomally setup with ros so I modifieyed the cmake files to not have i crash.
+mkdir nao/
+cd nao
+
 git clone git@github.com:ros-naoqi/nao_robot.git
+
 git clone git@github.com:MaartenBehn/nao_meshes.git
 cd nao_meshes
 mkdir build
 cd build
 cmake ..
 make ._meshes # Follow the installer just press enter and say yes
-cd ../..
+
+cd ../../..
 
 # -- Getting the Atlas URDF --
+mkdir atlas/
+cd atlas
 git clone git@github.com:team-vigir/vigir_atlas_common.git
 
 

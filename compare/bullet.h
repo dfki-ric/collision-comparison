@@ -29,9 +29,8 @@ namespace compare::Bullet {
         BulletCollider collider1;
     };
 
-    void get_case(Collider collider0, Collider collider1, BulletCase* bullet_case);
     void get_cases(Case* base_cases, BulletCase* bullet_cases, int length);
-    float get_distance(BulletCase* bullet_case);
+    float get_distance(BulletCase& bullet_case);
 }
 
 

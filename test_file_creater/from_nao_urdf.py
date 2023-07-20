@@ -2,9 +2,9 @@ import json
 from distance3d.gjk import gjk
 from test_file_creater.load_nao import get_nao_bvh
 
-data_path = "../data/"
+data_path = "../data/urdfs/nao/"
 
-bvh = get_nao_bvh(data_path)
+tm, bvh = get_nao_bvh(data_path)
 cases = bvh.aabb_overlapping_with_self()
 
 shapes = []

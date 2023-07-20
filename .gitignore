@@ -1,6 +1,5 @@
 
 *.idea/
-data/*
 
 compare/build_debug/
 compare/build_release/
@@ -10,3 +9,4 @@ compare/build_release/
 *pycache*
 
 !data/nao_test_cases.json
+!data/test_data.json
