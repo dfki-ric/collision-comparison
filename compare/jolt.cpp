@@ -123,14 +123,18 @@ namespace compare::Jolt {
     }
 
     class Collector : public JPH::CollideShapeCollector {
+    public:
+        int hits;
+
         void AddHit(const ResultType &inResult){
-            std::cout << "Hit";
+            hits++;
         }
     };
 
     float get_distance(JoltCase& jolt_case){
 
         Collector collector = Collector();
+        collector.hits = 0;
         JPH::CollideShapeSettings settings = JPH::CollideShapeSettings();
         JPH::SubShapeIDCreator part1, part2;
         JPH::CollisionDispatch::sCollideShapeVsShape(
@@ -141,7 +145,7 @@ namespace compare::Jolt {
                 jolt_case.transform0, jolt_case.transform1,
                 part1, part2, settings, collector);
 
-        return 0;
+        return 1.0f * (collector.hits == 0);
     }
 
 }

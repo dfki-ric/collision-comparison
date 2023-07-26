@@ -116,9 +116,9 @@ namespace compare::Base {
     }
 
 
-    void load_cases(Case* cases, int length) {
+    void load_cases(char* path, Case* cases, int length) {
 
-        std::ifstream f("../../data/test_data.json");
+        std::ifstream f(path);
         json data = json::parse(f);
 
         int i = 0;

@@ -2,8 +2,9 @@ from distance3d.broad_phase import BoundingVolumeHierarchy
 from pytransform3d.urdf import UrdfTransformManager
 
 
-def get_atlas_bvh(data_path, use_visuals=False):
-    urdf_file = "modified/atlas_v5_simple_shapes.urdf"
+def get_atlas_bvh(use_visuals=False):
+    data_path = "../data/urdfs/"
+    urdf_file = "atlas.urdf"
 
     tm = UrdfTransformManager()
     f = open(data_path + urdf_file, "r")

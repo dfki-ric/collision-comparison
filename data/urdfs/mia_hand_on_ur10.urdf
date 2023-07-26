@@ -1,0 +1,710 @@
+<?xml version="1.0"?>
+<!-- created with Phobos 1.0.1 "Capricious Choutengan" -->
+  <robot name="mia_hand_on_ur10">
+
+    <link name="arm_base">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.82574"/>
+        <inertia ixx="0.00221" ixy="0" ixz="3e-05" iyy="0.00212" iyz="0" izz="0.00201"/>
+      </inertial>
+      <visual name="visual_0_arm_base">
+        <origin xyz="0 0 0.5" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.2 0.2 1.0"/>
+        </geometry>
+        <material name="orange"/>
+      </visual>
+      <collision name="collision_0_arm_base">
+        <origin xyz="0 0 0.5" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.2 0.2 1.0"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="flange">
+      <visual name="visual_0_flange">
+        <origin xyz="-0.04 0.01527 -0.02389" rpy="1.309 0 0"/>
+        <geometry>
+          <mesh filename="../meshes/dae/Mesh.014.dae" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="GREY"/>
+      </visual>
+    </link>
+
+    <link name="hand_ee_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="1e-05"/>
+        <inertia ixx="2e-05" ixy="0" ixz="0" iyy="2e-05" iyz="0" izz="2e-05"/>
+      </inertial>
+    </link>
+
+    <link name="index_fle">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.01113"/>
+        <inertia ixx="1e-05" ixy="0" ixz="0" iyy="1e-05" iyz="0" izz="1e-05"/>
+      </inertial>
+      <collision name="collision_index_pre_sensor">
+        <origin xyz="0.00016 0.02361 0.00151" rpy="1.61136 -1.4799 -0.00917"/>
+        <geometry>
+          <cylinder radius="0.00713" length="0.01697"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="index_sensor">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.01765"/>
+        <inertia ixx="4e-05" ixy="0" ixz="0" iyy="2e-05" iyz="0" izz="4e-05"/>
+      </inertial>
+      <visual name="visual_0_index_sensor">
+        <origin xyz="-0.01674 -0.1269 -0.05127" rpy="0.45763 -1.37525 0.77647"/>
+        <geometry>
+          <mesh filename="../meshes/dae/Mesh.dae" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="BLACK"/>
+      </visual>
+      <visual name="visual_1_index_sensor">
+        <origin xyz="-0.01674 -0.1269 -0.05127" rpy="0.45763 -1.37525 0.77647"/>
+        <geometry>
+          <mesh filename="../meshes/dae/Mesh.001.dae" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="WHITE"/>
+      </visual>
+      <collision name="collision_index_distal">
+        <origin xyz="-0.0019 0.04126 0.00138" rpy="1.82614 -1.50236 0.11503"/>
+        <geometry>
+          <cylinder radius="0.00796" length="0.03037"/>
+        </geometry>
+      </collision>
+      <collision name="collision_index_post_sensor">
+        <origin xyz="0.0027 0.0146 0.00128" rpy="1.30726 -1.50236 0.11503"/>
+        <geometry>
+          <cylinder radius="0.00713" length="0.01426"/>
+        </geometry>
+      </collision>
+      <collision name="collision_index_tip">
+        <origin xyz="-0.01045 0.05966 0.00067" rpy="-0.71404 -1.36751 1.09491"/>
+        <geometry>
+          <sphere radius="0.00663"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="little_fle">
+      <inertial>
+        <origin xyz="-0.00155 0.0208 -4e-05" rpy="0 0 0"/>
+        <mass value="0.0207"/>
+        <inertia ixx="2e-05" ixy="0" ixz="0" iyy="2e-05" iyz="0" izz="2e-05"/>
+      </inertial>
+      <visual name="visual_0_little_fle">
+        <origin xyz="0.0218 -0.07988 -0.04213" rpy="-0.08866 -1.91864 1.60448"/>
+        <geometry>
+          <mesh filename="../meshes/dae/Mesh.002.dae" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="BLACK"/>
+      </visual>
+      <visual name="visual_1_little_fle">
+        <origin xyz="0.0218 -0.07988 -0.04213" rpy="-0.08866 -1.91864 1.60448"/>
+        <geometry>
+          <mesh filename="../meshes/dae/Mesh.003.dae" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="WHITE"/>
+      </visual>
+      <collision name="collision_little_distal">
+        <origin xyz="-0.00907 0.05236 0.00041" rpy="2.01205 -1.5477 0.01483"/>
+        <geometry>
+          <cylinder radius="0.0076" length="0.02993"/>
+        </geometry>
+      </collision>
+      <collision name="collision_little_proximal">
+        <origin xyz="-0.00198 0.0273 -4e-05" rpy="1.63933 -1.54051 -0.01081"/>
+        <geometry>
+          <cylinder radius="0.00783" length="0.03044"/>
+        </geometry>
+      </collision>
+      <collision name="collision_little_tip">
+        <origin xyz="-0.0166 0.06473 -0.00036" rpy="-1.13586 -1.91864 1.56133"/>
+        <geometry>
+          <sphere radius="0.00484"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="middle_fle">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.0121"/>
+        <inertia ixx="2e-05" ixy="0" ixz="0" iyy="2e-05" iyz="0" izz="2e-05"/>
+      </inertial>
+      <collision name="collision_middle_pre_sensor">
+        <origin xyz="5e-05 0.0201 0.00074" rpy="1.57234 -1.5708 0"/>
+        <geometry>
+          <cylinder radius="0.00683" length="0.01782"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="middle_sensor">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.0177"/>
+        <inertia ixx="2e-05" ixy="0" ixz="0" iyy="1e-05" iyz="0" izz="2e-05"/>
+      </inertial>
+      <visual name="visual_0_middle_sensor">
+        <origin xyz="0.00767 -0.12344 -0.04515" rpy="1.39626 -1.5708 0"/>
+        <geometry>
+          <mesh filename="../meshes/dae/Mesh.004.dae" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="BLACK"/>
+      </visual>
+      <visual name="visual_1_middle_sensor">
+        <origin xyz="0.00767 -0.12344 -0.04515" rpy="1.39626 -1.5708 0"/>
+        <geometry>
+          <mesh filename="../meshes/dae/Mesh.005.dae" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="WHITE"/>
+      </visual>
+      <collision name="collision_middle_distal">
+        <origin xyz="-0.00865 0.03943 0.00074" rpy="2.09122 -1.5708 0"/>
+        <geometry>
+          <cylinder radius="0.00813" length="0.03824"/>
+        </geometry>
+      </collision>
+      <collision name="collision_middle_post_sensor">
+        <origin xyz="-0.00041 0.01092 0.00074" rpy="1.57234 -1.5708 0"/>
+        <geometry>
+          <cylinder radius="0.00683" length="0.01183"/>
+        </geometry>
+      </collision>
+      <collision name="collision_middle_tip">
+        <origin xyz="-0.02054 0.0564 0.00074" rpy="0.52515 -1.5708 0"/>
+        <geometry>
+          <sphere radius="0.00563"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="palm">
+      <inertial>
+        <origin xyz="0.00268 0.0671 -0.016" rpy="0 0 0"/>
+        <mass value="0.274"/>
+        <inertia ixx="0.0003" ixy="0" ixz="0" iyy="0.00013" iyz="0" izz="0.00034"/>
+      </inertial>
+      <visual name="visual_0_palm">
+        <origin xyz="0.00304 0.07537 -0.0252" rpy="-0.2618 0 0"/>
+        <geometry>
+          <mesh filename="../meshes/dae/Mesh.006.dae" scale="0.07667 0.10427 0.07667"/>
+        </geometry>
+        <material name="BLACK"/>
+      </visual>
+      <visual name="visual_1_palm">
+        <origin xyz="0.0038 0.06597 -0.01205" rpy="-0.2618 0 0"/>
+        <geometry>
+          <mesh filename="../meshes/dae/Mesh.007.dae" scale="0.12203 0.12203 0.12203"/>
+        </geometry>
+        <material name="BLACK"/>
+      </visual>
+      <visual name="visual_2_palm">
+        <origin xyz="-0.04 0.01527 -0.02389" rpy="1.309 0 0"/>
+        <geometry>
+          <mesh filename="../meshes/dae/Mesh.008.dae" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="GREY"/>
+      </visual>
+      <collision name="collision_hand_distal">
+        <origin xyz="0.0004 0.09513 -0.02113" rpy="-0.26098 0.02436 0.04644"/>
+        <geometry>
+          <box size="0.07264 0.04753 0.03326"/>
+        </geometry>
+      </collision>
+      <collision name="collision_hand_proximal">
+        <origin xyz="0.00129 0.04623 -0.00569" rpy="-0.26526 -0.17953 0.10142"/>
+        <geometry>
+          <box size="0.06241 0.05638 0.02858"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="ring_fle">
+      <inertial>
+        <origin xyz="-0.00112 0.0264 0.0002" rpy="0 0 0"/>
+        <mass value="0.0263"/>
+        <inertia ixx="4e-05" ixy="0" ixz="0" iyy="2e-05" iyz="0" izz="4e-05"/>
+      </inertial>
+      <visual name="visual_0_ring_fle">
+        <origin xyz="0.01105 -0.09007 -0.04356" rpy="0 -1.74533 1.41372"/>
+        <geometry>
+          <mesh filename="../meshes/dae/Mesh.009.dae" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="BLACK"/>
+      </visual>
+      <visual name="visual_1_ring_fle">
+        <origin xyz="0.01105 -0.09007 -0.04356" rpy="0 -1.74533 1.41372"/>
+        <geometry>
+          <mesh filename="../meshes/dae/Mesh.010.dae" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="WHITE"/>
+      </visual>
+      <collision name="collision_ring_distal">
+        <origin xyz="-0.00852 0.06328 0.00022" rpy="2.09914 -1.57803 0.02052"/>
+        <geometry>
+          <cylinder radius="0.0076" length="0.02993"/>
+        </geometry>
+      </collision>
+      <collision name="collision_ring_proximal">
+        <origin xyz="0.00119 0.02893 0.00022" rpy="1.5708 -1.5708 0"/>
+        <geometry>
+          <cylinder radius="0.00783" length="0.03683"/>
+        </geometry>
+      </collision>
+      <collision name="collision_ring_tip">
+        <origin xyz="-0.01823 0.07664 -0.00019" rpy="-1.0472 -1.74533 1.5708"/>
+        <geometry>
+          <sphere radius="0.00487"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="thumb_fle">
+      <inertial>
+        <origin xyz="0.01277 0.0295 0.00017" rpy="0 0 0"/>
+        <mass value="0.0592"/>
+        <inertia ixx="8e-05" ixy="0" ixz="0" iyy="2e-05" iyz="0" izz="8e-05"/>
+      </inertial>
+      <visual name="visual_0_thumb_fle">
+        <origin xyz="-0.00357 -0.07198 0.05449" rpy="0.62849 1.08786 0.25848"/>
+        <geometry>
+          <mesh filename="../meshes/dae/Mesh.011.dae" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="WHITE"/>
+      </visual>
+      <visual name="visual_1_thumb_fle">
+        <origin xyz="-0.00357 -0.07198 0.05449" rpy="0.62849 1.08786 0.25848"/>
+        <geometry>
+          <mesh filename="../meshes/dae/Mesh.012.dae" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="GREY"/>
+      </visual>
+      <collision name="collision_thumb_distal">
+        <origin xyz="0.01567 0.04738 0.0014" rpy="1.47056 0.19513 -0.04718"/>
+        <geometry>
+          <cylinder radius="0.01169" length="0.05502"/>
+        </geometry>
+      </collision>
+      <collision name="collision_thumb_proximal">
+        <origin xyz="0.01561 0.03261 6e-05" rpy="1.54384 0.23867 -0.08006"/>
+        <geometry>
+          <cylinder radius="0.01271" length="0.05982"/>
+        </geometry>
+      </collision>
+      <collision name="collision_thumb_tip">
+        <origin xyz="0.0157 0.06996 -0.00076" rpy="-0.38283 0.58341 0.64822"/>
+        <geometry>
+          <sphere radius="0.01051"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="thumb_opp">
+      <inertial>
+        <origin xyz="0.00026 0.00762 0.00122" rpy="0 0 0"/>
+        <mass value="0.013"/>
+        <inertia ixx="2e-05" ixy="0" ixz="0" iyy="2e-05" iyz="0" izz="2e-05"/>
+      </inertial>
+      <visual name="visual_0_thumb_opp">
+        <origin xyz="-0.05452 -0.04869 0.02731" rpy="-0.12846 -0.36408 0.32446"/>
+        <geometry>
+          <mesh filename="../meshes/dae/Mesh.013.dae" scale="0.001 0.001 0.001"/>
+        </geometry>
+        <material name="GREY"/>
+      </visual>
+    </link>
+
+    <link name="thumb_sensor">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.00064"/>
+        <inertia ixx="2e-05" ixy="0" ixz="0" iyy="2e-05" iyz="0" izz="2e-05"/>
+      </inertial>
+    </link>
+
+    <link name="ur10_base">
+    </link>
+
+    <link name="ur10_base_link">
+    </link>
+
+    <link name="ur10_base_link_inertia">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="4.0"/>
+        <inertia ixx="0.00611" ixy="0" ixz="0" iyy="0.00611" iyz="0" izz="0.01125"/>
+      </inertial>
+      <visual name="visual_0_ur10_base_link_inertia">
+        <origin xyz="0 0 0" rpy="0 0 -3.14159"/>
+        <geometry>
+          <mesh filename="../meshes/dae/shape0.001.dae" scale="1.0 1.0 1.0"/>
+        </geometry>
+        <material name="SWMaterial-2_001"/>
+      </visual>
+      <collision name="collision_0_ur10_base_link_inertia">
+        <origin xyz="0 0 0" rpy="0 0 -3.14159"/>
+        <geometry>
+          <box size="0.14996 0.1671 0.038"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="ur10_flange">
+    </link>
+
+    <link name="ur10_forearm_link">
+      <inertial>
+        <origin xyz="-0.28615 0 0.04904" rpy="0 0 0"/>
+        <mass value="3.87"/>
+        <inertia ixx="0.11107" ixy="0" ixz="0" iyy="0.11107" iyz="0" izz="0.01088"/>
+      </inertial>
+      <visual name="visual_0_ur10_forearm_link">
+        <origin xyz="0 0 0.04904" rpy="1.5708 0 -1.5708"/>
+        <geometry>
+          <mesh filename="../meshes/dae/shape4.dae" scale="1.0 1.0 1.0"/>
+        </geometry>
+        <material name="SWMaterial-0.001"/>
+      </visual>
+      <collision name="collision_0_ur10_forearm_link">
+        <origin xyz="0 0 0.04904" rpy="1.5708 0 -1.5708"/>
+        <geometry>
+          <box size="0.1202 0.13634 0.67816"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="ur10_shoulder_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="7.778"/>
+        <inertia ixx="0.03147" ixy="0" ixz="0" iyy="0.03147" iyz="0" izz="0.02188"/>
+      </inertial>
+      <visual name="visual_0_ur10_shoulder_link">
+        <origin xyz="0 0 0" rpy="0 0 -3.14159"/>
+        <geometry>
+          <mesh filename="../meshes/dae/shape2.001.dae" scale="1.0 1.0 1.0"/>
+        </geometry>
+        <material name="SWMaterial-0"/>
+      </visual>
+      <collision name="collision_0_ur10_shoulder_link">
+        <origin xyz="0 0 0" rpy="0 0 -3.14159"/>
+        <geometry>
+          <box size="0.15095 0.16137 0.17711"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="ur10_tool0">
+    </link>
+
+    <link name="ur10_upper_arm_link">
+      <inertial>
+        <origin xyz="-0.306 0 0.175" rpy="0 0 0"/>
+        <mass value="12.93"/>
+        <inertia ixx="0.42175" ixy="0" ixz="0" iyy="0.42175" iyz="0" izz="0.03637"/>
+      </inertial>
+      <visual name="visual_0_ur10_upper_arm_link">
+        <origin xyz="0 0 0.22094" rpy="1.5708 0 -1.5708"/>
+        <geometry>
+          <mesh filename="../meshes/dae/shape3.001.dae" scale="1.0 1.0 1.0"/>
+        </geometry>
+        <material name="SWMaterial-0_001.001"/>
+      </visual>
+      <collision name="collision_0_ur10_upper_arm_link">
+        <origin xyz="0 0 0.22094" rpy="1.5708 0 -1.5708"/>
+        <geometry>
+          <box size="0.15068 0.17726 0.74884"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="ur10_wrist_1_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="1.96"/>
+        <inertia ixx="0.00511" ixy="0" ixz="0" iyy="0.00511" iyz="0" izz="0.00551"/>
+      </inertial>
+      <visual name="visual_0_ur10_wrist_1_link">
+        <origin xyz="0 0 -0.1149" rpy="1.5708 0 0"/>
+        <geometry>
+          <mesh filename="../meshes/dae/shape2.003.dae" scale="1.0 1.0 1.0"/>
+        </geometry>
+        <material name="SWMaterial-0_001.002"/>
+      </visual>
+      <collision name="collision_0_ur10_wrist_1_link">
+        <origin xyz="0 0 -0.1149" rpy="1.5708 0 0"/>
+        <geometry>
+          <box size="0.09102 0.10007 0.11882"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="ur10_wrist_2_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="1.96"/>
+        <inertia ixx="0.00408" ixy="0" ixz="0" iyy="0.00408" iyz="0" izz="0.00551"/>
+      </inertial>
+      <visual name="visual_0_ur10_wrist_2_link">
+        <origin xyz="0 0 -0.1158" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="../meshes/dae/shape2.004.dae" scale="1.0 1.0 1.0"/>
+        </geometry>
+        <material name="SWMaterial-0_002"/>
+      </visual>
+      <collision name="collision_0_ur10_wrist_2_link">
+        <origin xyz="0 0 -0.1158" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.09126 0.11887 0.10009"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="ur10_wrist_3_link">
+      <inertial>
+        <origin xyz="0 0 -0.01525" rpy="0 0 0"/>
+        <mass value="0.202"/>
+        <inertia ixx="0.00012" ixy="0" ixz="0" iyy="0.00012" iyz="0" izz="0.0002"/>
+      </inertial>
+      <visual name="visual_0_ur10_wrist_3_link">
+        <origin xyz="0 0 -0.0922" rpy="1.5708 0 0"/>
+        <geometry>
+          <mesh filename="../meshes/dae/shape0.006.dae" scale="1.0 1.0 1.0"/>
+        </geometry>
+        <material name="SWMaterial-2_003"/>
+      </visual>
+      <collision name="collision_0_ur10_wrist_3_link">
+        <origin xyz="0 0 -0.0922" rpy="1.5708 0 0"/>
+        <geometry>
+          <box size="0.08993 0.0305 0.09007"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="world">
+    </link>
+
+    <joint name="arm_base_to_arm" type="fixed">
+      <origin xyz="0 0 1.0" rpy="0 0 0"/>
+      <parent link="arm_base"/>
+      <child link="ur10_base_link"/>
+    </joint>
+
+    <joint name="j_index_fle" type="revolute">
+      <origin xyz="0.02631 0.11022 -0.02152" rpy="-0.59692 1.41555 -0.74981"/>
+      <parent link="palm"/>
+      <child link="index_fle"/>
+      <axis xyz="0 0 1.0"/>
+      <limit lower="-1.4" upper="1.4" effort="1.75" velocity="3.14"/>
+    </joint>
+
+    <joint name="j_index_sensor" type="fixed">
+      <origin xyz="-0.0004 0.02424 -0.00018" rpy="0.00063 -0.00021 0.17208"/>
+      <parent link="index_fle"/>
+      <child link="index_sensor"/>
+    </joint>
+
+    <joint name="j_little_fle" type="revolute">
+      <origin xyz="-0.02786 0.10733 -0.02061" rpy="1.27834 1.77592 1.62718"/>
+      <parent link="palm"/>
+      <child link="little_fle"/>
+      <axis xyz="0 0 1.0"/>
+      <limit lower="0" upper="1.39626" effort="1.75" velocity="3.14"/>
+    </joint>
+
+    <joint name="j_middle_sensor" type="fixed">
+      <origin xyz="0.00044 0.0255 0" rpy="0 0 0"/>
+      <parent link="middle_fle"/>
+      <child link="middle_sensor"/>
+    </joint>
+
+    <joint name="j_mrl_fle" type="revolute">
+      <origin xyz="0.00515 0.11356 -0.02435" rpy="-1.57079 1.48353 -1.57079"/>
+      <parent link="palm"/>
+      <child link="middle_fle"/>
+      <axis xyz="0 0 1.0"/>
+      <limit lower="0" upper="1.39626" effort="1.75" velocity="3.14"/>
+    </joint>
+
+    <joint name="j_ring_fle" type="revolute">
+      <origin xyz="-0.01225 0.11203 -0.02394" rpy="1.15081 1.68124 1.32178"/>
+      <parent link="palm"/>
+      <child link="ring_fle"/>
+      <axis xyz="0 0 1.0"/>
+      <limit lower="0" upper="1.39626" effort="1.75" velocity="3.14"/>
+    </joint>
+
+    <joint name="j_thumb_fle" type="revolute">
+      <origin xyz="-3e-05 -1e-05 -0.00899" rpy="-1.57091 0.43822 1.57067"/>
+      <parent link="thumb_sensor"/>
+      <child link="thumb_fle"/>
+      <axis xyz="0 0 1.0"/>
+      <limit lower="0" upper="1.1345" effort="3.5" velocity="1.57"/>
+    </joint>
+
+    <joint name="j_thumb_opp" type="revolute">
+      <origin xyz="0.01307 0.06811 -0.00195" rpy="1.43719 0.36916 0.31859"/>
+      <parent link="palm"/>
+      <child link="thumb_opp"/>
+      <axis xyz="0 0 1.0"/>
+      <limit lower="-0.628" upper="0" effort="3.5" velocity="4.0"/>
+    </joint>
+
+    <joint name="j_thumb_sensor" type="fixed">
+      <origin xyz="0 0.009 0" rpy="1.5708 0 0"/>
+      <parent link="thumb_opp"/>
+      <child link="thumb_sensor"/>
+    </joint>
+
+    <joint name="palm_to_flange" type="fixed">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <parent link="flange"/>
+      <child link="palm"/>
+    </joint>
+
+    <joint name="palm_to_hand_ee_link" type="fixed">
+      <origin xyz="0 0.13 0.03" rpy="-0.65 0 0"/>
+      <parent link="palm"/>
+      <child link="hand_ee_link"/>
+    </joint>
+
+    <joint name="ur10_base_link-base_fixed_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="0 0 -3.14159"/>
+      <parent link="ur10_base_link"/>
+      <child link="ur10_base"/>
+    </joint>
+
+    <joint name="ur10_base_link-base_link_inertia" type="fixed">
+      <origin xyz="0 0 0" rpy="0 0 -3.14159"/>
+      <parent link="ur10_base_link"/>
+      <child link="ur10_base_link_inertia"/>
+    </joint>
+
+    <joint name="ur10_elbow_joint" type="revolute">
+      <origin xyz="-0.612 0 0" rpy="0 0 0"/>
+      <parent link="ur10_upper_arm_link"/>
+      <child link="ur10_forearm_link"/>
+      <axis xyz="0 0 1.0"/>
+      <limit lower="-3.14159" upper="3.14159" effort="150.0" velocity="3.14159"/>
+    </joint>
+
+    <joint name="ur10_flange-tool0" type="fixed">
+      <origin xyz="0 0 0" rpy="1.5708 0 1.5708"/>
+      <parent link="ur10_flange"/>
+      <child link="ur10_tool0"/>
+    </joint>
+
+    <joint name="ur10_shoulder_lift_joint" type="revolute">
+      <origin xyz="0 0 0" rpy="1.5708 0 0"/>
+      <parent link="ur10_shoulder_link"/>
+      <child link="ur10_upper_arm_link"/>
+      <axis xyz="0 0 1.0"/>
+      <limit lower="-6.28319" upper="6.28319" effort="330.0" velocity="2.0944"/>
+    </joint>
+
+    <joint name="ur10_shoulder_pan_joint" type="revolute">
+      <origin xyz="0 0 0.1273" rpy="0 0 0"/>
+      <parent link="ur10_base_link_inertia"/>
+      <child link="ur10_shoulder_link"/>
+      <axis xyz="0 0 1.0"/>
+      <limit lower="-6.28319" upper="6.28319" effort="330.0" velocity="2.0944"/>
+    </joint>
+
+    <joint name="ur10_to_mia" type="fixed">
+      <origin xyz="0 0 0.022" rpy="1.57079 0 -1.5708"/>
+      <parent link="ur10_tool0"/>
+      <child link="flange"/>
+    </joint>
+
+    <joint name="ur10_wrist_1_joint" type="revolute">
+      <origin xyz="-0.5723 0 0.16394" rpy="0 0 0"/>
+      <parent link="ur10_forearm_link"/>
+      <child link="ur10_wrist_1_link"/>
+      <axis xyz="0 0 1.0"/>
+      <limit lower="-6.28319" upper="6.28319" effort="56.0" velocity="3.14159"/>
+    </joint>
+
+    <joint name="ur10_wrist_2_joint" type="revolute">
+      <origin xyz="0 -0.1157 0" rpy="1.5708 0 0"/>
+      <parent link="ur10_wrist_1_link"/>
+      <child link="ur10_wrist_2_link"/>
+      <axis xyz="0 0 1.0"/>
+      <limit lower="-6.28319" upper="6.28319" effort="56.0" velocity="3.14159"/>
+    </joint>
+
+    <joint name="ur10_wrist_3-flange" type="fixed">
+      <origin xyz="0 0 0" rpy="-1.5708 -1.5708 0"/>
+      <parent link="ur10_wrist_3_link"/>
+      <child link="ur10_flange"/>
+    </joint>
+
+    <joint name="ur10_wrist_3_joint" type="revolute">
+      <origin xyz="0 0.0922 0" rpy="-1.5708 0 0"/>
+      <parent link="ur10_wrist_2_link"/>
+      <child link="ur10_wrist_3_link"/>
+      <axis xyz="0 0 1.0"/>
+      <limit lower="-6.28319" upper="6.28319" effort="56.0" velocity="3.14159"/>
+    </joint>
+
+    <joint name="world_to_robot" type="fixed">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <parent link="world"/>
+      <child link="arm_base"/>
+    </joint>
+
+    <material name="BLACK">
+      <color rgba="0.01502 0.01502 0.01502 1.0"/>
+    </material>
+
+    <material name="GREY">
+      <color rgba="0.20213 0.20213 0.20213 1.0"/>
+    </material>
+
+    <material name="SWMaterial-0">
+      <color rgba="0.22275 0.22275 0.22275 1.0"/>
+    </material>
+
+    <material name="SWMaterial-0.001">
+      <color rgba="0.22275 0.22275 0.22275 1.0"/>
+    </material>
+
+    <material name="SWMaterial-0_001.001">
+      <color rgba="0.22275 0.22275 0.22275 1.0"/>
+    </material>
+
+    <material name="SWMaterial-0_001.002">
+      <color rgba="0.22275 0.22275 0.22275 1.0"/>
+    </material>
+
+    <material name="SWMaterial-0_002">
+      <color rgba="0.22275 0.22275 0.22275 1.0"/>
+    </material>
+
+    <material name="SWMaterial-2_001">
+      <color rgba="0.37145 0.37145 0.37145 1.0"/>
+    </material>
+
+    <material name="SWMaterial-2_003">
+      <color rgba="0.46431 0.46431 0.46431 1.0"/>
+    </material>
+
+    <material name="WHITE">
+      <color rgba="0.8 0.8 0.8 1.0"/>
+    </material>
+
+    <material name="orange">
+      <color rgba="1.0 0.42353 0.03922 1.0"/>
+    </material>
+
+  </robot>

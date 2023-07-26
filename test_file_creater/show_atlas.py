@@ -1,8 +1,7 @@
 from test_file_creater.load_atlas import get_atlas_bvh
 import pytransform3d.visualizer as pv
 
-data_path = "../data/urdfs/atlas/"
-tm, bvh = get_atlas_bvh(data_path)
+tm, bvh = get_atlas_bvh()
 
 fig = pv.figure()
 for artist in bvh.get_artists():
