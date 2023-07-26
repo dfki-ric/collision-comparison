@@ -2,10 +2,10 @@
 #pragma once
 
 #include "collider.h"
-# include "BulletCollision/CollisionShapes/btSphereShape.h"
-# include "BulletCollision/CollisionShapes/btCapsuleShape.h"
-# include "BulletCollision/CollisionShapes/btCylinderShape.h"
-# include "BulletCollision/CollisionShapes/btBoxShape.h"
+#include "BulletCollision/CollisionShapes/btSphereShape.h"
+#include "BulletCollision/CollisionShapes/btCapsuleShape.h"
+#include "BulletCollision/CollisionShapes/btCylinderShape.h"
+#include "BulletCollision/CollisionShapes/btBoxShape.h"
 
 using compare::Base::Collider;
 using compare::Base::ColliderType;
@@ -14,7 +14,7 @@ using compare::Base::Case;
 namespace compare::Bullet {
     struct BulletCollider {
         btSphereShape sphere;
-        btCapsuleShape capsule;
+        btCapsuleShapeX capsule;
         btCylinderShape cylinder;
         btBoxShape box;
 

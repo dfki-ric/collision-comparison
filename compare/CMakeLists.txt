@@ -21,51 +21,63 @@ include_directories(${CMAKE_SOURCE_DIR}/include/nanobench/src/include)
 
 
 # Jolt
-
-add_subdirectory(${CMAKE_SOURCE_DIR}/../JoltPhysics/Build ${CMAKE_BINARY_DIR}/Jolt)
 include_directories(${CMAKE_SOURCE_DIR}/../JoltPhysics)
 
-add_library(libjolt STATIC IMPORTED)
-set_target_properties(libjolt PROPERTIES IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/Jolt/libJolt.a)
-set_target_properties(libjolt PROPERTIES INTERFACE_INCLUDE_DIRECTORIES /usr/include)
-# set_target_properties(libjolt PROPERTIES COMPILE_DEFINITIONS "")
+#add_library(libjolt STATIC IMPORTED)
+#IF(CMAKE_BUILD_TYPE MATCHES DEBUG)
+#    set_target_properties(libjolt PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../JoltPhysics/Build/Linux_Debug/libJolt.a)
+#else()
+#    set_target_properties(libjolt PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../JoltPhysics/Build/Linux_Distribution/libJolt.a)
+#endif()
+#set_target_properties(libjolt PROPERTIES INTERFACE_INCLUDE_DIRECTORIES /usr/include)
+#target_link_libraries(compare libjolt)
 
-target_link_libraries(compare libjolt)
+target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../JoltPhysics/Build/Linux_Debug/libJolt.a)
+
 
 
 # FCL
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 target_link_libraries (compare Eigen3::Eigen)
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/../hpp-fcl/ ${CMAKE_BINARY_DIR}/fcl)
 include_directories(${CMAKE_SOURCE_DIR}/../hpp-fcl/include)
-include_directories(${CMAKE_BINARY_DIR}/fcl/include)
 
-link_directories(${CMAKE_BINARY_DIR}/fcl/)
+#add_library(libfcl STATIC IMPORTED)
+#IF(CMAKE_BUILD_TYPE MATCHES DEBUG)
+#    include_directories(${CMAKE_SOURCE_DIR}/../hpp-fcl/build/include)
+#    set_target_properties(libfcl PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../hpp-fcl/build/src/libhpp-fcl.so)
+#else()
+#    include_directories(${CMAKE_SOURCE_DIR}/../hpp-fcl/build_release/include)
+#    set_target_properties(libfcl PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../hpp-fcl/build_release/src/libhpp-fcl.so)
+#endif()
+#set_target_properties(libfcl PROPERTIES INTERFACE_INCLUDE_DIRECTORIES /usr/include)
+#target_link_libraries(compare libfcl)
 
-target_link_libraries(compare ${CMAKE_BINARY_DIR}/fcl/src/libhpp-fcl.so)
+include_directories(${CMAKE_SOURCE_DIR}/../hpp-fcl/build_release/include)
+target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../hpp-fcl/build_release/src/libhpp-fcl.so)
 
 
 # Bullet3
-add_subdirectory(${CMAKE_SOURCE_DIR}/../bullet3 ${CMAKE_BINARY_DIR}/bullet)
-set_property(DIRECTORY "${CMAKE_SOURCE_DIR}/../bullet3" APPEND
-  PROPERTY COMPILE_DEFINITIONS "-DUSE_DOUBLE_PRECISION=ON -DBT_USE_EGL=ON -DCMAKE_BUILD_TYPE=Release")
 include_directories(${CMAKE_SOURCE_DIR}/../bullet3/src)
 
-add_library(libbullet3collsion STATIC IMPORTED)
-set_target_properties(libbullet3collsion PROPERTIES IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/bullet/src/Bullet3Collision/libBullet3Collision.a)
-set_target_properties(libbullet3collsion PROPERTIES INTERFACE_INCLUDE_DIRECTORIES /usr/include)
-target_link_libraries(compare libbullet3collsion)
+target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../bullet3/build/src/Bullet3Common/libBullet3Common.a)
+target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../bullet3/build/src/Bullet3Collision/libBullet3Collision.a)
+target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../bullet3/build/src/Bullet3Dynamics/libBullet3Dynamics.a)
+target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../bullet3/build/src/Bullet3Geometry/libBullet3Geometry.a)
+target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../bullet3/build/src/Bullet3OpenCL/libBullet3OpenCL_clew.a)
+target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../bullet3/build/src/Bullet3Serialize/Bullet2FileLoader/libBullet2FileLoader.a)
+target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../bullet3/build/src/BulletCollision/libBulletCollision.a)
+target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../bullet3/build/src/BulletDynamics/libBulletDynamics.a)
+target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../bullet3/build/src/BulletInverseDynamics/libBulletInverseDynamics.a)
+target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../bullet3/build/src/BulletSoftBody/libBulletSoftBody.a)
+target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../bullet3/build/src/LinearMath/libLinearMath.a)
 
-add_library(libbulletcollsion STATIC IMPORTED)
-set_target_properties(libbulletcollsion PROPERTIES IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/bullet/src/BulletCollision/libBulletCollision.a)
-set_target_properties(libbulletcollsion PROPERTIES INTERFACE_INCLUDE_DIRECTORIES /usr/include)
-target_link_libraries(compare libbulletcollsion)
+# libccd
+include_directories(${CMAKE_SOURCE_DIR}/../libccd/src)
+add_library(libccd STATIC IMPORTED)
+set_target_properties(libccd PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../libccd/buid/src/libccd.so)
+set_target_properties(libccd PROPERTIES INTERFACE_INCLUDE_DIRECTORIES /usr/include)
 
-add_library(libbulletlinearmath STATIC IMPORTED)
-set_target_properties(libbulletlinearmath PROPERTIES IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/bullet/src/LinearMath/libLinearMath.a)
-set_target_properties(libbulletlinearmath PROPERTIES INTERFACE_INCLUDE_DIRECTORIES /usr/include)
-target_link_libraries(compare libbulletlinearmath)
 
 install(TARGETS compare DESTINATION bin)
 

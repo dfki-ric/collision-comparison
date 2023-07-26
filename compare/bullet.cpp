@@ -6,8 +6,9 @@
 #include "BulletCollision/NarrowPhaseCollision/btConvexPenetrationDepthSolver.h"
 #include "BulletCollision/NarrowPhaseCollision/btMinkowskiPenetrationDepthSolver.h"
 #include "BulletCollision/NarrowPhaseCollision/btPointCollector.h"
+#include "BulletCollision/NarrowPhaseCollision/btGjkPairDetector.h"
 #include "LinearMath/btIDebugDraw.h"
-#include <BulletCollision/NarrowPhaseCollision/btGjkPairDetector.h>
+
 
 namespace compare::Bullet {
     btTransform get_transform(Collider collider){
