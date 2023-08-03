@@ -1,5 +1,8 @@
 #pragma once
 
+#include <glm/vec3.hpp> // glm::vec3
+#include <glm/mat4x4.hpp> // glm::mat4
+
 namespace compare::Base {
     enum ColliderType {
         Sphere,
@@ -9,17 +12,11 @@ namespace compare::Base {
         Mesh
     };
 
-    struct Vertex {
-        float x;
-        float y;
-        float z;
-    };
-
     struct Collider {
         ColliderType type;
-        float colliderToOrigen[16];
-        float data[3];
-        Vertex* vertecies;
+        glm::mat4x4 colliderToOrigen;
+        glm::vec3 data;
+        glm::vec3* vertecies;
         unsigned int* indicies;
     };
 
@@ -48,7 +45,5 @@ namespace compare::Base {
     float get_distance(Case* base_case);
 
     void load_cases(char* path, Case* cases, int length);
-
-
 }
 

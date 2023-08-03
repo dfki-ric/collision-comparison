@@ -3,12 +3,6 @@
     "tasks": 
     [
         {
-            "label": "bench-distance3d",
-            "command": "sh scripts/benchmarks/benchmark_python_gjk.sh",
-            "type": "shell",
-        },
-
-        {
             "label": "bench-gjk-rs",
             "command": "sh scripts/benchmarks/benchmark_rust_gjk-rs.sh",
             "type": "shell",
@@ -20,17 +14,6 @@
             "type": "shell",
         },
 
-        {
-            "label": "profile-gjk-rs",
-            "command": "sh scripts/profile/profile_gjk-rs.sh",
-            "type": "shell",
-        },
-
-        {
-            "label": "profile-collision-rs",
-            "command": "sh scripts/profile/profile_collision-rs.sh",
-            "type": "shell",
-        },
 
         {
             "label": "compile-fcl",
@@ -46,7 +29,7 @@
 
         {
             "label": "compile-compare",
-            "command": "sh scripts/compile/compile_compare.sh",
+            "command": "sh scripts/compile/compile_compare_release.sh",
             "type": "shell",
         },
 

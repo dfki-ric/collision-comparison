@@ -355,7 +355,7 @@
       <collision name="collision_0_ur10_base_link_inertia">
         <origin xyz="0 0 0" rpy="0 0 -3.14159"/>
         <geometry>
-          <box size="0.14996 0.1671 0.038"/>
+          <cylinder radius="0.07498" length="0.038"/>
         </geometry>
       </collision>
     </link>
@@ -379,7 +379,7 @@
       <collision name="collision_0_ur10_forearm_link">
         <origin xyz="0 0 0.04904" rpy="1.5708 0 -1.5708"/>
         <geometry>
-          <box size="0.1202 0.13634 0.67816"/>
+          <cylinder radius="0.0601" length="0.67816"/>
         </geometry>
       </collision>
     </link>
@@ -400,7 +400,7 @@
       <collision name="collision_0_ur10_shoulder_link">
         <origin xyz="0 0 0" rpy="0 0 -3.14159"/>
         <geometry>
-          <box size="0.15095 0.16137 0.17711"/>
+          <cylinder radius="0.07548" length="0.17711"/>
         </geometry>
       </collision>
     </link>
@@ -424,7 +424,7 @@
       <collision name="collision_0_ur10_upper_arm_link">
         <origin xyz="0 0 0.22094" rpy="1.5708 0 -1.5708"/>
         <geometry>
-          <box size="0.15068 0.17726 0.74884"/>
+          <cylinder radius="0.07534" length="0.74884"/>
         </geometry>
       </collision>
     </link>
@@ -445,7 +445,7 @@
       <collision name="collision_0_ur10_wrist_1_link">
         <origin xyz="0 0 -0.1149" rpy="1.5708 0 0"/>
         <geometry>
-          <box size="0.09102 0.10007 0.11882"/>
+          <cylinder radius="0.04551" length="0.11882"/>
         </geometry>
       </collision>
     </link>
@@ -466,7 +466,7 @@
       <collision name="collision_0_ur10_wrist_2_link">
         <origin xyz="0 0 -0.1158" rpy="0 0 0"/>
         <geometry>
-          <box size="0.09126 0.11887 0.10009"/>
+          <cylinder radius="0.04563" length="0.10009"/>
         </geometry>
       </collision>
     </link>
@@ -487,7 +487,7 @@
       <collision name="collision_0_ur10_wrist_3_link">
         <origin xyz="0 0 -0.0922" rpy="1.5708 0 0"/>
         <geometry>
-          <box size="0.08993 0.0305 0.09007"/>
+          <cylinder radius="0.04497" length="0.09007"/>
         </geometry>
       </collision>
     </link>

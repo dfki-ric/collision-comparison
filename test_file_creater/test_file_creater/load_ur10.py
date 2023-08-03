@@ -3,7 +3,7 @@ from pytransform3d.urdf import UrdfTransformManager
 
 
 def get_u10_bvh(use_visuals=False):
-    data_path = "../data/urdfs/"
+    data_path = "../data/urdfs/urdf/"
     urdf_file = "mia_hand_on_ur10.urdf"
 
     tm = UrdfTransformManager()

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.9.4)
 
 project(collision-comparison VERSION 1.0.0)
 set_property(GLOBAL PROPERTY CXX_STANDARD 20)
@@ -8,21 +8,25 @@ add_executable(compare
         jolt.cpp
         fcl.cpp
         bullet.cpp
-        utility.cpp collider.h collider.cpp)
+        utility.cpp
+        collider.cpp
+        libccd.cpp)
 
 include_directories(/usr/include/assimp)
 
 # Json
 include_directories(${CMAKE_SOURCE_DIR}/include/json/include)
 
-
 # Benchmark
 include_directories(${CMAKE_SOURCE_DIR}/include/nanobench/src/include)
+
+# GLM
+include_directories(${CMAKE_SOURCE_DIR}/include/glm)
 
 # Jolt
 include_directories(${CMAKE_SOURCE_DIR}/../JoltPhysics)
 
-target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../JoltPhysics/Build/Linux_Debug/libJolt.a)
+target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../JoltPhysics/Build/Linux_Release/libJolt.a)
 
 # FCL
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
@@ -52,5 +56,10 @@ add_library(libbulletlinearmath STATIC IMPORTED)
 set_target_properties(libbulletlinearmath PROPERTIES IMPORTED_LOCATION ${CMAKE_BINARY_DIR}/bullet/src/LinearMath/libLinearMath.a)
 set_target_properties(libbulletlinearmath PROPERTIES INTERFACE_INCLUDE_DIRECTORIES /usr/include)
 target_link_libraries(compare libbulletlinearmath)
+
+# libccd
+include_directories(${CMAKE_SOURCE_DIR}/../libccd/src)
+target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../libccd/build/src/libccd.so)
+
 
 install(TARGETS compare DESTINATION bin)

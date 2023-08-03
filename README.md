@@ -69,6 +69,7 @@ mkdir include/
 cd include/
 git clone git@github.com:nlohmann/json.git
 git clone git@github.com:martinus/nanobench.git
+git clone git@github.com:g-truc/glm.git
 cd ../..
 ```
 

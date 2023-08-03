@@ -12,20 +12,13 @@
 #include <Jolt/Physics/Collision/CollideShape.h>
 #include <Jolt/Physics/Collision/Shape/MeshShape.h>
 #include <Jolt/Geometry/GJKClosestPoint.h>
-#include <Jolt/Geometry/ConvexSupport.h>
-#include <Jolt/Geometry/Sphere.h>
 #include <Jolt/Physics/Collision/CollisionDispatch.h>
 #include <Jolt/RegisterTypes.h>
 #include <Jolt/Core/Factory.h>
-#include <Jolt/Core/TempAllocator.h>
-#include <Jolt/Core/JobSystemThreadPool.h>
-#include <Jolt/Physics/PhysicsSettings.h>
-#include <Jolt/Physics/PhysicsSystem.h>
-#include <Jolt/Physics/Collision/Shape/BoxShape.h>
-#include <Jolt/Physics/Collision/Shape/SphereShape.h>
-#include <Jolt/Physics/Body/BodyCreationSettings.h>
-#include <Jolt/Physics/Body/BodyActivationListener.h>
 
+
+using JPH::SubShapeIDCreator;
+using JPH::CollideShapeSettings;
 using JPH::GJKClosestPoint;
 using JPH::TransformedConvexObject;
 
@@ -49,10 +42,10 @@ namespace compare::Jolt {
     }
 
     Mat44 get_transform(Collider collider){
-        return Mat44(JPH::Vec4(collider.colliderToOrigen[0], collider.colliderToOrigen[4], collider.colliderToOrigen[8], collider.colliderToOrigen[12]),
-                     JPH::Vec4(collider.colliderToOrigen[1], collider.colliderToOrigen[5], collider.colliderToOrigen[9], collider.colliderToOrigen[13]),
-                     JPH::Vec4(collider.colliderToOrigen[2], collider.colliderToOrigen[6], collider.colliderToOrigen[10], collider.colliderToOrigen[14]),
-                     JPH::Vec4(collider.colliderToOrigen[3], collider.colliderToOrigen[7], collider.colliderToOrigen[11], collider.colliderToOrigen[15]));
+        return Mat44(JPH::Vec4(collider.colliderToOrigen[0][0], collider.colliderToOrigen[1][0], collider.colliderToOrigen[2][0], collider.colliderToOrigen[3][0]),
+                     JPH::Vec4(collider.colliderToOrigen[0][1], collider.colliderToOrigen[1][1], collider.colliderToOrigen[2][1], collider.colliderToOrigen[3][1]),
+                     JPH::Vec4(collider.colliderToOrigen[0][2], collider.colliderToOrigen[1][2], collider.colliderToOrigen[2][2], collider.colliderToOrigen[3][2]),
+                     JPH::Vec4(collider.colliderToOrigen[0][3], collider.colliderToOrigen[1][3], collider.colliderToOrigen[2][3], collider.colliderToOrigen[3][3]));
     }
 
     void get_collider(Collider collider, JoltCollider& jolt_collider){
@@ -113,12 +106,8 @@ namespace compare::Jolt {
 
     
     void get_cases(Case* base_cases, JoltCase* jolt_cases, int length){
-
         for (int i = 0; i < length; i++) {
-            auto base_case = base_cases[i];
-            get_case(base_case.collider0, base_case.collider1, jolt_cases[i]);
-
-            get_distance(jolt_cases[i]);
+            get_case(base_cases[i].collider0, base_cases[i].collider1, jolt_cases[i]);
         }
     }
 
@@ -131,7 +120,7 @@ namespace compare::Jolt {
         }
     };
 
-    float get_distance(JoltCase& jolt_case){
+    bool get_intersection(JoltCase& jolt_case){
 
         Collector collector = Collector();
         collector.hits = 0;
@@ -145,7 +134,10 @@ namespace compare::Jolt {
                 jolt_case.transform0, jolt_case.transform1,
                 part1, part2, settings, collector);
 
-        return 1.0f * (collector.hits == 0);
+        return collector.hits > 0;
     }
-
 }
+
+
+
+

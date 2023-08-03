@@ -1,3 +1,3 @@
 #!/bin/bash
-
-./compare/build/compare
+cd compare
+./build_release/compare

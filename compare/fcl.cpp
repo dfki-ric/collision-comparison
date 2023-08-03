@@ -48,10 +48,10 @@ namespace compare::FCL {
     Transform3f get_transform(Collider collider){
         Transform3f transform;
         Eigen::Matrix3d m;
-        m << collider.colliderToOrigen[0],  collider.colliderToOrigen[1], collider.colliderToOrigen[2],
-                collider.colliderToOrigen[4],  collider.colliderToOrigen[5],  collider.colliderToOrigen[6],
-                collider.colliderToOrigen[8], collider.colliderToOrigen[9],  collider.colliderToOrigen[10];
-        transform.setTransform(m, Vec3f(collider.colliderToOrigen[3], collider.colliderToOrigen[7], collider.colliderToOrigen[11]));
+        m << collider.colliderToOrigen[0][0],  collider.colliderToOrigen[0][1], collider.colliderToOrigen[0][2],
+                collider.colliderToOrigen[1][0],  collider.colliderToOrigen[1][1],  collider.colliderToOrigen[1][2],
+                collider.colliderToOrigen[2][0], collider.colliderToOrigen[2][1],  collider.colliderToOrigen[2][2];
+        transform.setTransform(m, Vec3f(collider.colliderToOrigen[0][3], collider.colliderToOrigen[1][3], collider.colliderToOrigen[2][3]));
 
         return transform;
     }
@@ -115,9 +115,7 @@ namespace compare::FCL {
     void get_cases(Case* base_cases, FCLCase* fcl_cases, int length){
 
         for (int i = 0; i < length; i++) {
-
             get_case(base_cases[i].collider0, base_cases[i].collider1, fcl_cases[i]);
-
         }
     }
 

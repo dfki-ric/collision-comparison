@@ -3,7 +3,7 @@ from pytransform3d.urdf import UrdfTransformManager
 
 
 def get_nao_bvh(data_path, use_visuals=False):
-    data_path = "../data/urdfs/"
+    data_path = "../data/urdfs"
     urdf_file = "nao.urdf"
 
     tm = UrdfTransformManager()
