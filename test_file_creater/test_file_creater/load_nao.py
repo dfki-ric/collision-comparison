@@ -2,8 +2,8 @@ from distance3d.broad_phase import BoundingVolumeHierarchy
 from pytransform3d.urdf import UrdfTransformManager
 
 
-def get_nao_bvh(data_path, use_visuals=False):
-    data_path = "../data/urdfs"
+def get_nao_bvh(use_visuals=False):
+    data_path = "../data/urdfs/"
     urdf_file = "nao.urdf"
 
     tm = UrdfTransformManager()

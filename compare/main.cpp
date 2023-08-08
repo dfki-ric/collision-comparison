@@ -29,7 +29,7 @@ int main(){
 
     compare::Jolt::init();
 
-    int cases_length = 100;
+    int cases_length = 161;
 
     Case base_cases[cases_length];
     load_cases(path, &base_cases[0], cases_length);

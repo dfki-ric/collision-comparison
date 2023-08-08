@@ -20,12 +20,6 @@
       <inertia ixx="2.65584e-05" ixy="1.57e-09" ixz="0" iyy="2.75654e-05" iyz="-5.295e-08" izz="5.53372e-06"/>
       <origin rpy="0 0 0" xyz="-1e-05 0 -0.02742"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/HeadYaw.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/HeadYaw_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -46,12 +40,6 @@
       <inertia ixx="0.000957766" ixy="8.78814e-06" ixz="5.33702e-06" iyy="0.000816836" iyz="-2.99579e-05" izz="0.000984976"/>
       <origin rpy="0 0 0" xyz="-0.00112 0 0.05258"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/HeadPitch.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/HeadPitch_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -78,12 +66,6 @@
       <inertia ixx="2.3407e-05" ixy="1.07922e-06" ixz="-1.76003e-06" iyy="4.76355e-05" iyz="2.76058e-06" izz="4.97021e-05"/>
       <origin rpy="0 0 0" xyz="-0.00781 -0.01114 0.02661"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/LHipYawPitch.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/LHipYawPitch_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -104,12 +86,6 @@
       <inertia ixx="2.41106e-05" ixy="-6.08684e-07" ixz="6.33119e-06" iyy="6.34892e-05" iyz="-1.99137e-07" izz="5.67694e-05"/>
       <origin rpy="0 0 0" xyz="-0.01549 0.00029 -0.00515"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/LHipRoll.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/LHipRoll_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -130,12 +106,6 @@
       <inertia ixx="0.000509844" ixy="2.11296e-06" ixz="5.64129e-05" iyy="0.000465358" iyz="-7.91029e-06" izz="0.000301098"/>
       <origin rpy="0 0 0" xyz="0.00138 0.00221 -0.05373"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/LHipPitch.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/LHipPitch_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -156,12 +126,6 @@
       <inertia ixx="0.000470586" ixy="3.60392e-06" ixz="-2.86648e-05" iyy="0.000412654" iyz="7.13013e-06" izz="0.000185772"/>
       <origin rpy="0 0 0" xyz="0.00453 0.00225 -0.04936"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/LKneePitch.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/LKneePitch_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -182,12 +146,6 @@
       <inertia ixx="3.22034e-05" ixy="-8.83212e-09" ixz="4.27549e-06" iyy="6.7943e-05" iyz="2.84849e-07" izz="5.48269e-05"/>
       <origin rpy="0 0 0" xyz="0.00045 0.00029 0.00685"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/LAnklePitch.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/LAnklePitch_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -208,12 +166,6 @@
       <inertia ixx="9.78911e-05" ixy="7.88039e-06" ixz="6.1279e-06" iyy="0.000369977" iyz="1.44233e-06" izz="0.000419417"/>
       <origin rpy="0 0 0" xyz="0.02542 0.0033 -0.03239"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/LAnkleRoll.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/LAnkleRoll_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -242,12 +194,6 @@
       <inertia ixx="3.18766e-05" ixy="-1.07152e-06" ixz="-1.77295e-06" iyy="5.18361e-05" iyz="-7.00664e-06" izz="5.39657e-05"/>
       <origin rpy="0 0 0" xyz="-0.00781 0.01114 0.02661"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/RHipYawPitch.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/RHipYawPitch_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -268,12 +214,6 @@
       <inertia ixx="2.41136e-05" ixy="5.67164e-07" ixz="6.30461e-06" iyy="6.34886e-05" iyz="1.97457e-07" izz="5.6773e-05"/>
       <origin rpy="0 0 0" xyz="-0.01549 -0.00029 -0.00515"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/RHipRoll.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/RHipRoll_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -294,12 +234,6 @@
       <inertia ixx="0.000510607" ixy="-2.02799e-06" ixz="5.69893e-05" iyy="0.0004665" iyz="7.09563e-06" izz="0.000301333"/>
       <origin rpy="0 0 0" xyz="0.00138 -0.00221 -0.05373"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/RHipPitch.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/RHipPitch_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -320,12 +254,6 @@
       <inertia ixx="0.000471336" ixy="-3.8668e-06" ixz="-3.71648e-05" iyy="0.00041228" iyz="-6.11093e-06" izz="0.000183997"/>
       <origin rpy="0 0 0" xyz="0.00453 -0.00225 -0.04936"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/RKneePitch.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/RKneePitch_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -346,12 +274,6 @@
       <inertia ixx="3.22017e-05" ixy="4.68321e-08" ixz="4.28821e-06" iyy="6.79885e-05" iyz="-2.71089e-07" izz="5.48747e-05"/>
       <origin rpy="0 0 0" xyz="0.00045 -0.00029 0.00685"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/RAnklePitch.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/RAnklePitch_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -372,12 +294,6 @@
       <inertia ixx="9.77513e-05" ixy="-7.70106e-06" ixz="5.88169e-06" iyy="0.000369108" iyz="-1.55058e-06" izz="0.000418695"/>
       <origin rpy="0 0 0" xyz="0.02542 -0.0033 -0.03239"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/RAnkleRoll.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/RAnkleRoll_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -405,12 +321,6 @@
       <inertia ixx="0.00308361" ixy="1.43116e-05" ixz="-3.30211e-05" iyy="0.0028835" iyz="-2.70793e-05" izz="0.0015924"/>
       <origin rpy="0 0 0" xyz="-0.00413 0 0.04342"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/Torso.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/Torso_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -431,12 +341,6 @@
       <inertia ixx="3.10677e-05" ixy="1.2692e-06" ixz="6.04576e-09" iyy="1.39498e-05" iyz="-2.99484e-07" izz="3.30001e-05"/>
       <origin rpy="0 0 0" xyz="-0.00165 -0.02663 0.00014"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/LShoulderPitch.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/LShoulderPitch_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -457,12 +361,6 @@
       <inertia ixx="8.7181e-05" ixy="-2.53381e-05" ixz="-1.4213e-05" iyy="0.000274712" iyz="4.71439e-07" izz="0.000241812"/>
       <origin rpy="0 0 0" xyz="0.02455 0.00563 0.0033"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/LShoulderRoll.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/LShoulderRoll_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -497,12 +395,6 @@
       <inertia ixx="2.46746e-05" ixy="3.23152e-06" ixz="1.58221e-06" iyy="3.83837e-05" iyz="1.39194e-07" izz="3.59708e-05"/>
       <origin rpy="0 0 0" xyz="0.02556 0.00281 0.00076"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/LElbowRoll.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/LElbowRoll_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -523,12 +415,6 @@
       <inertia ixx="6.86477e-05" ixy="1.15465e-07" ixz="-2.87254e-06" iyy="0.000135756" iyz="2.67539e-06" izz="0.000133228"/>
       <origin rpy="0 0 0" xyz="0.03434 -0.00088 0.00308"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/LWristYaw.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/LWristYaw_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -562,12 +448,6 @@
       <inertia ixx="3.10677e-05" ixy="-1.2692e-06" ixz="6.04576e-09" iyy="1.39498e-05" iyz="2.99484e-07" izz="3.30001e-05"/>
       <origin rpy="0 0 0" xyz="-0.00165 0.02663 0.00014"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/RShoulderPitch.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/RShoulderPitch_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -588,12 +468,6 @@
       <inertia ixx="0.000103401" ixy="5.48849e-05" ixz="-1.32643e-05" iyy="0.00027077" iyz="9.16707e-06" izz="0.000254529"/>
       <origin rpy="0 0 0" xyz="0.02455 -0.00563 0.0033"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/RShoulderRoll.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/RShoulderRoll_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -628,12 +502,6 @@
       <inertia ixx="2.47331e-05" ixy="-3.2418e-06" ixz="9.06451e-07" iyy="3.84719e-05" iyz="-1.38804e-07" izz="3.59319e-05"/>
       <origin rpy="0 0 0" xyz="0.02556 -0.00281 0.00076"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/RElbowRoll.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/RElbowRoll_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -654,12 +522,6 @@
       <inertia ixx="6.86477e-05" ixy="1.13165e-05" ixz="-2.87254e-06" iyy="0.000135756" iyz="3.68003e-06" izz="0.000133228"/>
       <origin rpy="0 0 0" xyz="0.03434 0.00088 0.00308"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/RWristYaw.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/RWristYaw_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -1023,12 +885,6 @@
       <mass value="2e-06"/>
       <inertia ixx="1.1e-09" ixy="0" ixz="0" iyy="1.1e-09" iyz="0" izz="1.1e-09"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/RFinger23.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/RFinger23_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -1048,12 +904,6 @@
       <mass value="2e-06"/>
       <inertia ixx="1.1e-09" ixy="0" ixz="0" iyy="1.1e-09" iyz="0" izz="1.1e-09"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/RFinger13.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/RFinger13_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -1073,12 +923,6 @@
       <mass value="2e-06"/>
       <inertia ixx="1.1e-09" ixy="0" ixz="0" iyy="1.1e-09" iyz="0" izz="1.1e-09"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/RFinger12.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/RFinger12_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -1098,12 +942,6 @@
       <mass value="2e-06"/>
       <inertia ixx="1.1e-09" ixy="0" ixz="0" iyy="1.1e-09" iyz="0" izz="1.1e-09"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/LFinger21.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/LFinger21_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -1123,12 +961,6 @@
       <mass value="2e-06"/>
       <inertia ixx="1.1e-09" ixy="0" ixz="0" iyy="1.1e-09" iyz="0" izz="1.1e-09"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/LFinger13.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/LFinger13_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -1148,12 +980,6 @@
       <mass value="2e-06"/>
       <inertia ixx="1.1e-09" ixy="0" ixz="0" iyy="1.1e-09" iyz="0" izz="1.1e-09"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/LFinger11.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/LFinger11_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -1173,12 +999,6 @@
       <mass value="2e-06"/>
       <inertia ixx="1.1e-09" ixy="0" ixz="0" iyy="1.1e-09" iyz="0" izz="1.1e-09"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/RFinger22.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/RFinger22_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -1198,12 +1018,6 @@
       <mass value="2e-06"/>
       <inertia ixx="1.1e-09" ixy="0" ixz="0" iyy="1.1e-09" iyz="0" izz="1.1e-09"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/LFinger22.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/LFinger22_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -1223,12 +1037,6 @@
       <mass value="2e-06"/>
       <inertia ixx="1.1e-09" ixy="0" ixz="0" iyy="1.1e-09" iyz="0" izz="1.1e-09"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/RFinger21.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/RFinger21_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -1248,12 +1056,6 @@
       <mass value="2e-06"/>
       <inertia ixx="1.1e-09" ixy="0" ixz="0" iyy="1.1e-09" iyz="0" izz="1.1e-09"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/LFinger12.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/LFinger12_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -1273,12 +1075,6 @@
       <mass value="2e-06"/>
       <inertia ixx="1.1e-09" ixy="0" ixz="0" iyy="1.1e-09" iyz="0" izz="1.1e-09"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/RFinger11.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/RFinger11_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -1298,12 +1094,6 @@
       <mass value="2e-06"/>
       <inertia ixx="1.1e-09" ixy="0" ixz="0" iyy="1.1e-09" iyz="0" izz="1.1e-09"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/LFinger23.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/LFinger23_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -1323,12 +1113,6 @@
       <mass value="2e-06"/>
       <inertia ixx="1.1e-09" ixy="0" ixz="0" iyy="1.1e-09" iyz="0" izz="1.1e-09"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/LThumb1.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/LThumb1_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -1348,12 +1132,6 @@
       <mass value="2e-06"/>
       <inertia ixx="1.1e-09" ixy="0" ixz="0" iyy="1.1e-09" iyz="0" izz="1.1e-09"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/RThumb1.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/RThumb1_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -1373,12 +1151,6 @@
       <mass value="2e-06"/>
       <inertia ixx="1.1e-09" ixy="0" ixz="0" iyy="1.1e-09" iyz="0" izz="1.1e-09"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/RThumb2.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/RThumb2_0.10.stl" scale="0.1 0.1 0.1"/>
@@ -1398,12 +1170,6 @@
       <mass value="2e-06"/>
       <inertia ixx="1.1e-09" ixy="0" ixz="0" iyy="1.1e-09" iyz="0" izz="1.1e-09"/>
     </inertial>
-    <visual>
-      <geometry>
-        <mesh filename="meshes/LThumb2.dae" scale="0.1 0.1 0.1"/>
-      </geometry>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-    </visual>
     <collision>
       <geometry>
         <mesh filename="meshes/LThumb2_0.10.stl" scale="0.1 0.1 0.1"/>
