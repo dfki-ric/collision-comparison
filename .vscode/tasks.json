@@ -3,17 +3,10 @@
     "tasks": 
     [
         {
-            "label": "bench-gjk-rs",
-            "command": "sh scripts/benchmarks/benchmark_rust_gjk-rs.sh",
+            "label": "bench-rust",
+            "command": "sh scripts/benchmarks/benchmark_rust.sh",
             "type": "shell",
         },
-
-        {
-            "label": "bench-collision-rs",
-            "command": "sh scripts/benchmarks/benchmark_rust_collision-rs.sh",
-            "type": "shell",
-        },
-
 
         {
             "label": "compile-fcl",

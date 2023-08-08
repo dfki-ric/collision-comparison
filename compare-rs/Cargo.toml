@@ -1,0 +1,31 @@
+[package]
+name = "compare-rs"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+glam = "0.23"
+cgmath = "0.18.0"
+serde_json = { version = "1.0", features = ["arbitrary_precision"]}
+rand = "0.8"
+nalgebra = "0.32"
+ncollide3d = "0.33"
+gjk = { path = "../gjk-rs" }
+collision = { path = "../collision-rs" }
+
+[dev_dependencies]
+criterion = { version = "0.4", features = ["html_reports"]}
+
+[[bench]]
+name = "gjk-rs"
+harness = false
+
+[[bench]]
+name = "ncollide"
+harness = false
+
+[[bench]]
+name = "collision-rs"
+harness = false

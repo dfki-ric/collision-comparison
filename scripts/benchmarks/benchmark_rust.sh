@@ -1,3 +1,3 @@
 #!/bin/bash
-cd gjk-rs
+cd compare-rs
 cargo bench
