@@ -1,7 +1,8 @@
-from test_file_creater.load_nao import get_nao_bvh
 import pytransform3d.visualizer as pv
 
-tm, bvh = get_nao_bvh()
+from src.load_nao import get_nao_bvh_complex
+
+tm, bvh = get_nao_bvh_complex()
 
 fig = pv.figure()
 for artist in bvh.get_artists():

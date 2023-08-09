@@ -3,8 +3,20 @@
     "tasks": 
     [
         {
+            "label": "test-rust",
+            "command": "sh scripts/run/run_compare-rs_test.sh",
+            "type": "shell",
+        },
+
+        {
             "label": "bench-rust",
             "command": "sh scripts/benchmarks/benchmark_rust.sh",
+            "type": "shell",
+        },
+
+        {
+            "label": "bench-python",
+            "command": "sh scripts/benchmarks/benchmark_python.sh",
             "type": "shell",
         },
 

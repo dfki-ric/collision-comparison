@@ -1,5 +1,6 @@
-use criterion::{criterion_group, criterion_main, Criterion, BenchmarkId};
-use gjk::{colliders::Collider, gjk::GJKNesterov, json_loder::load_test_file};
+use compare::load_data;
+use criterion::{criterion_group, criterion_main, Criterion};
+use gjk::{colliders::Collider, gjk::GJKNesterov};
 
 
 fn test_nesterov(collider1: &Collider, collider2: &Collider) {
@@ -9,8 +10,7 @@ fn test_nesterov(collider1: &Collider, collider2: &Collider) {
 
 fn bench_nesterov_accelerated(c: &mut Criterion) {
 
-    let path = "../data/nao_test_cases.json";
-    let cases = load_test_file(path);
+    let cases = load_data();
 
     c.bench_function("gjk-rs_nasterov_gjk", |b| b.iter(|| 
         for (i, data) in cases.iter().enumerate() {

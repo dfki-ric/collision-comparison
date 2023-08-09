@@ -1,6 +1,7 @@
 import json
 from distance3d.gjk import gjk
-from test_file_creater.load_ur10 import get_u10_bvh
+
+from src.load_ur10 import get_u10_bvh
 
 tm, bvh = get_u10_bvh()
 cases = bvh.aabb_overlapping_with_self()

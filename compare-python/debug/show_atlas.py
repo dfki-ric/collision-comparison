@@ -1,7 +1,8 @@
 import pytransform3d.visualizer as pv
-from test_file_creater.load_ur10 import get_u10_bvh_complex
 
-tm, bvh = get_u10_bvh_complex()
+from src.load_atlas import get_atlas_bvh
+
+tm, bvh = get_atlas_bvh()
 
 fig = pv.figure()
 for artist in bvh.get_artists():

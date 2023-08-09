@@ -176,7 +176,6 @@ dependencies = [
  "collision",
  "criterion",
  "gjk",
- "glam",
  "nalgebra 0.32.3",
  "ncollide3d",
  "rand",
@@ -296,8 +295,6 @@ name = "gjk"
 version = "0.1.0"
 dependencies = [
  "glam",
- "nalgebra 0.32.3",
- "ncollide3d",
  "rand",
  "serde_json",
 ]

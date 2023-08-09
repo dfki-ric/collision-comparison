@@ -1,8 +1,9 @@
 import json
 from distance3d.gjk import gjk
-from test_file_creater.load_atlas import get_atlas_bvh
 
-tm, bvh = get_atlas_bvh()
+from src.load_nao import get_nao_bvh
+
+tm, bvh = get_nao_bvh()
 cases = bvh.aabb_overlapping_with_self()
 
 shapes = []
@@ -24,7 +25,7 @@ for case in cases:
     shapes.append(data)
     i += 1
 
-file = open("../data/atlas_test_cases.json", "w")
+file = open("../data/nao_test_cases.json", "w")
 json.dump(shapes, file, indent=4)
 
 

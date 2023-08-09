@@ -1,8 +1,8 @@
 
 *.idea/
 
-compare/build_debug/
-compare/build_release/
+compare-cpp/build_debug/
+compare-cpp/build_release/
 
 *.pclprof
 
