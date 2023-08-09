@@ -1,5 +1,5 @@
 # distance3d
-git https://github.com/MaartenBehn/distance3d.git
+git clone https://github.com/MaartenBehn/distance3d.git
 cd distance3d/
 cd ..
 
@@ -20,6 +20,7 @@ git submodule update --init
 # make -j 8
 # cd ..
 ## Release
+mkdir build_release
 cd build_release
 cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_PYTHON_INTERFACE:BOOL=OFF ..
 make -j 8
