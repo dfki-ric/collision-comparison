@@ -1,17 +1,16 @@
 # distance3d
-git clone git@github.com:MaartenBehn/distance3d.git
+git https://github.com/MaartenBehn/distance3d.git
 cd distance3d/
-git checkout feature/collider_to_dict
 cd ..
 
 # collision-rs
-git clone git@github.com:MaartenBehn/collision-rs.git
+git clone https://github.com/MaartenBehn/collision-rs.git
 
 # gjk-rs
-git clone git@github.com:MaartenBehn/gjk-rs.git
+git clone https://github.com/MaartenBehn/gjk-rs.git
 
 # fcl
-git clone git@github.com:MaartenBehn/hpp-fcl.git
+git clone https://github.com/MaartenBehn/hpp-fcl.git
 cd hpp-fcl
 git submodule update --init
 ## Debug
@@ -27,7 +26,7 @@ make -j 8
 cd ../..
 
 # Jolt
-git clone git@github.com:MaartenBehn/JoltPhysics.git
+git clone https://github.com/MaartenBehn/JoltPhysics.git
 cd JoltPhysics/Build
 ## Debug
 # sh ./cmake_linux_clang_gcc.sh
@@ -41,7 +40,7 @@ make -j 8 && ./UnitTests
 cd ../..
 
 # Bullet
-git clone git@github.com:MaartenBehn/bullet3.git
+git clone https://github.com/MaartenBehn/bullet3.git
 # cd bullet3
 # mkdir build
 # cd build
@@ -51,7 +50,7 @@ git clone git@github.com:MaartenBehn/bullet3.git
 
 
 # Libccd
-git clone git@github.com:danfis/libccd.git
+git clone https://github.com/danfis/libccd.git
 cd libccd
 mkdir build && cd build
 cmake -G "Unix Makefiles" ..
