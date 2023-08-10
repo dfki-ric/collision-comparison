@@ -1,3 +1,3 @@
 #!/bin/bash
-cd distance3d
-python3 benchmarks/benchmark_gjk.py
+cd compare-python
+./venv/bin/python3 compare/compare_nao.py
