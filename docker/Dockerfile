@@ -1,19 +1,38 @@
 FROM manjarolinux/build:latest
 
+RUN useradd builduser -m                                     
+RUN passwd -d builduser                                      
+RUN printf 'builduser ALL=(ALL) ALL\n' | tee -a /etc/sudoers 
+RUN sudo -u builduser bash -c 'cd ~ \
+ && git clone https://aur.archlinux.org/yay.git \
+ && cd yay && makepkg -si --noconfirm' 
+
 # collision-comparison
 RUN git clone https://github.com/MaartenBehn/collision-comparison.git
 
 ## Python
+RUN sudo -u builduser bash -c 'yay -Syy --noconfirm python38' 
+
+RUN cd collision-comparison/compare-python \ 
+ && python3.8 -m venv venv/ \
+ && ./venv/bin/python3 -m pip install --upgrade pip 
 
 # distance3d
 RUN cd collision-comparison \ 
  && git clone https://github.com/MaartenBehn/distance3d.git
 
 RUN cd collision-comparison/compare-python \ 
- && python3 -m venv venv/ \
- && ./venv/bin/pip install numpy
+ && ./venv/bin/pip install -e ../distance3d 
 
-RUN cd collision-comparison \
+RUN pacman -Syy --noconfirm --needed \
+    glu \
+    && rm -f /var/cache/pacman/pkg/*
+
+ENV PYTHONPATH="${PYTHONPATH}:collision-comparison/compare-python"
+
+
+# Run python benchmark once
+ RUN cd collision-comparison \
  && sh scripts/benchmarks/benchmark_python.sh
 
 
@@ -35,10 +54,10 @@ RUN pacman -Syy --noconfirm --needed \
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
-RUN cd collision-comparison/compare-rs \
+# Run rust benchmark once
+RUN cd collision-comparison \
  && source "$HOME/.cargo/env" \
- && cargo build
-
+ && sh scripts/benchmarks/benchmark_rust.sh
 
 ## Cpp
 
@@ -50,24 +69,7 @@ RUN pacman -Syy --noconfirm --needed \
     && rm -f /var/cache/pacman/pkg/*
 
 # form aur with yay
-RUN useradd builduser -m                                     
-RUN passwd -d builduser                                      
-RUN printf 'builduser ALL=(ALL) ALL\n' | tee -a /etc/sudoers 
-RUN sudo -u builduser bash -c 'cd ~ \
- && git clone https://aur.archlinux.org/yay.git \
- && cd yay && makepkg -si --noconfirm' 
-
 RUN sudo -u builduser bash -c 'yay -Syy --noconfirm octomap' 
-
-# fcl
-# RUN cd collision-comparison \ 
-#  && git clone https://github.com/MaartenBehn/hpp-fcl.git \
-#  && cd hpp-fcl \
-#  && git submodule update --init \
-#  && mkdir build_release \
-#  && cd build_release \ 
-#  && cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_PYTHON_INTERFACE:BOOL=OFF .. \
-#  && make -j 8
 
 # Jolt
 RUN cd collision-comparison \ 
@@ -88,6 +90,16 @@ RUN cd collision-comparison \
  && mkdir build && cd build \
  && cmake -G "Unix Makefiles" .. \
  && make 
+
+# fcl
+# RUN cd collision-comparison \ 
+#  && git clone https://github.com/MaartenBehn/hpp-fcl.git \
+#  && cd hpp-fcl \
+#  && git submodule update --init \
+#  && mkdir build_release \
+#  && cd build_release \ 
+#  && cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_PYTHON_INTERFACE:BOOL=OFF .. \
+#  && make -j 8
 
 # Compare-cpp
 RUN cd collision-comparison/compare-cpp \
