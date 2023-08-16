@@ -32,9 +32,10 @@ target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../JoltPhysics/Build/Linux_Rel
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 target_link_libraries (compare Eigen3::Eigen)
 
+add_subdirectory(${CMAKE_SOURCE_DIR}/../hpp-fcl ${CMAKE_BINARY_DIR}/hpp-fcl)
 include_directories(${CMAKE_SOURCE_DIR}/../hpp-fcl/include)
 include_directories(${CMAKE_SOURCE_DIR}/../hpp-fcl/build_release/include)
-target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../hpp-fcl/build_release/src/libhpp-fcl.so)
+target_link_libraries(compare ${CMAKE_BINARY_DIR}/hpp-fcl/src/libhpp-fcl.so)
 
 # Bullet3
 add_subdirectory(${CMAKE_SOURCE_DIR}/../bullet3 ${CMAKE_BINARY_DIR}/bullet)

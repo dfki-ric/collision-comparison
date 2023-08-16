@@ -92,14 +92,14 @@ RUN cd collision-comparison \
  && make 
 
 # fcl
-# RUN cd collision-comparison \ 
-#  && git clone https://github.com/MaartenBehn/hpp-fcl.git \
-#  && cd hpp-fcl \
-#  && git submodule update --init \
-#  && mkdir build_release \
-#  && cd build_release \ 
-#  && cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_PYTHON_INTERFACE:BOOL=OFF .. \
-#  && make -j 8
+RUN cd collision-comparison \ 
+ && git clone https://github.com/MaartenBehn/hpp-fcl.git \  
+ && cd hpp-fcl \
+ && git submodule update --init
+# && mkdir build_release \
+# && cd build_release \ 
+# && cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_PYTHON_INTERFACE:BOOL=OFF .. \
+# && make -j 6
 
 # Compare-cpp
 RUN cd collision-comparison/compare-cpp \
@@ -111,5 +111,5 @@ RUN cd collision-comparison/compare-cpp \
  && git clone https://github.com/g-truc/glm.git 
 
 
-
-
+RUN cd collision-comparison/ \
+ && sh scripts/compile/compile_compare_release.sh

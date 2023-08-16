@@ -22,7 +22,6 @@ bool is_distance_correct(float test_dist, float base_dist){
     return (base_dist <= 0 && test_dist <= 0) || abs(base_dist - test_dist) < 0.1;
 }
 
-
 int main(){
 
     char* path = "../../data/nao_test_cases.json";
