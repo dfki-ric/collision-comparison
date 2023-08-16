@@ -26,7 +26,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include/glm)
 # Jolt
 include_directories(${CMAKE_SOURCE_DIR}/../JoltPhysics)
 
-target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../JoltPhysics/Build/Linux_Release/libJolt.a)
+target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../JoltPhysics/Build/Linux_Distribution/libJolt.a)
 
 # FCL
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)

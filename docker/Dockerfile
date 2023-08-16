@@ -1,5 +1,9 @@
 FROM manjarolinux/build:latest
 
+RUN pacman -Suy --noconfirm --needed \
+    go \
+    && rm -f /var/cache/pacman/pkg/*
+
 RUN useradd builduser -m                                     
 RUN passwd -d builduser                                      
 RUN printf 'builduser ALL=(ALL) ALL\n' | tee -a /etc/sudoers 
@@ -60,7 +64,6 @@ RUN cd collision-comparison \
  && sh scripts/benchmarks/benchmark_rust.sh
 
 ## Cpp
-
 RUN pacman -Syy --noconfirm --needed \
     eigen \
     boost \
@@ -110,6 +113,7 @@ RUN cd collision-comparison/compare-cpp \
  && git clone https://github.com/martinus/nanobench.git \
  && git clone https://github.com/g-truc/glm.git 
 
+ARG CACHEBUST=1 
 
 RUN cd collision-comparison/ \
  && sh scripts/compile/compile_compare_release.sh
