@@ -113,7 +113,9 @@ RUN cd collision-comparison/compare-cpp \
  && git clone https://github.com/martinus/nanobench.git \
  && git clone https://github.com/g-truc/glm.git 
 
-ARG CACHEBUST=1 
+RUN pacman -Syy --noconfirm --needed \
+    ninja \
+    && rm -f /var/cache/pacman/pkg/*
 
 RUN cd collision-comparison/ \
  && sh scripts/compile/compile_compare_release.sh
