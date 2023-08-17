@@ -2,8 +2,8 @@
 ## Setup
 ==> Dockerfile
 ```bash
-cd docker
 docker buildx build -t compare .
+docker run --rm -it --entrypoint bash compare
 ```
 
 ### Building URDFs (Not nessesary)
