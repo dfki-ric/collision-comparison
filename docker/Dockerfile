@@ -69,6 +69,7 @@ RUN pacman -Syy --noconfirm --needed \
     boost \
     assimp \
     clang \
+    ninja \
     && rm -f /var/cache/pacman/pkg/*
 
 # form aur with yay
@@ -113,9 +114,7 @@ RUN cd collision-comparison/compare-cpp \
  && git clone https://github.com/martinus/nanobench.git \
  && git clone https://github.com/g-truc/glm.git 
 
-RUN pacman -Syy --noconfirm --needed \
-    ninja \
-    && rm -f /var/cache/pacman/pkg/*
+Arg test=0
 
 RUN cd collision-comparison/ \
  && sh scripts/compile/compile_compare_release.sh

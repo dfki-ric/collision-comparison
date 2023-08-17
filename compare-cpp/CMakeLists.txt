@@ -59,6 +59,7 @@ set_target_properties(libbulletlinearmath PROPERTIES INTERFACE_INCLUDE_DIRECTORI
 target_link_libraries(compare libbulletlinearmath)
 
 # libccd
+include_directories(${CMAKE_SOURCE_DIR}/../libccd/build/src/)
 include_directories(${CMAKE_SOURCE_DIR}/../libccd/src)
 target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../libccd/build/src/libccd.so)
 
