@@ -107,14 +107,11 @@ RUN cd collision-comparison \
 
 # Compare-cpp
 RUN cd collision-comparison/compare-cpp \
- && mkdir build_debug/ \
  && mkdir build_release/ \
  && cd include \
  && git clone https://github.com/nlohmann/json.git \
  && git clone https://github.com/martinus/nanobench.git \
  && git clone https://github.com/g-truc/glm.git 
-
-Arg test=0
 
 RUN cd collision-comparison/ \
  && sh scripts/compile/compile_compare_release.sh

@@ -34,7 +34,7 @@ target_link_libraries (compare Eigen3::Eigen)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/../hpp-fcl ${CMAKE_BINARY_DIR}/hpp-fcl)
 include_directories(${CMAKE_SOURCE_DIR}/../hpp-fcl/include)
-include_directories(${CMAKE_SOURCE_DIR}/../hpp-fcl/build_release/include)
+include_directories(${CMAKE_BINARY_DIR}/hpp-fcl/include)
 target_link_libraries(compare ${CMAKE_BINARY_DIR}/hpp-fcl/src/libhpp-fcl.so)
 
 # Bullet3
