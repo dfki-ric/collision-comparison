@@ -35,7 +35,7 @@ git clone git@github.com:ros-industrial/universal_robot.git
 cd ../..
 ```
 
-### Rust nightly is needed: 
+### If Rust nightly is needed: 
 ```bash
 rustup toolchain install nightly
 ```
