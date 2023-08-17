@@ -100,5 +100,6 @@
     "**/.vscode",
     "**/.vscode/**"
   ],
-  "C_Cpp_Runner.useAddressSanitizer": false
+  "C_Cpp_Runner.useAddressSanitizer": false,
+  "cmake.sourceDirectory": "/home/dfki.uni-bremen.de/mbehn/dev/collision-comparison/compare-cpp"
 }
