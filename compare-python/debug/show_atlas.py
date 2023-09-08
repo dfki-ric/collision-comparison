@@ -1,6 +1,6 @@
 import pytransform3d.visualizer as pv
 
-from src.load_atlas import get_atlas_bvh
+from src import get_atlas_bvh
 
 tm, bvh = get_atlas_bvh()
 

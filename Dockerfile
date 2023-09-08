@@ -71,7 +71,7 @@ RUN cd collision-comparison \
 
 # distance3d
 RUN cd collision-comparison \ 
- && git clone https://github.com/MaartenBehn/distance3d.git
+ && git clone https://github.com/MaartenBehn/distance3d.git 
 
 # Install distance3d
 RUN cd collision-comparison \ 
@@ -90,6 +90,7 @@ RUN cd collision-comparison \
  && git clone https://github.com/MaartenBehn/gjk-rs.git
 
 # --- Copy folders ---
+ADD results collision-comparison/results
 ADD scripts collision-comparison/scripts
 ADD data collision-comparison/data
 
@@ -110,7 +111,7 @@ ADD compare-python collision-comparison/compare-python
 ENV PYTHONPATH="${PYTHONPATH}:collision-comparison/compare-python"
 
 # Run python benchmark once
- RUN cd collision-comparison \
+RUN cd collision-comparison \
  && sh scripts/benchmarks/benchmark_python.sh
 
 
@@ -122,6 +123,4 @@ RUN rm -rf collision-comparison/compare-rs/target
 RUN cd collision-comparison \
  && source "$HOME/.cargo/env" \
  && sh scripts/benchmarks/benchmark_rust.sh
-
-
 

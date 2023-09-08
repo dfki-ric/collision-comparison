@@ -1,6 +1,6 @@
 import pytransform3d.visualizer as pv
 
-from src.load_nao import get_nao_bvh
+from src import get_nao_bvh
 
 tm, bvh = get_nao_bvh()
 

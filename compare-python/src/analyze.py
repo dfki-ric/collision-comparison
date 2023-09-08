@@ -1,6 +1,7 @@
-import numpy as np
-from distance3d.gjk import gjk
 import matplotlib.pyplot as plt
+import numpy as np
+
+from distance3d.gjk import gjk
 
 
 def analyze_robot(bvh):

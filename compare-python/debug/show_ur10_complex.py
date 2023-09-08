@@ -1,6 +1,6 @@
 import pytransform3d.visualizer as pv
 
-from src.load_ur10 import get_u10_bvh_complex
+from src import get_u10_bvh_complex
 
 tm, bvh = get_u10_bvh_complex()
 

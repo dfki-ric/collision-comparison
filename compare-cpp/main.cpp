@@ -22,16 +22,19 @@ bool is_distance_correct(float test_dist, float base_dist){
     return (base_dist <= 0 && test_dist <= 0) || abs(base_dist - test_dist) < 0.1;
 }
 
+void gen(std::string const& typeName, char const* mustacheTemplate, ankerl::nanobench::Bench const& bench) {
+
+
+}
+
 int main(){
 
-    char* path = "../../data/nao_test_cases.json";
+    char* path = "../data/current.json";
 
     compare::Jolt::init();
 
-    int cases_length = 161;
-
-    Case base_cases[cases_length];
-    load_cases(path, &base_cases[0], cases_length);
+    Case base_cases[200];
+    int cases_length = load_cases(path, &base_cases[0], cases_length);
 
     FCLCase fcl_cases[cases_length];
     compare::FCL::get_cases(&base_cases[0], &fcl_cases[0], cases_length);
@@ -48,30 +51,35 @@ int main(){
 #ifdef NDEBUG
     std::cout << "\n\n";
 
-    ankerl::nanobench::Bench().minEpochIterations(1000).run("libccd intersection", [&] {
+    ankerl::nanobench::Bench bench;
+    bench.minEpochIterations(1000);
+
+    bench.run("libccd intersection", [&] {
         for (int i = 0; i < cases_length; i++) {
             compare::libccd::get_intersection(libccd_cases[i]);
         }
     });
 
-    ankerl::nanobench::Bench().minEpochIterations(1000).run("Jolt intersection", [&] {
+    bench.run("Jolt intersection", [&] {
         for (int i = 0; i < cases_length; i++) {
             compare::Jolt::get_intersection(jolt_cases[i]);
         }
     });
 
-    ankerl::nanobench::Bench().minEpochIterations(1000).run("FCL distance", [&] {
+    bench.run("FCL distance", [&] {
         for (int i = 0; i < cases_length; i++) {
             compare::FCL::get_distance(fcl_cases[i]);
         }
     });
 
-    ankerl::nanobench::Bench().minEpochIterations(1000).run("Bullet distance", [&] {
+    bench.run("Bullet distance", [&] {
         for (int i = 0; i < cases_length; i++) {
             compare::Bullet::get_distance(bullet_cases[i]);
         }
     });
 
+    std::ofstream renderOut("./cpp_result.json");
+    ankerl::nanobench::render(ankerl::nanobench::templates::json(), bench, renderOut);
 
 	return 0;
 #endif

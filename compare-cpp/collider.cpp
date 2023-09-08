@@ -115,7 +115,7 @@ namespace compare::Base {
         collider->colliderToOrigen[3][3] = collider_json["collider2origin"][3][3];
     }
 
-    void load_cases(char* path, Case* cases, int length) {
+    int load_cases(char* path, Case* cases, int length) {
 
         std::ifstream f(path);
         json data = json::parse(f);
@@ -139,6 +139,8 @@ namespace compare::Base {
                 break;
             }
         }
+
+        return i + 1;
     }
 
 }

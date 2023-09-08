@@ -1,5 +1,5 @@
-from src.analyze import analyze_robot
-from src.load_ur10 import get_u10_bvh
+from src import analyze_robot, get_ur10_tm, get_ur10_bvh_from_tm
 
-tm, bvh = get_u10_bvh()
+tm = get_ur10_tm()
+bvh = get_ur10_bvh_from_tm(tm)
 analyze_robot(bvh)

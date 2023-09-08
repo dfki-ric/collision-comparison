@@ -1,8 +1,10 @@
+import json
+
 import numpy as np
 import pybullet as pb
 import pytransform3d.rotations as pr
-from distance3d import random, colliders, benchmark, gjk, mpr
-from src.load_nao import get_nao_bvh
+from distance3d import benchmark
+from src import get_nao_bvh
 
 COLLISION_SHAPES = [
     "cylinder", "box", "capsule", "sphere"
@@ -69,8 +71,14 @@ for (c1, c2) in collision_objects:
         dist = pb.getClosestPoints(c1, c2, np.inf, physicsClientId=pcid)[0][8]
         #dist = len(pb.getContactPoints(c1, c2, physicsClientId=pcid)) > 0
 
+result = {}
+
 duration = timer.stop("pybullet")
-micro = duration * 1000000 / len(cases)
+micro = duration * 1000000
+result["Pybullet"] = micro
 print(f"Pybullet: {micro}")
 
 pb.disconnect(physicsClientId=pcid)
+
+file = open(f"./pybullet_result.json", "w")
+json.dump(result, file, indent=4)

@@ -1,0 +1,414 @@
+<robot name="uc6_ines" version="1.0">
+  <joint name="sucker_joint" type="revolute">
+    <limit lower="0.00000" upper="0.38000" effort="0.00000" velocity="0.00000"/>
+    <origin rpy="-0.00000 1.57080 0.00000" xyz="-0.89700 -0.62000 0.17200"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_sucker_top_link"/>
+    <axis xyz="0.00000 0.00000 1.00000"/>
+  </joint>
+  <joint name="uc6_back_side_block_link" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-1.20000 -0.42914 0.80301"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_back_side_block_link"/>
+  </joint>
+  <joint name="uc6_bag_dispenser_platform_link" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-1.04079 -0.50594 0.12500"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_bag_dispenser_platform_link"/>
+  </joint>
+  <joint name="uc6_camera_base_link" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="0.08000 -0.66000 0.30000"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_camera_base_link"/>
+  </joint>
+  <joint name="uc6_camera_link" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="0.03000 -0.68000 0.31301"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_camera_link"/>
+  </joint>
+  <joint name="uc6_conveyor_belt_end_link" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-0.74028 -0.86914 0.12301"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_conveyor_belt_end_link"/>
+  </joint>
+  <joint name="uc6_conveyor_belt_link" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-0.96028 -0.91914 0.27302"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_conveyor_belt_link"/>
+  </joint>
+  <joint name="uc6_conveyor_belt_sensor_link" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-0.65980 -0.87229 0.02000"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_conveyor_belt_sensor_link"/>
+  </joint>
+  <joint name="uc6_insertion_platform_link" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-0.74943 -0.46106 0.12700"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_insertion_platform_link"/>
+  </joint>
+  <joint name="uc6_platform_connector1_link" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-0.50000 -0.58000 -0.23000"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_platform_connector1_link"/>
+  </joint>
+  <joint name="uc6_platform_connector2_link" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-0.50000 0.58000 -0.55000"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_platform_connector2_link"/>
+  </joint>
+  <joint name="uc6_platform_link" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-1.32185 0.05258 -0.11000"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_platform_link"/>
+  </joint>
+  <joint name="uc6_robot_base_link" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 -0.01000"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_robot_base_link"/>
+  </joint>
+  <joint name="uc6_robot_base_pole1_link" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="0.15000 0.64000 0.77000"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_robot_base_pole1_link"/>
+  </joint>
+  <joint name="uc6_robot_base_pole2_link" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-0.14700 0.64000 0.77000"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_robot_base_pole2_link"/>
+  </joint>
+  <joint name="uc6_sealing_conveyor_link" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-1.20357 0.20919 0.04000"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_sealing_conveyor_link"/>
+  </joint>
+  <joint name="uc6_sealing_guiding1_link" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-1.07929 0.40272 0.08500"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_sealing_guiding1_link"/>
+  </joint>
+  <joint name="uc6_sealing_guiding2_link" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-1.07960 0.41500 0.09596"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_sealing_guiding2_link"/>
+  </joint>
+  <joint name="uc6_sealing_machine_link" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-1.24656 0.44470 0.15800"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_sealing_machine_link"/>
+  </joint>
+  <joint name="uc6_sucker1_link" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-0.79987 -0.39073 0.15500"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_sucker1_link"/>
+  </joint>
+  <joint name="uc6_sucker2_link" type="fixed">
+    <origin rpy="0.00000 -1.57080 0.00000" xyz="-0.02800 0.17828 0.04477"/>
+    <parent link="uc6_sucker_top_link"/>
+    <child link="uc6_sucker2_link"/>
+  </joint>
+  <joint name="uc6_sucker5_link" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-0.91816 -0.64700 0.14557"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_sucker5_link"/>
+  </joint>
+  <joint name="uc6_sucker6_link" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-0.94814 -0.70113 0.12500"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_sucker6_link"/>
+  </joint>
+  <joint name="uc6_sucker7_link" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-1.07052 -0.35260 0.13300"/>
+    <parent link="uc6_root"/>
+    <child link="uc6_sucker7_link"/>
+  </joint>
+  <link name="uc6_back_side_block_link">
+    <collision name="uc6_back_side_block">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.06000 -0.37086 -0.40301"/>
+      <geometry>
+        <box size="0.10000 1.00000 1.64000"/>
+      </geometry>
+    </collision>
+    <collision name="uc6_bar1">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.20500 -0.17586 -0.10301"/>
+      <geometry>
+        <box size="0.05000 0.05000 1.20000"/>
+      </geometry>
+    </collision>
+    <collision name="uc6_bar2_leaning">
+      <origin rpy="0.00000 0.50615 0.00000" xyz="-0.09500 0.12914 -0.05301"/>
+      <geometry>
+        <box size="0.05000 0.05000 1.40000"/>
+      </geometry>
+    </collision>
+    <collision name="uc6_topside_block">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 -0.37086 0.39699"/>
+      <geometry>
+        <box size="0.60000 1.60000 0.10000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="uc6_bag_dispenser_platform_link">
+    <collision name="uc6_bag_dispenser_platform">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.24421 0.04094 -0.13500"/>
+      <geometry>
+        <box size="1.01000 0.28000 0.27000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="uc6_camera_base_link">
+    <collision name="uc6_camera_base">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 -0.17000"/>
+      <geometry>
+        <box size="0.06000 0.06000 0.33000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="uc6_camera_link">
+    <collision name="uc6_camera">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.02000 -0.05301"/>
+      <geometry>
+        <box size="0.10000 0.16000 0.10000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="uc6_conveyor_belt_end_link">
+    <collision name="uc6_conveyor_belt_end">
+      <origin rpy="1.57080 0.00000 0.00000" xyz="0.02528 -0.02086 -0.02001"/>
+      <geometry>
+        <cylinder radius="0.02600" length="0.27200"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="uc6_conveyor_belt_link">
+    <collision name="uc6_conveyor_belt">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.49972 0.02914 -0.61301"/>
+      <geometry>
+        <box size="1.48000 0.27200 0.94500"/>
+      </geometry>
+    </collision>
+    <visual name="conveyor v3">
+      <origin rpy="0.00000 0.00000 -3.14159" xyz="0.19428 -0.07086 -0.19502"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc6_ines/meshes/stl/conveyor v3.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="uc6_conveyor_belt_sensor_link">
+    <collision name="uc6_conveyor_belt_sensor">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.02020 0.01229 -0.02000"/>
+      <geometry>
+        <box size="0.20000 0.08000 0.04000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="uc6_insertion_platform_link">
+    <collision name="uc6_insertion_platform">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.00557 0.00606 -0.00200"/>
+      <geometry>
+        <box size="0.06000 0.09000 0.00400"/>
+      </geometry>
+    </collision>
+    <visual name="fixandopenbase_baseset">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.23143 1.25306 -1.03500"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc6_ines/meshes/stl/fixandopenbase_baseset.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="uc6_platform_connector1_link">
+    <collision name="uc6_platform_connector1">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <box size="0.60000 0.06000 0.06000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="uc6_platform_connector2_link">
+    <collision name="uc6_platform_connector2">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <box size="0.60000 0.06000 0.06000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="uc6_platform_link">
+    <collision name="uc6_platform">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.03685 -0.05258 -0.37500"/>
+      <geometry>
+        <box size="1.02000 1.22000 0.75000"/>
+      </geometry>
+    </collision>
+    <visual name="april_fusion_v3">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.80385 0.73942 -0.79800"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc6_ines/meshes/stl/april_fusion_v3.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="uc6_robot_base_link">
+    <collision name="uc6_robot_base_front_1">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.15600 0.00000 -0.10500"/>
+      <geometry>
+        <box size="0.10000 0.20000 0.20000"/>
+      </geometry>
+    </collision>
+    <collision name="uc6_robot_base_front_2">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.15500 0.00000 -0.10500"/>
+      <geometry>
+        <box size="0.10000 0.20000 0.20000"/>
+      </geometry>
+    </collision>
+    <collision name="uc6_robot_base_half_1">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00100 -0.40000 -0.41500"/>
+      <geometry>
+        <box size="0.41000 0.60000 0.82000"/>
+      </geometry>
+    </collision>
+    <collision name="uc6_robot_base_half_2">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00100 0.40000 -0.41500"/>
+      <geometry>
+        <box size="0.41000 0.60000 0.82000"/>
+      </geometry>
+    </collision>
+    <collision name="uc6_robot_base_lower">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00100 0.00000 -0.45000"/>
+      <geometry>
+        <box size="0.41000 0.20000 0.75000"/>
+      </geometry>
+    </collision>
+    <visual name="soporte_robotur10_v5">
+      <origin rpy="1.57080 0.00000 -1.57080" xyz="0.22100 -0.30500 -0.28700"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc6_ines/meshes/stl/soporte_robotur10_v5.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="uc6_robot_base_pole1_link">
+    <collision name="uc6_robot_base_pole1">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 -0.41000"/>
+      <geometry>
+        <box size="0.09000 0.09000 0.81000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="uc6_robot_base_pole2_link">
+    <collision name="uc6_robot_base_pole2">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 -0.00000 -0.41000"/>
+      <geometry>
+        <box size="0.10000 0.09000 0.81000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="uc6_root">
+    <visual name="ur10ebase">
+      <origin rpy="1.57080 0.00000 0.00000" xyz="0.00000 0.00000 -0.02000"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc6_ines/meshes/stl/ur10ebase.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="uc6_sealing_conveyor_link">
+    <collision name="uc6_sealing_conveyor">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.19643 0.02681 -0.08000"/>
+      <geometry>
+        <box size="0.90000 0.17000 0.16000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="uc6_sealing_guiding1_link">
+    <collision name="uc6_sealing_guiding1">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.00071 0.00728 -0.00500"/>
+      <geometry>
+        <box size="0.10000 0.04000 0.01000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="uc6_sealing_guiding2_link">
+    <collision name="uc6_sealing_guiding2">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.00040 0.00500 -0.01096"/>
+      <geometry>
+        <box size="0.10000 0.01000 0.04000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="uc6_sealing_machine_link">
+    <collision name="uc6_sealing_machine">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.15344 0.03530 -0.15800"/>
+      <geometry>
+        <box size="0.56000 0.20000 0.31600"/>
+      </geometry>
+    </collision>
+    <visual name="selladora">
+      <origin rpy="1.57080 0.00000 -1.57080" xyz="0.12156 0.12230 -0.28100"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc6_ines/meshes/stl/selladora.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="uc6_sucker1_link">
+    <collision name="uc6_sucker1">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.00013 0.00273 -0.01500"/>
+      <geometry>
+        <box size="0.03000 0.03000 0.03000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="uc6_sucker2_link">
+    <collision name="uc6_sucker2">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.00577 0.00972 -0.03000"/>
+      <geometry>
+        <box size="0.03000 0.09000 0.06000"/>
+      </geometry>
+    </collision>
+    <visual name="suckertop">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.33423 1.23372 -1.11400"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc6_ines/meshes/stl/cilindro_ventosas.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="uc6_sucker5_link">
+    <collision name="uc6_sucker5">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00416 0.02000 -0.04857"/>
+      <geometry>
+        <box size="0.04000 0.04000 0.12000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="uc6_sucker6_link">
+    <collision name="uc6_sucker6">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.00586 0.02413 -0.04000"/>
+      <geometry>
+        <box size="0.12000 0.16000 0.08000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="uc6_sucker7_link">
+    <collision name="uc6_sucker7">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.02348 -0.00040 -0.00400"/>
+      <geometry>
+        <box size="0.22000 0.04000 0.00800"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="uc6_sucker_top_link">
+    <collision name="uc6_sucker3">
+      <origin rpy="0.00000 -1.57080 0.00000" xyz="-0.00500 0.09000 -0.01700"/>
+      <geometry>
+        <box size="0.04000 0.23400 0.04400"/>
+      </geometry>
+    </collision>
+    <collision name="uc6_sucker4">
+      <origin rpy="0.00000 -1.57080 0.00000" xyz="-0.06300 0.18800 -0.01800"/>
+      <geometry>
+        <cylinder radius="0.01500" length="0.14000"/>
+      </geometry>
+    </collision>
+    <visual name="suckerset">
+      <origin rpy="0.00000 -1.57080 0.00000" xyz="1.07900 1.41200 0.37900"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc6_ines/meshes/stl/setcilindro.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+</robot>

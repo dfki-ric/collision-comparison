@@ -1,5 +1,6 @@
-from distance3d.broad_phase import BoundingVolumeHierarchy
 from pytransform3d.urdf import UrdfTransformManager
+
+from distance3d.broad_phase import BoundingVolumeHierarchy
 
 
 def get_nao_bvh(use_visuals=False):
