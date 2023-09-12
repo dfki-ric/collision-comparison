@@ -1,5 +1,5 @@
 use gjk::colliders::{ColliderType, Collider};
-use ncollide3d::{shape::{Ball, Cuboid, Cylinder, Capsule}, na::{Isometry3, self}};
+use ncollide3d::{shape::{Ball, Cuboid, Cylinder, Capsule}, na::{Isometry3, self, Vector3}};
 
 
 pub struct NcollideCollider{
@@ -20,7 +20,13 @@ pub fn get_collider(collider: &Collider) -> NcollideCollider {
 
     let rotation = na::Rotation3::from_matrix(&matrix);
     let pos = na::Vector3::new(collider.center[0], collider.center[1], collider.center[2]);
-    let transform = Isometry3::new(pos, *rotation.axis_angle().unwrap().0);
+
+    let axis_angle = if rotation.axis_angle().is_some() {
+            *rotation.axis_angle().unwrap().0} 
+        else {
+            na::Vector3::new(0.0, 0.0, 0.0)
+        };
+    let transform = Isometry3::new(pos, axis_angle);
 
     NcollideCollider{
         ball: Ball::new(collider.radius),

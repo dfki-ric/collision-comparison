@@ -25,7 +25,6 @@ do
     cp "compare-python/distance3d_result.json" "results/$i/";
     cp "compare-cpp/cpp_result.json" "results/$i/";
     cp -a "compare-rs/target/criterion" "results/$i/";
-    break
    fi
 done
 

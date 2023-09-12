@@ -8,7 +8,7 @@ from .load_atlas import get_atlas_bvh
 from .load_nao import get_nao_bvh, get_nao_bvh_complex
 from .load_uc6 import get_uc6_bvh
 from .load_ur10 import get_ur10_tm, get_u10_bvh_complex, get_ur10_bvh_from_tm
-from .test_file import write_test_file
+from .test_file import write_test_file, load_test_file
 
 uc6_ur10_offset = np.eye(4)
 uc6_ur10_offset[:3, 3] = np.array([1, -1, -1.5])
