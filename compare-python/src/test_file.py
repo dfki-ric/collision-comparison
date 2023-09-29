@@ -7,20 +7,21 @@ from distance3d.gjk import gjk
 
 
 def to_dict(collider):
+    type = collider.__class__.__name__
     data = {
-        "type": collider.__name__,
+        "type": type,
         "collider2origin": collider.collider2origin().tolist()
     }
 
-    if collider.__name__ == Sphere:
+    if type == Sphere:
         data += {
             "radius": collider.radius
         }
-    if collider.__name__ == Box:
+    if type == Box:
         data += {
             "size": collider.size.tolist()
         }
-    if collider.__name__ == Capsule or collider.__name__ == Cylinder:
+    if type == Capsule or type == Cylinder:
         data += {
             "radius": collider.radius,
             "height": collider.height
