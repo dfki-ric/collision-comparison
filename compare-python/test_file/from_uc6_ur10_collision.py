@@ -6,7 +6,7 @@ uc6_tm, uc6_bvh = get_uc6_bvh()
 ur10_tm = get_ur10_tm()
 
 datasets = 100000
-i = 384
+i = 331
 while i <= datasets:
     set_random_joints(ur10_tm)
 

@@ -13,19 +13,13 @@ def to_dict(collider):
         "collider2origin": collider.collider2origin().tolist()
     }
 
-    if type == Sphere:
-        data += {
-            "radius": collider.radius
-        }
-    if type == Box:
-        data += {
-            "size": collider.size.tolist()
-        }
-    if type == Capsule or type == Cylinder:
-        data += {
-            "radius": collider.radius,
-            "height": collider.height
-        }
+    if type == "Sphere":
+        data["radius"] = collider.radius
+    if type == "Box":
+        data["size"] = collider.size.tolist()
+    if type == "Capsule" or type == "Cylinder":
+        data["radius"] = collider.radius
+        data["height"] = collider.length
 
     return data
 

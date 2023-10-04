@@ -3,7 +3,7 @@
 ==> Dockerfile
 ```bash
 docker buildx build -t compare .
-docker run --rm -it --entrypoint bash compare
+docker run --mount type=bind,source="./results",target="/collision-comparison/results" --rm -it --entrypoint bash compare
 
 tree -L 1 | tail -1
 ```
