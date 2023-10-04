@@ -4,6 +4,8 @@
 ```bash
 docker buildx build -t compare .
 docker run --rm -it --entrypoint bash compare
+
+tree -L 1 | tail -1
 ```
 
 ### Building URDFs (Not nessesary)
