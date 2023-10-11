@@ -12,3 +12,4 @@ compare-cpp/build_release/
 !data/test_data.json
 
 venv/*
+results/*
