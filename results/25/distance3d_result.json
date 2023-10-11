@@ -1,9 +1,0 @@
-{
-    "Original": 313.90350004585343,
-    "Jolt (intersection)": 2340.124699912849,
-    "Jolt (distance)": 4015.047899974889,
-    "Nesterov": 4490.1003000632045,
-    "Nesterov (with acceleration)": 298.54590002287296,
-    "Nesterov (Primitives)": 3967.84050012684,
-    "Nesterov (Primitives with acceleration)": 52.54479992800043
-}

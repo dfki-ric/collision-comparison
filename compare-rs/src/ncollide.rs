@@ -1,5 +1,5 @@
 use gjk::colliders::{ColliderType, Collider};
-use ncollide3d::{shape::{Ball, Cuboid, Cylinder, Capsule}, na::{Isometry3, self, Vector3}};
+use ncollide3d::{shape::{Ball, Cuboid, Cylinder, Capsule}, na::{Isometry3, self}};
 
 
 pub struct NcollideCollider{

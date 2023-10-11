@@ -1,5 +1,4 @@
-use cgmath::{Matrix4};
-use collision::{algorithm::minkowski::GJK3, primitive::{Primitive3, Sphere, Capsule, Cylinder, Cuboid}};
+use collision::{algorithm::minkowski::GJK3};
 use compare::{collision::get_cases, load_data};
 use criterion::{criterion_group, criterion_main, Criterion};
 

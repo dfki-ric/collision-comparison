@@ -13,7 +13,7 @@ fn bench_nesterov_accelerated(c: &mut Criterion) {
     let cases = load_data();
 
     c.bench_function("gjk-rs_nasterov_gjk", |b| b.iter(|| 
-        for (i, data) in cases.iter().enumerate() {
+        for (_i, data) in cases.iter().enumerate() {
             test_nesterov(&data.0, &data.1);
         }
     ));
