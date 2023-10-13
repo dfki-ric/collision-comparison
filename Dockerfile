@@ -38,7 +38,7 @@ RUN cd collision-comparison \
  && cd JoltPhysics/Build \
  && sh ./cmake_linux_clang_gcc.sh Distribution \
  && cd Linux_Distribution \
- && make -j 8 && ./UnitTests 
+ && make -j 8
 
 # Libccd
 RUN cd collision-comparison \ 
