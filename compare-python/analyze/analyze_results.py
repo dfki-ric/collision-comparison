@@ -90,7 +90,7 @@ for dir in os.listdir(result_path):
         else:
             results[key] = [result[key]]
 
-results_sum = {key: results_sum.get(key, 0) / len(results)
+results_sum = {key: results_sum.get(key, 0) / len(results[key])
                for key in set(results_sum)}
 
 

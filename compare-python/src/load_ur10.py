@@ -5,6 +5,7 @@ from pytransform3d.urdf import UrdfTransformManager
 
 from distance3d.broad_phase import BoundingVolumeHierarchy
 
+
 def get_ur10_tm():
     data_path = "../data/urdfs/"
     urdf_file = "mia_hand_on_ur10.urdf"
@@ -16,8 +17,9 @@ def get_ur10_tm():
 
     return tm
 
+
 def get_ur10_bvh_from_tm(tm, use_visuals=False, base_frame2origin=np.eye(4)):
-    bvh = BoundingVolumeHierarchy(tm, "mia_hand_on_ur10", base_frame2origin=base_frame2origin)
+    bvh = BoundingVolumeHierarchy(tm, "world", base_frame2origin=base_frame2origin)
     bvh.fill_tree_with_colliders(tm, make_artists=True, use_visuals=use_visuals)
 
     return bvh
@@ -36,5 +38,3 @@ def get_u10_bvh_complex(use_visuals=False):
     bvh.fill_tree_with_colliders(tm, make_artists=True, use_visuals=use_visuals)
 
     return tm, bvh
-
-

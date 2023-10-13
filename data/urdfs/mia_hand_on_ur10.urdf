@@ -1,7 +1,7 @@
 <robot name="mia_hand_on_ur10" version="1.0">
-  <joint name="arm_base_to_arm" type="fixed">
+  <joint name="world_to_arm" type="fixed">
     <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 1.00000"/>
-    <parent link="arm_base"/>
+    <parent link="world"/>
     <child link="ur10_base_link"/>
   </joint>
   <joint name="j_index_fle" type="revolute">
@@ -144,19 +144,6 @@
     <child link="ur10_wrist_3_link"/>
     <axis xyz="0.00000 0.00000 1.00000"/>
   </joint>
-  <joint name="world_to_robot" type="fixed">
-    <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
-    <parent link="world"/>
-    <child link="arm_base"/>
-  </joint>
-  <link name="arm_base">
-    <collision name="arm_base_collision">
-      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.50000"/>
-      <geometry>
-        <box size="0.20000 0.20000 1.00000"/>
-      </geometry>
-    </collision>
-  </link>
   <link name="flange"/>
   <link name="hand_ee_link"/>
   <link name="index_fle">

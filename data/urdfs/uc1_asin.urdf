@@ -1,0 +1,331 @@
+<robot name="uc1_asin" version="1.0">
+  <joint name="control_box_stand_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 0.43284" xyz="0.09000 -0.84000 1.24000"/>
+    <parent link="world"/>
+    <child link="control_box_stand"/>
+  </joint>
+  <joint name="control_table_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+    <parent link="world"/>
+    <child link="control_table"/>
+  </joint>
+  <joint name="conveyor_belt_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-0.67430 0.11496 1.12598"/>
+    <parent link="world"/>
+    <child link="conveyor_belt"/>
+  </joint>
+  <joint name="emergency_box_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 -0.00000" xyz="0.26999 -0.09711 0.76257"/>
+    <parent link="control_box_stand"/>
+    <child link="emergency_box"/>
+  </joint>
+  <joint name="photoelectric_sensor_1_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-0.21000 0.81000 1.16000"/>
+    <parent link="world"/>
+    <child link="photoelectric_sensor_1"/>
+  </joint>
+  <joint name="photoelectric_sensor_2_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-0.55000 0.85000 1.16000"/>
+    <parent link="world"/>
+    <child link="photoelectric_sensor_2"/>
+  </joint>
+  <joint name="support_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-0.18987 1.23835 1.45602"/>
+    <parent link="world"/>
+    <child link="support"/>
+  </joint>
+  <joint name="tray_cart_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="1.07000 -0.54000 0.17500"/>
+    <parent link="world"/>
+    <child link="tray_cart"/>
+  </joint>
+  <joint name="tripod_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="0.44774 1.22512 1.47738"/>
+    <parent link="world"/>
+    <child link="tripod"/>
+  </joint>
+  <joint name="ur_table_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 1.57080" xyz="-0.14000 -0.50000 0.17500"/>
+    <parent link="world"/>
+    <child link="ur_table"/>
+  </joint>
+  <link name="control_box_stand">
+    <collision name="control_box_stand_collision">
+      <origin rpy="0.00000 0.00000 -0.00000" xyz="0.35000 -0.34649 -0.54511"/>
+      <geometry>
+        <box size="0.70000 0.70000 1.10000"/>
+      </geometry>
+    </collision>
+    <visual name="control_box_stand_">
+      <origin rpy="0.00000 0.00000 -0.00000" xyz="0.35000 -0.34649 -0.54511"/>
+      <geometry>
+        <box size="0.70000 0.70000 1.10000"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="control_table">
+    <collision name="control_table_collision">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-1.27000 -1.74000 1.20000"/>
+      <geometry>
+        <box size="2.00000 2.00000 2.00000"/>
+      </geometry>
+    </collision>
+    <visual name="control_table_">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-1.27000 -1.74000 1.20000"/>
+      <geometry>
+        <box size="2.00000 2.00000 2.00000"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="conveyor_belt">
+    <collision name="conveyor_belt_control_box_1">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.44570 -0.10496 0.38402"/>
+      <geometry>
+        <box size="0.52000 1.16000 0.60000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_control_box_2">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.20570 0.44804 0.30402"/>
+      <geometry>
+        <box size="0.04000 0.04000 0.86000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_control_box_3">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.64570 0.44804 0.30402"/>
+      <geometry>
+        <box size="0.04000 0.04000 0.86000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_part_0">
+      <origin rpy="0.00000 0.00000 -0.15818" xyz="-0.60124 0.03487 -0.10098"/>
+      <geometry>
+        <box size="0.20000 0.30000 0.22000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_part_1">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.42621 0.02004 -0.10098"/>
+      <geometry>
+        <box size="0.20000 0.30000 0.22000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_part_10">
+      <origin rpy="0.00000 0.00000 -0.47395" xyz="-0.74365 0.08827 -0.10098"/>
+      <geometry>
+        <box size="0.20000 0.30000 0.22000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_part_11">
+      <origin rpy="0.00000 0.00000 -0.60201" xyz="-0.89792 0.18617 -0.10098"/>
+      <geometry>
+        <box size="0.20000 0.30000 0.22000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_part_12">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.28430 0.87504 -0.10098"/>
+      <geometry>
+        <box size="0.30000 0.46000 0.22000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_part_2">
+      <origin rpy="0.00000 0.00000 0.20514" xyz="-0.27475 0.03210 -0.10098"/>
+      <geometry>
+        <box size="0.20000 0.30000 0.22000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_part_3">
+      <origin rpy="0.00000 0.00000 0.40955" xyz="-0.17033 0.06622 -0.10098"/>
+      <geometry>
+        <box size="0.20000 0.30000 0.22000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_part_4">
+      <origin rpy="0.00000 0.00000 0.48930" xyz="-0.07354 0.11652 -0.10098"/>
+      <geometry>
+        <box size="0.20000 0.30000 0.22000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_part_5">
+      <origin rpy="0.00000 0.00000 0.63394" xyz="0.01671 0.17119 -0.10098"/>
+      <geometry>
+        <box size="0.20000 0.30000 0.22000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_part_6">
+      <origin rpy="0.00000 0.00000 0.86481" xyz="0.10410 0.24798 -0.10098"/>
+      <geometry>
+        <box size="0.20000 0.30000 0.22000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_part_7">
+      <origin rpy="0.00000 0.00000 1.00546" xyz="0.17379 0.35030 -0.10098"/>
+      <geometry>
+        <box size="0.20000 0.30000 0.22000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_part_8">
+      <origin rpy="0.00000 0.00000 1.20268" xyz="0.24379 0.49930 -0.10098"/>
+      <geometry>
+        <box size="0.20000 0.30000 0.22000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_part_9">
+      <origin rpy="0.00000 0.00000 -1.66151" xyz="0.28379 0.64565 -0.10098"/>
+      <geometry>
+        <box size="0.20000 0.30000 0.22000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_pole_1">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.19530 0.10404 -0.46598"/>
+      <geometry>
+        <cylinder radius="0.04000" length="0.96000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_pole_2">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-1.05170 0.10404 -0.46598"/>
+      <geometry>
+        <cylinder radius="0.04000" length="0.96000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_pole_3">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.42626 -0.15396 -0.09598"/>
+      <geometry>
+        <cylinder radius="0.04000" length="0.22000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_pole_4">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.42626 0.19004 -0.09598"/>
+      <geometry>
+        <cylinder radius="0.04000" length="0.22000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_pole_5">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.04870 0.34504 -0.09598"/>
+      <geometry>
+        <cylinder radius="0.04000" length="0.22000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_pole_6">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.80570 0.34504 -0.09598"/>
+      <geometry>
+        <cylinder radius="0.04000" length="0.22000"/>
+      </geometry>
+    </collision>
+    <visual name="conveyor_belt_">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.42570 0.72504 -0.95098"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc1_asin/meshes/stl/conveyor_belt.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="emergency_box">
+    <collision name="emergency_box_collision">
+      <origin rpy="0.00000 0.00000 1.57080" xyz="0.15001 -0.29789 -0.22268"/>
+      <geometry>
+        <box size="0.60000 0.32000 1.16000"/>
+      </geometry>
+    </collision>
+    <visual name="emergency_box_led_column_upper">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.15000 -0.30000 0.20732"/>
+      <geometry>
+        <cylinder radius="0.03500" length="0.28000"/>
+      </geometry>
+    </visual>
+    <visual name="emergency_box_mesh">
+      <origin rpy="1.57080 -0.00000 1.57080" xyz="0.00001 -0.30289 -0.37757"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc1_asin/meshes/stl/emergency_box.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+    <visual name="ermergency_box_led_column_bottom">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.15000 -0.30000 0.02732"/>
+      <geometry>
+        <cylinder radius="0.01250" length="0.06000"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="photoelectric_sensor_1">
+    <collision name="photoelectric_sensor_1_collision_cylinder">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 -0.10000"/>
+      <geometry>
+        <cylinder radius="0.04000" length="0.30000"/>
+      </geometry>
+    </collision>
+    <visual name="photoelectric_sensor_1_">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <box size="0.01000 0.02000 0.04500"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="photoelectric_sensor_2">
+    <collision name="photoelectric_sensor_2_collision_cylinder">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 -0.10000"/>
+      <geometry>
+        <cylinder radius="0.04000" length="0.30000"/>
+      </geometry>
+    </collision>
+    <visual name="photoelectric_sensor_2_">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <box size="0.01000 0.02000 0.04500"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="support">
+    <collision name="support_collision">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.40013 0.62165 -0.26602"/>
+      <geometry>
+        <box size="0.84000 1.28000 2.08000"/>
+      </geometry>
+    </collision>
+    <visual name="support_">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.40013 0.62165 -1.33502"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc1_asin/meshes/stl/support.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="tray_cart">
+    <collision name="tray_cart_collision">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.30000 0.60000 0.37500"/>
+      <geometry>
+        <box size="0.60000 1.20000 0.75000"/>
+      </geometry>
+    </collision>
+    <visual name="tray_cart_mesh">
+      <origin rpy="0.00000 0.00000 1.57080" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc1_asin/meshes/stl/tray_cart.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="tripod">
+    <collision name="tripod_collision">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.30774 0.59488 -0.27738"/>
+      <geometry>
+        <box size="0.62000 1.20000 2.00000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="ur_table">
+    <collision name="robot_stand_platform">
+      <origin rpy="0.00000 0.00000 -1.57080" xyz="0.50000 -0.14000 0.81500"/>
+      <geometry>
+        <box size="0.20000 0.20000 0.02000"/>
+      </geometry>
+    </collision>
+    <collision name="robot_stand_table">
+      <origin rpy="0.00000 0.00000 -1.57080" xyz="0.50000 -0.30000 0.40500"/>
+      <geometry>
+        <box size="0.60000 1.00000 0.80000"/>
+      </geometry>
+    </collision>
+    <visual name="ur_table_item_simplified">
+      <origin rpy="1.57080 0.00000 -1.57080" xyz="0.60000 -0.32500 0.80000"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc1_asin/meshes/stl/ur_table_item_simplified.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="world"/>
+</robot>
