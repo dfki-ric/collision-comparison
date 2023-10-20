@@ -5,6 +5,7 @@ from scipy.spatial.transform import Rotation
 
 from .analyze import analyze_robot, get_collider_count, get_distances_all, get_distances_cases, get_colliders_from_pairs, \
     get_collider_sizes, get_average_size, plot_distance_distribution, print_collider_distribution
+from .analyze_results import get_rust_results, get_cpp_result, get_python_results
 from .load_atlas import get_atlas_tm, get_atlas_bvh_from_tm, get_atlas_bvh
 from .load_nao import get_nao_bvh, get_nao_bvh_complex
 from .load_uc1 import get_uc1_bvh

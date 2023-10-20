@@ -8,7 +8,7 @@ do
    if [ ! -d "results/$i" ]; then
 
     rm -f "data/current.json"
-    cp "data/uc6_ur10_collision_$i.json" "data/current.json"
+    cp "data/uc6_ur10_collision/uc6_ur10_collision_$i.json" "data/current.json"
 
     echo --- CPP ---
     sh scripts/benchmarks/benchmark_cpp.sh

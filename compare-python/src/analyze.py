@@ -200,3 +200,4 @@ def print_collider_distribution(colliders):
             continue
 
         print("  ", name, ":", int((colliders[name] / collider_sum) * 100), "%")
+
