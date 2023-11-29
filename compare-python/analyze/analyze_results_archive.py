@@ -98,3 +98,4 @@ for pc_name in os.listdir(result_path):
         ax.set_title(f"{name} on {pc_name}")
         fig.tight_layout()
         plt.show()
+        plt.savefig(f"{name} on {pc_name}.png")
