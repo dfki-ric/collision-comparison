@@ -15,7 +15,12 @@ However, statistical tests show that differences between the most commonly used 
 </p>
 
 <p float="left">
+  <img src="doc/uc1_ur10_collision_on_TEAM7-STUD-1B-U.png" width="400" />
   <img src="doc/uc6_ur10_collision_on_TEAM7-STUD-1B-U.png" width="400" />
+</p>
+
+<p float="left">
+  <img src="doc/uc6_ur10_collision_on_Alexanders-PC.png" width="400" />
 </p>
 
 ## Setup
@@ -33,13 +38,25 @@ sh scripts/benchmarks/benchmark_uc6_ur10.sh
 # To run benchmark on uc6 with ur10
 ```
 
-#### How many Folders are done?
+## Results 
+### How many Folders are done?
 ```bash
 cd results
 tree -L 1 | tail -1
 ```
 
-### On Manjaro
+### Analyzing Results
+Put Data from results folder in results-archive
+Create a folder for every pc. 
+Put the results in a sub folder with the name of the test case. 
+For example like this: `./results-archive/UPLINX-4-U/uc6_ur10_collision`
+
+To analyze the results archive run
+```bash
+sh ./scripts/analyze/analyze_results.sh
+```
+
+## Setup on Manjaro
 ```bash
 sudo pacman -Suy --noconfirm --needed \
     go \
@@ -130,11 +147,7 @@ source "$HOME/.cargo/env" \
  && sh scripts/benchmarks/benchmark_rust.sh
 ```
 
-
-
-
-
-### Building URDFs (Not nessesary)
+## Building URDFs (not needed final URDF are in repo)
 ```bash
 cd data/urdf
 
@@ -163,7 +176,7 @@ git clone git@github.com:ros-industrial/universal_robot.git
 cd ../..
 ```
 
-### If Rust nightly is needed: 
+## If Rust nightly is needed: 
 ```bash
 rustup toolchain install nightly
 ```
