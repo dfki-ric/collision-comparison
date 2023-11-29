@@ -35,7 +35,9 @@ RUN mkdir collision-comparison
 # Jolt
 RUN cd collision-comparison \ 
  && git clone https://github.com/MaartenBehn/JoltPhysics.git \
- && cd JoltPhysics/Build \
+ && cd JoltPhysics \
+ && git checkout No-broadphase \
+ && cd Build \
  && sh ./cmake_linux_clang_gcc.sh Distribution \
  && cd Linux_Distribution \
  && make -j 8

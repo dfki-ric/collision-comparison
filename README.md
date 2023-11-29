@@ -1,6 +1,45 @@
-# Setup
 
-## On Manjaro
+# Benchmarking Collision Detection for Robotics
+
+## Abstract
+Collision detection in robotics plays an important role in simulation, planning, and control. In particular, Gilbert-Johnson-Keerthi (GJK) and its variants are still widely used. We are interested in the question of how much programming language, algorithm development, and implementation tricks influence the performance of this algorithm. We develop a benchmark that resembles how GJK is currently used in robotics and compare the performance of commonly used implementations of the algorithm. We analyse not just the moments of the distribution of measured times, but the whole distribution, which is relevant for real-time applications.
+Surprisingly, we obtained the best performance with the Jolt game engine, which is usually not used in robotics and does not implement the latest algorithmic developments.
+We also found that highly optimized C++ libraries are still faster than more recently developed Rust libraries and that Python cannot be used when performance is a constraint, even when highly optimized code is used.
+However, statistical tests show that differences between the most commonly used C++ and Rust libraries are not significant.
+
+## Results
+
+<p float="left">
+  <img src="doc/uc1_ur10_collision_on_UPLINX-4-U.png" width="400" />
+  <img src="doc/uc6_ur10_collision_on_UPLINX-4-U.png" width="400" /> 
+</p>
+
+<p float="left">
+  <img src="doc/uc6_ur10_collision_on_TEAM7-STUD-1B-U.png" width="400" />
+</p>
+
+## Setup
+
+### In Docker
+```bash
+docker buildx build -t compare .
+docker run --mount type=bind,source="./results",target="/collision-comparison/results" --rm -it --entrypoint bash compare
+```
+
+#### Run in docker
+```bash
+cd /collision-comparison
+sh scripts/benchmarks/benchmark_uc6_ur10.sh 
+# To run benchmark on uc6 with ur10
+```
+
+#### How many Folders are done?
+```bash
+cd results
+tree -L 1 | tail -1
+```
+
+### On Manjaro
 ```bash
 sudo pacman -Suy --noconfirm --needed \
     go \
@@ -91,16 +130,9 @@ source "$HOME/.cargo/env" \
  && sh scripts/benchmarks/benchmark_rust.sh
 ```
 
-## In Docker
-```bash
-docker buildx build -t compare .
-docker run --mount type=bind,source="./results",target="/collision-comparison/results" --rm -it --entrypoint bash compare
-```
 
-## How many Folders?
-```bash
-tree -L 1 | tail -1
-```
+
+
 
 ### Building URDFs (Not nessesary)
 ```bash
@@ -135,8 +167,3 @@ cd ../..
 ```bash
 rustup toolchain install nightly
 ```
-
-### Dependencies
-- octomap
-- assimp
-- eigen

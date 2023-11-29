@@ -15,3 +15,5 @@ data/*
 venv/*
 results/*
 results-archive/*
+
+results.zip

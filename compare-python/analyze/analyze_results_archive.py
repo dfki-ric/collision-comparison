@@ -4,7 +4,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from src import get_cpp_result, get_rust_results, get_python_results
-from src.analyze_results import get_short_name
+from src.analyze_results import get_short_names
 
 # Einheit micro sekunden (µs)
 
@@ -48,22 +48,32 @@ for pc_name in os.listdir(result_path):
                 else:
                     results[key] = [result[key]]
 
+        #  Mean
         results_sum = {key: results_sum.get(key, 0) / len(results[key])
                        for key in set(results_sum)}
 
         results_sum = dict(sorted(results_sum.items(), key=lambda item: item[1]))
         print("---", name, "---")
+        print("Mean:")
         for key in results_sum:
             print(key, ':', "%.4f µs" % results_sum[key])
 
+        print("Max Index:")
+        # Longest case per implementation
+        for key in results_sum:
+            i = np.argmax(results[key])
+            print(f"{key} : {i}")
+
+
+
+        #  Violin Plot
         pos = []
         data = []
         i = 0
-        short_names = []
-        for key in results_sum:
+        short_names = get_short_names()
+        for key in short_names:
             pos.append(i)
             data.append(np.array(results[key]))
-            short_names.append(get_short_name(key))
             i += 1
 
         fig = plt.figure()
@@ -74,7 +84,7 @@ for pc_name in os.listdir(result_path):
 
         ax.set_xscale('log')
         plt.yticks(np.arange(0, i, 1.0))
-        ax.set_yticklabels(short_names)
+        ax.set_yticklabels(short_names.values())
         ax.set_xlabel("Time per collision check in µs")
         ax.set_xlim(0.001, 8000)
 

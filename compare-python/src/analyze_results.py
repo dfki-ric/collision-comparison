@@ -51,28 +51,26 @@ def get_rust_results(path):
     return data
 
 
-def get_short_name(name):
-    short_names = {
-        "FCL distance": "hpp-fcl",
+def get_short_names():
+    return {
+        "FCL distance": "HPP-FCL",
         "Jolt intersection": "Jolt",
         "libccd intersection": "libccd",
         "Bullet distance": "Bullet",
 
         "ncollide_distance": "ncollide",
-        "collision-rs_intersect_gjk": "col-rs: inter",
-        "collision-rs_distance_gjk":  "col-rs: dist",
-        "collision-rs_nasterov_gjk":  "col-rs: nes",
+        "collision-rs_nasterov_gjk": "collision-rs 3",
+        "collision-rs_distance_gjk": "collision-rs 2",
+        "collision-rs_intersect_gjk": "collision-rs 1",
 
-        "gjk-rs_nasterov_gjk": "gjk-rs: nes",
+        "gjk-rs_nasterov_gjk": "gjk-rs",
         "Pybullet": "pybullet",
 
-        "distance3d Nesterov (Primitives with acceleration)": "dis3d: nes acc full-jit",
-        "distance3d Nesterov (Primitives)": "dis3d: nes full-jit",
-        "distance3d Nesterov (with acceleration)": "dis3d: nes acc part-jit",
-        "distance3d Nesterov": "dis3d: nes part-jit",
-        "distance3d Jolt (intersection)": "dis3d: Jolt inter",
-        "distance3d Jolt (distance)": "dis3d: Jolt dist",
-        "distance3d Original": "dis3d: org-gjk",
+        "distance3d Nesterov (Primitives with acceleration)": "distance3d 7",
+        "distance3d Nesterov (Primitives)": "distance3d 6",
+        "distance3d Nesterov (with acceleration)": "distance3d 5",
+        "distance3d Nesterov": "distance3d 4",
+        "distance3d Jolt (intersection)": "distance3d 2",
+        "distance3d Jolt (distance)": "distance3d 3",
+        "distance3d Original": "distance3d 1",
     }
-
-    return short_names[name]
