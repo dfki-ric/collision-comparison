@@ -60,3 +60,4 @@ for key in results:
     ax.set_xlim(left=0)
     ax.yaxis.set_tick_params(labelleft=False)
     plt.show()
+    plt.savefig(f"{key}.png")

@@ -127,17 +127,15 @@ namespace compare::Jolt {
         JPH::CollideShapeSettings settings = JPH::CollideShapeSettings();
         JPH::SubShapeIDCreator part1, part2;
         JPH::CollisionDispatch::sCollideShapeVsShape(
-                jolt_case.collider0.shape,
-                jolt_case.collider1.shape,
-                JPH::Vec3::sReplicate(1.0f),
-                JPH::Vec3::sReplicate(1.0f),
-                jolt_case.transform0, jolt_case.transform1,
-                part1, part2, settings, collector);
+            jolt_case.collider0.shape,
+            jolt_case.collider1.shape,
+            JPH::Vec3::sReplicate(1.0f),
+            JPH::Vec3::sReplicate(1.0f),
+            jolt_case.transform0, jolt_case.transform1,
+            part1, part2, settings, collector);
 
         return collector.hits > 0;
     }
 }
-
-
 
 
