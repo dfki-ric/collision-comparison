@@ -52,51 +52,67 @@ for pc_name in os.listdir(result_path):
                         for key in set(results_mean)}
 
         results_mean = dict(sorted(results_mean.items(), key=lambda item: item[1]))
-        print("---", name, "---")
-        print("Mean:")
+        print("---", name, "on", pc_name, "---")
+        print("\n -- Mean: --")
         for key in results_mean:
             print(key, ':', "%.4f µs" % results_mean[key])
 
-        print("Max Index:")
+        print("\n-- Max Index: --")
         # Longest case per implementation
         for key in results_mean:
             i = np.argmax(results[key])
             print(f"{key} : {i}")
 
+
+        cpp_results = [results["FCL distance"],
+                       results["Jolt intersection"],
+                       results["libccd intersection"],
+                       results["Bullet distance"]]
+
+        rust_results = [results["ncollide_distance"],
+                        results["collision-rs_nasterov_gjk"],
+                        results["collision-rs_distance_gjk"],
+                        results["collision-rs_intersect_gjk"],
+                        results["gjk-rs_nasterov_gjk"]]
+
+        python_results = [results["Pybullet"],
+                          results["distance3d Nesterov (Primitives with acceleration)"],
+                          results["distance3d Nesterov (Primitives)"],
+                          results["distance3d Nesterov (with acceleration)"],
+                          results["distance3d Nesterov"],
+                          results["distance3d Jolt (intersection)"],
+                          results["distance3d Jolt (distance)"],
+                          results["distance3d Original"]]
+
         # ANOVA
-        print("ANOVA for all:")
+        print("\n-- ANOVA --")
+        print("ANOVA for every case as its own group:")
         F, p = scipy.stats.f_oneway(*results.values())
         print("F: ", F)
         print("p: ", p)
 
-        print("ANOVA for C/C++:")
-        F, p = scipy.stats.f_oneway(results["FCL distance"],
-                                    results["Jolt intersection"],
-                                    results["libccd intersection"],
-                                    results["Bullet distance"])
+        print("ANOVA for every C/C++ case as its own group:")
+        F, p = scipy.stats.f_oneway(*cpp_results)
         print("F: ", F)
         print("p: ", p)
 
-        print("ANOVA for Rust:")
-        F, p = scipy.stats.f_oneway(results["ncollide_distance"],
-                                    results["collision-rs_nasterov_gjk"],
-                                    results["collision-rs_distance_gjk"],
-                                    results["collision-rs_intersect_gjk"],
-                                    results["gjk-rs_nasterov_gjk"])
+        print("ANOVA for every Rust case as its own group:")
+        F, p = scipy.stats.f_oneway(*rust_results)
         print("F: ", F)
         print("p: ", p)
 
-        print("ANOVA for Python:")
-        F, p = scipy.stats.f_oneway(results["Pybullet"],
-                                    results["distance3d Nesterov (Primitives with acceleration)"],
-                                    results["distance3d Nesterov (Primitives)"],
-                                    results["distance3d Nesterov (with acceleration)"],
-                                    results["distance3d Nesterov"],
-                                    results["distance3d Jolt (intersection)"],
-                                    results["distance3d Jolt (distance)"],
-                                    results["distance3d Original"])
+        print("ANOVA for every Python case as its own group:")
+        F, p = scipy.stats.f_oneway(*python_results)
         print("F: ", F)
         print("p: ", p)
+
+        print("ANOVA for all cases from one language as one group:")
+        F, p = scipy.stats.f_oneway(cpp_results, rust_results, python_results)
+        print("F: ", F)
+        print("p: ", p)
+
+        # T test
+        # statistics, p, df, confidence_interval = scipy.stats.ttest_ind()
 
         #  Violin Plot
         pos = []
