@@ -64,8 +64,37 @@ for pc_name in os.listdir(result_path):
             print(f"{key} : {i}")
 
         # ANOVA
-        print("ANOVA:")
+        print("ANOVA for all:")
         F, p = scipy.stats.f_oneway(*results.values())
+        print("F: ", F)
+        print("p: ", p)
+
+        print("ANOVA for C/C++:")
+        F, p = scipy.stats.f_oneway(results["FCL distance"],
+                                    results["Jolt intersection"],
+                                    results["libccd intersection"],
+                                    results["Bullet distance"])
+        print("F: ", F)
+        print("p: ", p)
+
+        print("ANOVA for Rust:")
+        F, p = scipy.stats.f_oneway(results["ncollide_distance"],
+                                    results["collision-rs_nasterov_gjk"],
+                                    results["collision-rs_distance_gjk"],
+                                    results["collision-rs_intersect_gjk"],
+                                    results["gjk-rs_nasterov_gjk"])
+        print("F: ", F)
+        print("p: ", p)
+
+        print("ANOVA for Python:")
+        F, p = scipy.stats.f_oneway(results["Pybullet"],
+                                    results["distance3d Nesterov (Primitives with acceleration)"],
+                                    results["distance3d Nesterov (Primitives)"],
+                                    results["distance3d Nesterov (with acceleration)"],
+                                    results["distance3d Nesterov"],
+                                    results["distance3d Jolt (intersection)"],
+                                    results["distance3d Jolt (distance)"],
+                                    results["distance3d Original"])
         print("F: ", F)
         print("p: ", p)
 
