@@ -122,7 +122,7 @@ for pc_name in os.listdir(result_path):
             for key_b, result_b in results.items():
                 print(key_a, " vs ", key_b)
                 statistics, p = scipy.stats.ttest_ind(result_a, result_b)
-                d = statistics * np.sqrt((1 / len(result_a)) + (1 / len(result_b)))
+                d = abs(statistics * np.sqrt((1 / len(result_a)) + (1 / len(result_b))))
 
                 print("statistics: ", statistics)
                 print("p: ", p)
