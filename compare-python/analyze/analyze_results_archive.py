@@ -2,13 +2,12 @@ import json
 import os
 import numpy as np
 from matplotlib import pyplot as plt
+import scipy
 
 from src import get_cpp_result, get_rust_results, get_python_results
 from src.analyze_results import get_short_names
 
 # Einheit micro sekunden (µs)
-
-
 
 result_path = "../results-archive"
 data_path = "../data"
@@ -18,7 +17,7 @@ for pc_name in os.listdir(result_path):
     for name in os.listdir(f"{result_path}/{pc_name}/"):
 
         results = {}
-        results_sum = None
+        results_mean = None
         for dir in os.listdir(f"{result_path}/{pc_name}/{name}/"):
 
             path = f"{result_path}/{pc_name}/{name}/{dir}/"
@@ -35,11 +34,11 @@ for pc_name in os.listdir(result_path):
             for key in result:
                 result[key] /= case_amount
 
-            if results_sum == None:
-                results_sum = result
+            if results_mean == None:
+                results_mean = result
             else:
-                results_sum = {key: results_sum.get(key, 0) + result.get(key, 0)
-                               for key in set(results_sum) | set(result)}
+                results_mean = {key: results_mean.get(key, 0) + result.get(key, 0)
+                                for key in set(results_mean) | set(result)}
 
             for key in result:
 
@@ -49,22 +48,26 @@ for pc_name in os.listdir(result_path):
                     results[key] = [result[key]]
 
         #  Mean
-        results_sum = {key: results_sum.get(key, 0) / len(results[key])
-                       for key in set(results_sum)}
+        results_mean = {key: results_mean.get(key, 0) / len(results[key])
+                        for key in set(results_mean)}
 
-        results_sum = dict(sorted(results_sum.items(), key=lambda item: item[1]))
+        results_mean = dict(sorted(results_mean.items(), key=lambda item: item[1]))
         print("---", name, "---")
         print("Mean:")
-        for key in results_sum:
-            print(key, ':', "%.4f µs" % results_sum[key])
+        for key in results_mean:
+            print(key, ':', "%.4f µs" % results_mean[key])
 
         print("Max Index:")
         # Longest case per implementation
-        for key in results_sum:
+        for key in results_mean:
             i = np.argmax(results[key])
             print(f"{key} : {i}")
 
-
+        # ANOVA
+        print("ANOVA:")
+        F, p = scipy.stats.f_oneway(results)
+        print("F: ", F)
+        print("p: ", p)
 
         #  Violin Plot
         pos = []
@@ -99,3 +102,6 @@ for pc_name in os.listdir(result_path):
         fig.tight_layout()
         plt.show()
         plt.savefig(f"{name} on {pc_name}.png")
+
+
+
