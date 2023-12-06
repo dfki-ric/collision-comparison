@@ -106,13 +106,25 @@ for pc_name in os.listdir(result_path):
         print("F: ", F)
         print("p: ", p)
 
-        print("ANOVA for all cases from one language as one group:")
-        F, p = scipy.stats.f_oneway(cpp_results, rust_results, python_results)
-        print("F: ", F)
-        print("p: ", p)
+        # print("ANOVA for all cases from one language as one group:")
+        # F, p = scipy.stats.f_oneway(cpp_results, rust_results, python_results)
+        # print("F: ", F)
+        # print("p: ", p)
 
         # T test
-        # statistics, p, df, confidence_interval = scipy.stats.ttest_ind()
+        print("\n -- T Test --")
+        for (key_a, result_a) in results:
+            for (key_b, result_b) in results:
+                if result_a == result_b:
+                    continue
+
+                print(key_a, " vs ", key_b)
+                statistics, p, df, confidence_interval = scipy.stats.ttest_ind(result_a, result_b)
+                print("statistics: ", statistics)
+                print("p: ", p)
+                print("df: ", df)
+                print("confidence_interval: ", confidence_interval)
+
 
         #  Violin Plot
         pos = []
