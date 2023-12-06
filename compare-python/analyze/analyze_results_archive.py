@@ -119,13 +119,9 @@ for pc_name in os.listdir(result_path):
                     continue
 
                 print(key_a, " vs ", key_b)
-                print(result_a)
-
-                statistics, p, df, confidence_interval = scipy.stats.ttest_ind(result_a, result_b)
+                statistics, p = scipy.stats.ttest_ind(result_a, result_b)
                 print("statistics: ", statistics)
                 print("p: ", p)
-                print("df: ", df)
-                print("confidence_interval: ", confidence_interval)
 
 
         #  Violin Plot
