@@ -113,16 +113,11 @@ for pc_name in os.listdir(result_path):
 
         # T test
         print("\n -- T Test --")
-        for key_a, result_a in results.items():
-            for key_b, result_b in results.items():
-                if result_a == result_b:
-                    continue
-
-                print(key_a, " vs ", key_b)
-                statistics, p = scipy.stats.ttest_ind(result_a, result_b)
-                print("statistics: ", statistics)
-                print("p: ", p)
-
+        for key_a, result_a, key_b, result_b in [(a, b) for idx, a in enumerate(results.items()) for b in results.items()[idx + 1:]]:
+            print(key_a, " vs ", key_b)
+            statistics, p = scipy.stats.ttest_ind(result_a, result_b)
+            print("statistics: ", statistics)
+            print("p: ", p)
 
         #  Violin Plot
         pos = []
