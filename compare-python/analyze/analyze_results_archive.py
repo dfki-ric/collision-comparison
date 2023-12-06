@@ -65,7 +65,7 @@ for pc_name in os.listdir(result_path):
 
         # ANOVA
         print("ANOVA:")
-        F, p = scipy.stats.f_oneway(results)
+        F, p = scipy.stats.f_oneway(results.values())
         print("F: ", F)
         print("p: ", p)
 
