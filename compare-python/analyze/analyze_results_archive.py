@@ -113,8 +113,8 @@ for pc_name in os.listdir(result_path):
 
         # T test
         print("\n -- T Test --")
-        for (key_a, result_a) in results:
-            for (key_b, result_b) in results:
+        for key_a, result_a in results:
+            for key_b, result_b in results:
                 if result_a == result_b:
                     continue
 
