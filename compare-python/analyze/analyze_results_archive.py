@@ -112,7 +112,7 @@ for pc_name in os.listdir(result_path):
         # print("p: ", p)
 
         # T test
-        print("\n -- T Test --")
+        #print("\n -- T Test --")
 
         d_results = []
         d_results_capped = []
@@ -122,13 +122,13 @@ for pc_name in os.listdir(result_path):
             d_results_capped.append([])
 
             for key_b, result_b in results.items():
-                print(key_a, " vs ", key_b)
+                #print(key_a, " vs ", key_b)
                 statistics, p = scipy.stats.ttest_ind(result_a, result_b)
                 d = abs(statistics * np.sqrt((1 / len(result_a)) + (1 / len(result_b))))
 
-                print("statistics: ", statistics)
-                print("p: ", p)
-                print("D with statistics as t: ", d)
+                #print("statistics: ", statistics)
+                #print("p: ", p)
+                #print("D with statistics as t: ", d)
 
                 d_results[i].append(d)
                 d_results_capped[i].append(min(d, 1.0))
