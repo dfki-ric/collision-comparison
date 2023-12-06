@@ -119,6 +119,9 @@ for pc_name in os.listdir(result_path):
             print("statistics: ", statistics)
             print("p: ", p)
 
+            d = p * np.sqrt((1 / len(result_a)) + (1 / len(result_b)))
+            print("D: ", d)
+
         #  Violin Plot
         pos = []
         data = []
