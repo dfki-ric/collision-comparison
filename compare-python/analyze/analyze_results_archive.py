@@ -64,6 +64,7 @@ for pc_name in os.listdir(result_path):
             print(f"{key} : {i}")
 
 
+
         cpp_results = [results["FCL distance"],
                        results["Jolt intersection"],
                        results["libccd intersection"],
@@ -112,28 +113,39 @@ for pc_name in os.listdir(result_path):
         # print("p: ", p)
 
         # T test
-        #print("\n -- T Test --")
+        # print("\n -- T Test --")
+
+        pos = []
+        data = []
+        i = 0
+        short_names = get_short_names()
+        for key in short_names:
+            pos.append(i)
+            data.append(np.array(results[key]))
+            i += 1
+
 
         d_results = []
         d_results_capped = []
         i = 0
-        for key_a, result_a in results.items():
+        for result_a in data:
             d_results.append([])
             d_results_capped.append([])
 
-            for key_b, result_b in results.items():
-                #print(key_a, " vs ", key_b)
+            for result_b in data:
+                # print(key_a, " vs ", key_b)
                 statistics, p = scipy.stats.ttest_ind(result_a, result_b)
                 d = abs(statistics * np.sqrt((1 / len(result_a)) + (1 / len(result_b))))
 
-                #print("statistics: ", statistics)
-                #print("p: ", p)
-                #print("D with statistics as t: ", d)
+                # print("statistics: ", statistics)
+                # print("p: ", p)
+                # print("D with statistics as t: ", d)
 
                 d_results[i].append(d)
                 d_results_capped[i].append(min(d, 1.0))
 
             i += 1
+
 
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
@@ -142,7 +154,6 @@ for pc_name in os.listdir(result_path):
         ax.set_title(f"{name} on {pc_name}")
         ax.set_aspect('equal')
 
-        short_names = get_short_names()
         plt.xticks(np.arange(0, len(short_names.values()), 1.0))
         plt.yticks(np.arange(0, len(short_names.values()), 1.0))
         ax.set_xticklabels(short_names.values())
@@ -168,7 +179,6 @@ for pc_name in os.listdir(result_path):
         ax.set_title(f"{name} on {pc_name}")
         ax.set_aspect('equal')
 
-        short_names = get_short_names()
         plt.xticks(np.arange(0, len(short_names.values()), 1.0))
         plt.yticks(np.arange(0, len(short_names.values()), 1.0))
         ax.set_xticklabels(short_names.values())
@@ -188,15 +198,6 @@ for pc_name in os.listdir(result_path):
 
 
         #  Violin Plot
-        pos = []
-        data = []
-        i = 0
-        short_names = get_short_names()
-        for key in short_names:
-            pos.append(i)
-            data.append(np.array(results[key]))
-            i += 1
-
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
 
@@ -204,7 +205,7 @@ for pc_name in os.listdir(result_path):
                     showmeans=True, showextrema=True, showmedians=True)
 
         ax.set_xscale('log')
-        plt.yticks(np.arange(0, i, 1.0))
+        plt.yticks(np.arange(0, len(short_names.values()), 1.0))
         ax.set_yticklabels(short_names.values())
         ax.set_xlabel("Time per collision check in µs")
         ax.set_xlim(0.001, 8000)
