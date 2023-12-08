@@ -72,7 +72,7 @@ for pc_name in os.listdir(result_path):
         python_short_names = {}
         python_data = []
         for key in ["Pybullet", "distance3d Nesterov (Primitives with acceleration)", "distance3d Nesterov (Primitives)",
-                    "distance3d Nesterov (with acceleration)", "distance3d Nesterov", "distance3d Jolt (intersection)"
+                    "distance3d Nesterov (with acceleration)", "distance3d Nesterov", "distance3d Jolt (intersection)",
                     "distance3d Jolt (distance)", "distance3d Original"]:
             cpp_short_names[key] = short_names[key]
             cpp_data.append(results[key])
