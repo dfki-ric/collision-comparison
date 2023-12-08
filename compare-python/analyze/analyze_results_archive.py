@@ -129,20 +129,26 @@ for pc_name in os.listdir(result_path):
             for result_a in data:
                 d_results.append([])
 
+                j = 0
                 for result_b in data:
-                    statistics, _ = scipy.stats.ttest_ind(result_a, result_b)
-                    d = abs(statistics * np.sqrt((1 / len(result_a)) + (1 / len(result_b))))
+                    if j < i:
+                        statistics, _ = scipy.stats.ttest_ind(result_a, result_b)
+                        d = abs(statistics * np.sqrt((1 / len(result_a)) + (1 / len(result_b))))
 
-                    if d <= 0.3:
-                        d = 0.2
-                    elif d <= 0.6:
-                        d = 0.5
-                    elif d <= 0.9:
-                        d = 0.8
-                    elif d > 0.9:
-                        d = 1.0
+                        if d <= 0.3:
+                            d = 0.2
+                        elif d <= 0.6:
+                            d = 0.5
+                        elif d <= 0.9:
+                            d = 0.8
+                        elif d > 0.9:
+                            d = 1.0
 
-                    d_results[i].append(d)
+                        d_results[i].append(d)
+                    else:
+                        d_results[i].append(0)
+
+                    j += 1
 
                 i += 1
 
