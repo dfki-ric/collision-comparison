@@ -149,7 +149,7 @@ for pc_name in os.listdir(result_path):
             fig = plt.figure()
             ax = fig.add_subplot(1, 1, 1)
 
-            plt.imshow(d_results)
+            plt.imshow(d_results, cmap='Blues', interpolation='none')
             ax.set_title(f"{name} on {pc_name}")
             ax.set_aspect('equal')
 
