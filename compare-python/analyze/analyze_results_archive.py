@@ -47,6 +47,36 @@ for pc_name in os.listdir(result_path):
                 else:
                     results[key] = [result[key]]
 
+        pos = []
+        data = []
+        i = 0
+        short_names = get_short_names()
+        for key in short_names:
+            pos.append(i)
+            data.append(np.array(results[key]))
+            i += 1
+
+        cpp_short_names = {}
+        cpp_data = []
+        for key in ["FCL distance", "Jolt intersection", "libccd intersection", "Bullet distance"]:
+            cpp_short_names[key] = short_names[key]
+            cpp_data.append(results[key])
+
+        rust_short_names = {}
+        rust_data = []
+        for key in ["ncollide_distance", "collision-rs_nasterov_gjk", "collision-rs_distance_gjk",
+                    "collision-rs_intersect_gjk", "gjk-rs_nasterov_gjk"]:
+            cpp_short_names[key] = short_names[key]
+            cpp_data.append(results[key])
+
+        python_short_names = {}
+        python_data = []
+        for key in ["Pybullet", "distance3d Nesterov (Primitives with acceleration)", "distance3d Nesterov (Primitives)",
+                    "distance3d Nesterov (with acceleration)", "distance3d Nesterov", "distance3d Jolt (intersection)"
+                    "distance3d Jolt (distance)", "distance3d Original"]:
+            cpp_short_names[key] = short_names[key]
+            cpp_data.append(results[key])
+
         #  Mean
         results_mean = {key: results_mean.get(key, 0) / len(results[key])
                         for key in set(results_mean)}
@@ -59,31 +89,9 @@ for pc_name in os.listdir(result_path):
 
         print("\n-- Max Index: --")
         # Longest case per implementation
-        for key in results_mean:
+        for key in short_names:
             i = np.argmax(results[key])
             print(f"{key} : {i}")
-
-
-
-        cpp_results = [results["FCL distance"],
-                       results["Jolt intersection"],
-                       results["libccd intersection"],
-                       results["Bullet distance"]]
-
-        rust_results = [results["ncollide_distance"],
-                        results["collision-rs_nasterov_gjk"],
-                        results["collision-rs_distance_gjk"],
-                        results["collision-rs_intersect_gjk"],
-                        results["gjk-rs_nasterov_gjk"]]
-
-        python_results = [results["Pybullet"],
-                          results["distance3d Nesterov (Primitives with acceleration)"],
-                          results["distance3d Nesterov (Primitives)"],
-                          results["distance3d Nesterov (with acceleration)"],
-                          results["distance3d Nesterov"],
-                          results["distance3d Jolt (intersection)"],
-                          results["distance3d Jolt (distance)"],
-                          results["distance3d Original"]]
 
         # ANOVA
         print("\n-- ANOVA --")
@@ -93,17 +101,17 @@ for pc_name in os.listdir(result_path):
         print("p: ", p)
 
         print("ANOVA for every C/C++ case as its own group:")
-        F, p = scipy.stats.f_oneway(*cpp_results)
+        F, p = scipy.stats.f_oneway(*cpp_data)
         print("F: ", F)
         print("p: ", p)
 
         print("ANOVA for every Rust case as its own group:")
-        F, p = scipy.stats.f_oneway(*rust_results)
+        F, p = scipy.stats.f_oneway(*rust_data)
         print("F: ", F)
         print("p: ", p)
 
         print("ANOVA for every Python case as its own group:")
-        F, p = scipy.stats.f_oneway(*python_results)
+        F, p = scipy.stats.f_oneway(*python_data)
         print("F: ", F)
         print("p: ", p)
 
@@ -115,87 +123,57 @@ for pc_name in os.listdir(result_path):
         # T test
         # print("\n -- T Test --")
 
-        pos = []
-        data = []
-        i = 0
-        short_names = get_short_names()
-        for key in short_names:
-            pos.append(i)
-            data.append(np.array(results[key]))
-            i += 1
+        def show_data_ds(data, short_names, language):
+            d_results = []
+            i = 0
+            for result_a in data:
+                d_results.append([])
+
+                for result_b in data:
+                    statistics, _ = scipy.stats.ttest_ind(result_a, result_b)
+                    d = abs(statistics * np.sqrt((1 / len(result_a)) + (1 / len(result_b))))
+
+                    if d <= 0.3:
+                        d = 0.2
+                    elif d <= 0.6:
+                        d = 0.5
+                    elif d <= 0.9:
+                        d = 0.8
+                    elif d > 0.9:
+                        d = 1.0
+
+                    d_results[i].append(d)
+
+                i += 1
+
+            fig = plt.figure()
+            ax = fig.add_subplot(1, 1, 1)
+
+            plt.imshow(d_results)
+            ax.set_title(f"{name} on {pc_name}")
+            ax.set_aspect('equal')
+
+            plt.xticks(np.arange(0, len(short_names.values()), 1.0))
+            plt.yticks(np.arange(0, len(short_names.values()), 1.0))
+            ax.set_xticklabels(short_names.values())
+            ax.set_yticklabels(short_names.values())
+            plt.xticks(rotation=90, ha='right')
+
+            cax = fig.add_axes([0.12, 0.1, 0.78, 0.8])
+            cax.get_xaxis().set_visible(False)
+            cax.get_yaxis().set_visible(False)
+            cax.patch.set_alpha(0)
+            cax.set_frame_on(False)
+            plt.colorbar(orientation='vertical')
+
+            fig.tight_layout()
+            plt.show()
+            plt.savefig(f"{name}_on_{pc_name}_d_{language}.png")
 
 
-        d_results = []
-        d_results_capped = []
-        i = 0
-        for result_a in data:
-            d_results.append([])
-            d_results_capped.append([])
-
-            for result_b in data:
-                # print(key_a, " vs ", key_b)
-                statistics, p = scipy.stats.ttest_ind(result_a, result_b)
-                d = abs(statistics * np.sqrt((1 / len(result_a)) + (1 / len(result_b))))
-
-                # print("statistics: ", statistics)
-                # print("p: ", p)
-                # print("D with statistics as t: ", d)
-
-                d_results[i].append(d)
-                d_results_capped[i].append(min(d, 1.0))
-
-            i += 1
-
-
-        fig = plt.figure()
-        ax = fig.add_subplot(1, 1, 1)
-
-        plt.imshow(d_results)
-        ax.set_title(f"{name} on {pc_name}")
-        ax.set_aspect('equal')
-
-        plt.xticks(np.arange(0, len(short_names.values()), 1.0))
-        plt.yticks(np.arange(0, len(short_names.values()), 1.0))
-        ax.set_xticklabels(short_names.values())
-        ax.set_yticklabels(short_names.values())
-        plt.xticks(rotation=90, ha='right')
-
-        cax = fig.add_axes([0.12, 0.1, 0.78, 0.8])
-        cax.get_xaxis().set_visible(False)
-        cax.get_yaxis().set_visible(False)
-        cax.patch.set_alpha(0)
-        cax.set_frame_on(False)
-        plt.colorbar(orientation='vertical')
-
-        fig.tight_layout()
-        plt.show()
-        plt.savefig(f"{name}_on_{pc_name}_d.png")
-
-
-        fig = plt.figure()
-        ax = fig.add_subplot(1, 1, 1)
-
-        plt.imshow(d_results_capped)
-        ax.set_title(f"{name} on {pc_name}")
-        ax.set_aspect('equal')
-
-        plt.xticks(np.arange(0, len(short_names.values()), 1.0))
-        plt.yticks(np.arange(0, len(short_names.values()), 1.0))
-        ax.set_xticklabels(short_names.values())
-        ax.set_yticklabels(short_names.values())
-        plt.xticks(rotation=90, ha='right')
-
-        cax = fig.add_axes([0.12, 0.1, 0.78, 0.8])
-        cax.get_xaxis().set_visible(False)
-        cax.get_yaxis().set_visible(False)
-        cax.patch.set_alpha(0)
-        cax.set_frame_on(False)
-        plt.colorbar(orientation='vertical')
-
-        fig.tight_layout()
-        plt.show()
-        plt.savefig(f"{name}_on_{pc_name}_d_capped.png")
-
+        show_data_ds(cpp_data, cpp_short_names, "cpp")
+        show_data_ds(rust_data, rust_short_names, "rust")
+        show_data_ds(python_data, python_short_names, "python")
 
         #  Violin Plot
         fig = plt.figure()
