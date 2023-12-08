@@ -66,16 +66,16 @@ for pc_name in os.listdir(result_path):
         rust_data = []
         for key in ["ncollide_distance", "collision-rs_nasterov_gjk", "collision-rs_distance_gjk",
                     "collision-rs_intersect_gjk", "gjk-rs_nasterov_gjk"]:
-            cpp_short_names[key] = short_names[key]
-            cpp_data.append(results[key])
+            rust_short_names[key] = short_names[key]
+            rust_data.append(results[key])
 
         python_short_names = {}
         python_data = []
         for key in ["Pybullet", "distance3d Nesterov (Primitives with acceleration)", "distance3d Nesterov (Primitives)",
                     "distance3d Nesterov (with acceleration)", "distance3d Nesterov", "distance3d Jolt (intersection)",
                     "distance3d Jolt (distance)", "distance3d Original"]:
-            cpp_short_names[key] = short_names[key]
-            cpp_data.append(results[key])
+            python_short_names[key] = short_names[key]
+            python_data.append(results[key])
 
         #  Mean
         results_mean = {key: results_mean.get(key, 0) / len(results[key])
