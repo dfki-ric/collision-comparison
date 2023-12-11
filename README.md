@@ -56,6 +56,11 @@ To analyze the results archive run
 sh ./scripts/analyze/analyze_results.sh
 ```
 
+### Result Dataset 
+A zip Archive of all the recorded data is saved in the dfki Fileserver at the path: `Research/projects/ongoing/APRIL_FK_21170/documentation/experiments`
+
+
+
 ## Setup on Manjaro
 ```bash
 sudo pacman -Suy --noconfirm --needed \

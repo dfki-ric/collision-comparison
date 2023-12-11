@@ -72,8 +72,8 @@ for pc_name in os.listdir(result_path):
         python_short_names = {}
         python_data = []
         for key in ["Pybullet", "distance3d Nesterov (Primitives with acceleration)", "distance3d Nesterov (Primitives)",
-                    "distance3d Nesterov (with acceleration)", "distance3d Nesterov", "distance3d Jolt (intersection)",
-                    "distance3d Jolt (distance)", "distance3d Original"]:
+                    "distance3d Nesterov (with acceleration)", "distance3d Nesterov",
+                    "distance3d Jolt (distance)", "distance3d Jolt (intersection)", "distance3d Original"]:
             python_short_names[key] = short_names[key]
             python_data.append(results[key])
 
@@ -115,67 +115,23 @@ for pc_name in os.listdir(result_path):
         print("F: ", F)
         print("p: ", p)
 
-        # print("ANOVA for all cases from one language as one group:")
-        # F, p = scipy.stats.f_oneway(cpp_results, rust_results, python_results)
-        # print("F: ", F)
-        # print("p: ", p)
-
-        # T test
-        # print("\n -- T Test --")
-
         def show_data_ds(data, short_names, language):
-            d_results = []
+
+            print(list(short_names.values()))
             i = 0
             for result_a in data:
-                d_results.append([])
+                print(list(short_names.values())[i], end='')
 
                 j = 0
                 for result_b in data:
-                    if j < i:
-                        statistics, _ = scipy.stats.ttest_ind(result_a, result_b)
-                        d = abs(statistics * np.sqrt((1 / len(result_a)) + (1 / len(result_b))))
-
-                        if d <= 0.3:
-                            d = 0.2
-                        elif d <= 0.6:
-                            d = 0.5
-                        elif d <= 0.9:
-                            d = 0.8
-                        elif d > 0.9:
-                            d = 1.0
-
-                        d_results[i].append(d)
-                    else:
-                        d_results[i].append(0)
-
+                    statistics, _ = scipy.stats.ttest_ind(result_a, result_b)
+                    d = abs(statistics * np.sqrt((1 / len(result_a)) + (1 / len(result_b))))
+                    print(f" & {d:.2f}", end='')
                     j += 1
 
+                print(" \\\\")
+
                 i += 1
-
-            fig = plt.figure()
-            ax = fig.add_subplot(1, 1, 1)
-
-            plt.imshow(d_results, cmap='Blues', interpolation='none')
-            ax.set_title(f"{name} on {pc_name}")
-            ax.set_aspect('equal')
-
-            plt.xticks(np.arange(0, len(short_names.values()), 1.0))
-            plt.yticks(np.arange(0, len(short_names.values()), 1.0))
-            ax.set_xticklabels(short_names.values())
-            ax.set_yticklabels(short_names.values())
-            plt.xticks(rotation=90, ha='right')
-
-            cax = fig.add_axes([0.12, 0.1, 0.78, 0.8])
-            cax.get_xaxis().set_visible(False)
-            cax.get_yaxis().set_visible(False)
-            cax.patch.set_alpha(0)
-            cax.set_frame_on(False)
-            plt.colorbar(orientation='vertical')
-
-            fig.tight_layout()
-            plt.show()
-            plt.savefig(f"{name}_on_{pc_name}_d_{language}.png")
-
 
         show_data_ds(cpp_data, cpp_short_names, "cpp")
         show_data_ds(rust_data, rust_short_names, "rust")
