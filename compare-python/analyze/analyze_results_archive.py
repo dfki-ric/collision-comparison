@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 import scipy
 
 from src import get_cpp_result, get_rust_results, get_python_results
-from src.analyze_results import get_short_names
+from src.analyze_results import get_short_names, get_short_pc_names
 
 # Einheit micro sekunden (µs)
 
@@ -77,12 +77,15 @@ for pc_name in os.listdir(result_path):
             python_short_names[key] = short_names[key]
             python_data.append(results[key])
 
+        short_pc_names = get_short_pc_names()
+
+
         #  Mean
         results_mean = {key: results_mean.get(key, 0) / len(results[key])
                         for key in set(results_mean)}
 
         results_mean = dict(sorted(results_mean.items(), key=lambda item: item[1]))
-        print("---", name, "on", pc_name, "---")
+        print("---", name, "on", short_pc_names[pc_name], "---")
         print("\n -- Mean: --")
         for key in results_mean:
             print(key, ':', "%.4f µs" % results_mean[key])
@@ -157,10 +160,10 @@ for pc_name in os.listdir(result_path):
             top=False,
             labelbottom=True)
 
-        ax.set_title(f"{name} on {pc_name}")
+        ax.set_title(f"{name} on {short_pc_names[pc_name]}")
         fig.tight_layout()
         plt.show()
-        plt.savefig(f"{name}_on_{pc_name}_violin.png")
+        plt.savefig(f"{name}_on_{short_pc_names[pc_name]}_violin.png")
 
 
 

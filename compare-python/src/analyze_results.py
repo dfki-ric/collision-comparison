@@ -74,3 +74,10 @@ def get_short_names():
         "distance3d Jolt (distance)": "distance3d jolt dist",
         "distance3d Original": "distance3d org",
     }
+
+def get_short_pc_names():
+    return {
+        "UPLINX-4-U": "A",
+        "TEAM7-STUD-1B-U": "Jolt",
+        "Alexanders-PC": "libccd",
+    }
