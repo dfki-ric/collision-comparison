@@ -77,7 +77,7 @@ def get_short_names():
 
 def get_short_pc_names():
     return {
-        "UPLINX-4-U": "A",
-        "TEAM7-STUD-1B-U": "Jolt",
-        "Alexanders-PC": "libccd",
+        "UPLINX-4-U": "PC1",
+        "TEAM7-STUD-1B-U": "PC2",
+        "Alexanders-PC": "PC3",
     }
