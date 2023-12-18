@@ -66,9 +66,9 @@ def get_short_names():
         "gjk-rs_nasterov_gjk": "gjk-rs",
         "Pybullet": "pybullet",
 
-        "distance3d Nesterov (Primitives with acceleration)": "distance3d tuple numba",
+        "distance3d Nesterov (Primitives with acceleration)": "distance3d tuple jit",
         "distance3d Nesterov (Primitives)": "distance3d tuple",
-        "distance3d Nesterov (with acceleration)": "distance3d nest numba",
+        "distance3d Nesterov (with acceleration)": "distance3d nest jit",
         "distance3d Nesterov": "distance3d nest",
         "distance3d Jolt (intersection)": "distance3d jolt inter",
         "distance3d Jolt (distance)": "distance3d jolt dist",
