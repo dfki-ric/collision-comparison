@@ -59,18 +59,18 @@ def get_short_names():
         "Bullet distance": "Bullet",
 
         "ncollide_distance": "ncollide",
-        "collision-rs_nasterov_gjk": "collision-rs 3",
-        "collision-rs_distance_gjk": "collision-rs 2",
-        "collision-rs_intersect_gjk": "collision-rs 1",
+        "collision-rs_nasterov_gjk": "collision-rs nest",
+        "collision-rs_distance_gjk": "collision-rs dist",
+        "collision-rs_intersect_gjk": "collision-rs inter",
 
         "gjk-rs_nasterov_gjk": "gjk-rs",
         "Pybullet": "pybullet",
 
-        "distance3d Nesterov (Primitives with acceleration)": "distance3d 7",
-        "distance3d Nesterov (Primitives)": "distance3d 6",
-        "distance3d Nesterov (with acceleration)": "distance3d 5",
-        "distance3d Nesterov": "distance3d 4",
-        "distance3d Jolt (intersection)": "distance3d 2",
-        "distance3d Jolt (distance)": "distance3d 3",
-        "distance3d Original": "distance3d 1",
+        "distance3d Nesterov (Primitives with acceleration)": "distance3d tuple numba",
+        "distance3d Nesterov (Primitives)": "distance3d tuple",
+        "distance3d Nesterov (with acceleration)": "distance3d nest numba",
+        "distance3d Nesterov": "distance3d nest",
+        "distance3d Jolt (intersection)": "distance3d jolt inter",
+        "distance3d Jolt (distance)": "distance3d jolt dist",
+        "distance3d Original": "distance3d org",
     }
