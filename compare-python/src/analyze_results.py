@@ -80,4 +80,5 @@ def get_short_pc_names():
         "UPLINX-4-U": "PC1",
         "TEAM7-STUD-1B-U": "PC2",
         "Alexanders-PC": "PC3",
+        "JoltTest": "PC4",
     }
