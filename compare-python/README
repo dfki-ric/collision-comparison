@@ -1,0 +1,7 @@
+
+## Structure 
+- analyze -> Run test and analysis on the models and results.
+- compare -> benchmarking code executed when running benchmark
+- debug -> show the models, strip the results-archive
+- test_file -> create test data
+- src -> helper functions

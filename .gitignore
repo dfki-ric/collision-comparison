@@ -11,6 +11,8 @@ compare-cpp/build_release/
 data/*
 !data/urdfs
 !data/current.json
+!data/uc1_ur10_collision.zip
+!data/uc6_ur10_collision.zip
 
 venv/*
 results/*
