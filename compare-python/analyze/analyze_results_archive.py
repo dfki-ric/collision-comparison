@@ -96,6 +96,12 @@ for pc_name in os.listdir(result_path):
             i = np.argmax(results[key])
             print(f"{key} : {i}")
 
+        # Normal test
+        print(f"\n-- Normal Test --")
+        for key in results:
+            statistic, p = scipy.stats.normaltest(results[key])
+            print(f"{short_names[key]}: {p:.2f}")
+
         # ANOVA
         print("\n-- ANOVA --")
         print("ANOVA for every case as its own group:")
@@ -139,6 +145,10 @@ for pc_name in os.listdir(result_path):
         show_data_ds(cpp_data, cpp_short_names, "cpp")
         show_data_ds(rust_data, rust_short_names, "rust")
         show_data_ds(python_data, python_short_names, "python")
+
+
+
+
 
         #  Violin Plot
         fig = plt.figure()

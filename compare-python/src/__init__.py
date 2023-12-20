@@ -25,6 +25,3 @@ def set_random_joints(tm):
         limits = tm.get_joint_limits(joint)
         joint_pos = round(random.uniform(limits[0], limits[1]), 2)
         tm.set_joint(joint, joint_pos)
-
-
-
