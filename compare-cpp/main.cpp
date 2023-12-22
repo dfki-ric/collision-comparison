@@ -24,7 +24,6 @@ bool is_distance_correct(float test_dist, float base_dist){
 
 void gen(std::string const& typeName, char const* mustacheTemplate, ankerl::nanobench::Bench const& bench) {
 
-
 }
 
 int main(){
