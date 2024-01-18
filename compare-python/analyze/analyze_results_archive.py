@@ -3,6 +3,7 @@ import os
 import numpy as np
 from matplotlib import pyplot as plt
 import scipy
+from scipy import stats
 
 from src import get_cpp_result, get_rust_results, get_python_results
 from src.analyze_results import get_short_names, get_short_pc_names
@@ -11,6 +12,7 @@ from src.analyze_results import get_short_names, get_short_pc_names
 
 result_path = "../results-archive"
 data_path = "../data"
+significance_alpha = 0.05
 
 for pc_name in os.listdir(result_path):
 
@@ -99,30 +101,8 @@ for pc_name in os.listdir(result_path):
         # Normal test
         print(f"\n-- Normal Test --")
         for key in results:
-            statistic, p = scipy.stats.normaltest(results[key])
+            statistic, p = stats.normaltest(results[key])
             print(f"{short_names[key]}: {p:.2f}")
-
-        # ANOVA
-        print("\n-- ANOVA --")
-        print("ANOVA for every case as its own group:")
-        F, p = scipy.stats.f_oneway(*results.values())
-        print("F: ", F)
-        print("p: ", p)
-
-        print("ANOVA for every C/C++ case as its own group:")
-        F, p = scipy.stats.f_oneway(*cpp_data)
-        print("F: ", F)
-        print("p: ", p)
-
-        print("ANOVA for every Rust case as its own group:")
-        F, p = scipy.stats.f_oneway(*rust_data)
-        print("F: ", F)
-        print("p: ", p)
-
-        print("ANOVA for every Python case as its own group:")
-        F, p = scipy.stats.f_oneway(*python_data)
-        print("F: ", F)
-        print("p: ", p)
 
         def show_data_ds(data, short_names, language):
 
@@ -133,9 +113,13 @@ for pc_name in os.listdir(result_path):
 
                 j = 0
                 for result_b in data:
-                    statistics, _ = scipy.stats.ttest_ind(result_a, result_b)
-                    d = abs(statistics * np.sqrt((1 / len(result_a)) + (1 / len(result_b))))
-                    print(f" & {d:.2f}", end='')
+                    U1, p = scipy.stats.mannwhitneyu(result_a, result_b, alternative="less")
+                    U2 = len(result_a) * len(result_b) - U1
+                    eff_size = U2 / (len(result_a) * len(result_b))  # TODO not exactly sure why we need U2
+                    if p > significance_alpha:
+                        print(" & ns", end='')
+                    else:
+                        print(f" & {eff_size:.2f}", end='')
                     j += 1
 
                 print(" \\\\")
@@ -145,10 +129,6 @@ for pc_name in os.listdir(result_path):
         show_data_ds(cpp_data, cpp_short_names, "cpp")
         show_data_ds(rust_data, rust_short_names, "rust")
         show_data_ds(python_data, python_short_names, "python")
-
-
-
-
 
         #  Violin Plot
         fig = plt.figure()
