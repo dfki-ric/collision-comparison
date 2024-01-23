@@ -114,8 +114,7 @@ for pc_name in os.listdir(result_path):
                 j = 0
                 for result_b in data:
                     U1, p = scipy.stats.mannwhitneyu(result_a, result_b, alternative="less")
-                    U2 = len(result_a) * len(result_b) - U1
-                    eff_size = U2 / (len(result_a) * len(result_b))  # TODO not exactly sure why we need U2
+                    eff_size = U1 / (len(result_a) * len(result_b))
                     if p > significance_alpha:
                         print(" & ns", end='')
                     else:
