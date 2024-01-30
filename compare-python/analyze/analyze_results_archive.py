@@ -133,8 +133,8 @@ for pc_name in os.listdir(result_path):
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
 
-        ax.violinplot(data, pos, points=10000, vert=False, widths=1,
-                    showmeans=True, showextrema=True, showmedians=True)
+        ax.violinplot(data, pos, vert=False, widths=1,
+                    showmeans=False, showextrema=True, showmedians=True)
 
         ax.set_xscale('log')
         plt.yticks(np.arange(0, len(short_names.values()), 1.0))
@@ -151,8 +151,8 @@ for pc_name in os.listdir(result_path):
 
         ax.set_title(f"{name} on {short_pc_names[pc_name]}")
         fig.tight_layout()
-        plt.show()
-        plt.savefig(f"{name}_on_{short_pc_names[pc_name]}_violin.png")
+        plt.savefig(f"{name}_on_{short_pc_names[pc_name]}_violin.pdf")
+        #plt.show()
 
 
 
