@@ -47,13 +47,13 @@ Results of hypothesis testing for time per collision test in **UC1 with UR10 col
 
 #### Python Group
 
-| | *pybullet* | d3d tuple jit | d3d tuple | d3d nest jit | d3d nest | d3d jolt dist | d3d jolt inter | d3d org |
+| | *pybullet* | d3d tuple acc | d3d tuple no acc | d3d nest acc | d3d nest no acc | d3d jolt dist | d3d jolt inter | d3d org |
 |-|-|-|-|-|-|-|-|-|
 | *pybullet* |  | 0.02 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
-| d3d tuple jit | ns |  | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
-| d3d tuple | ns | ns |  | 0.46 | 0.27 | 0.41 | ns | 0.43 |
-| d3d nest jit | ns | ns | ns |  | 0.12 | 0.46 | ns | 0.34 |
-| d3d nest | ns | ns | ns | ns |  | ns | ns | ns |
+| d3d tuple acc | ns |  | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| d3d tuple no acc | ns | ns |  | 0.46 | 0.27 | 0.41 | ns | 0.43 |
+| d3d nest acc | ns | ns | ns |  | 0.12 | 0.46 | ns | 0.34 |
+| d3d nest no acc | ns | ns | ns | ns |  | ns | ns | ns |
 | d3d jolt dist | ns | ns | ns | ns | 0.31 |  | ns | 0.49 |
 | d3d jolt inter | ns | ns | 0.35 | 0.31 | 0.14 | 0.27 |  | 0.26 |
 | d3d org | ns | ns | ns | ns | 0.19 | ns | ns |  |
@@ -83,13 +83,13 @@ Results of hypothesis testing for time per collision test in **UC6 with UR10 col
 
 #### Python Group
 
-| | *pybullet* | d3d tuple jit | d3d tuple | d3d nest jit | d3d nest | d3d jolt dist | d3d jolt inter | d3d org |
+| | *pybullet* | d3d tuple acc | d3d tuple no acc | d3d nest acc | d3d nest no acc | d3d jolt dist | d3d jolt inter | d3d org |
 |-|-|-|-|-|-|-|-|-|
 | *pybullet* |  | 0.14 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
-| d3d tuple jit | ns |  | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
-| d3d tuple | ns | ns |  | ns | 0.42 | 0.48 | ns | ns |
-| d3d nest jit | ns | ns | 0.20 |  | 0.05 | 0.17 | 0.28 | 0.40 |
-| d3d nest | ns | ns | ns | ns |  | ns | ns | ns |
+| d3d tuple acc | ns |  | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| d3d tuple no acc | ns | ns |  | ns | 0.42 | 0.48 | ns | ns |
+| d3d nest acc | ns | ns | 0.20 |  | 0.05 | 0.17 | 0.28 | 0.40 |
+| d3d nest no acc | ns | ns | ns | ns |  | ns | ns | ns |
 | d3d jolt dist | ns | ns | ns | ns | 0.42 |  | ns | ns |
 | d3d jolt inter | ns | ns | 0.37 | ns | 0.28 | 0.36 |  | ns |
 | d3d org | ns | ns | 0.20 | ns | 0.04 | 0.18 | 0.29 |  |
