@@ -1,0 +1,372 @@
+<robot name="uc2_osai" version="1.0">
+  <joint name="control_box_stand_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 -1.57080" xyz="2.30000 0.00000 1.07000"/>
+    <parent link="world"/>
+    <child link="link_control_box_stand"/>
+  </joint>
+  <joint name="link_Boxes" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="0.16200 0.04500 0.00000"/>
+    <parent link="world"/>
+    <child link="link_Boxes"/>
+  </joint>
+  <joint name="link_Conveyor" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="0.15500 0.00000 0.00000"/>
+    <parent link="world"/>
+    <child link="link_Conveyor"/>
+  </joint>
+  <joint name="link_Monitor" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="0.98000 -0.66000 1.04000"/>
+    <parent link="world"/>
+    <child link="link_Monitor"/>
+  </joint>
+  <joint name="link_emergency_box_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 -0.00000" xyz="-0.08709 -0.27214 0.78059"/>
+    <parent link="link_control_box_stand"/>
+    <child link="link_emergency_box"/>
+  </joint>
+  <joint name="link_fixture" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="0.15800 0.04650 0.00000"/>
+    <parent link="world"/>
+    <child link="link_fixture"/>
+  </joint>
+  <joint name="link_fixture_slider1" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="0.12209 -0.35552 0.99894"/>
+    <parent link="link_fixture"/>
+    <child link="link_fixture_slider_1"/>
+  </joint>
+  <joint name="link_fixture_slider2" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="0.16403 -0.35563 0.99894"/>
+    <parent link="link_fixture"/>
+    <child link="link_fixture_slider_2"/>
+  </joint>
+  <joint name="link_inspection_tool" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="0.30000 -0.68000 0.83000"/>
+    <parent link="world"/>
+    <child link="link_inspection_tool"/>
+  </joint>
+  <joint name="link_pallet" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="0.16000 0.04800 0.00500"/>
+    <parent link="world"/>
+    <child link="link_pallet"/>
+  </joint>
+  <joint name="link_tripod_1_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-0.94000 -0.95000 0.00000"/>
+    <parent link="world"/>
+    <child link="link_tripod_1"/>
+  </joint>
+  <joint name="link_tripod_2_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-0.51000 -0.74000 0.00000"/>
+    <parent link="world"/>
+    <child link="link_tripod_2"/>
+  </joint>
+  <joint name="robot_platform_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-0.03800 0.17500 0.71500"/>
+    <parent link="world"/>
+    <child link="robot_platform"/>
+  </joint>
+  <link name="link_Boxes">
+    <collision name="Boxes2">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.01006 0.68950 0.80000"/>
+      <geometry>
+        <box size="0.03989 0.44000 0.16125"/>
+      </geometry>
+    </collision>
+    <collision name="Boxes3">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.28465 0.48950 0.80000"/>
+      <geometry>
+        <box size="0.54952 0.04000 0.16125"/>
+      </geometry>
+    </collision>
+    <collision name="Boxes4">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.57970 0.68950 0.80000"/>
+      <geometry>
+        <box size="0.04060 0.44000 0.16125"/>
+      </geometry>
+    </collision>
+    <collision name="Boxes5">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.28465 0.88913 0.80000"/>
+      <geometry>
+        <box size="0.54952 0.04073 0.16125"/>
+      </geometry>
+    </collision>
+    <collision name="Boxes6">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.28465 0.68909 0.74000"/>
+      <geometry>
+        <box size="0.54952 0.35969 0.04811"/>
+      </geometry>
+    </collision>
+    <collision name="Boxes7">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.28550 0.68900 0.82000"/>
+      <geometry>
+        <box size="0.04200 0.36000 0.12000"/>
+      </geometry>
+    </collision>
+    <visual name="boxes">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.07000 0.02000 0.00000"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc2_osai/meshes/stl/boxes.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="link_Conveyor">
+    <collision name="Conveyor1">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-1.08100 0.16725 0.35500"/>
+      <geometry>
+        <box size="0.56200 1.70929 0.79300"/>
+      </geometry>
+    </collision>
+    <collision name="Conveyor2">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-1.28000 0.16000 0.77500"/>
+      <geometry>
+        <box size="0.09000 1.66000 0.06000"/>
+      </geometry>
+    </collision>
+    <collision name="Conveyor3">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.89500 0.16000 0.77500"/>
+      <geometry>
+        <box size="0.09000 1.66000 0.06000"/>
+      </geometry>
+    </collision>
+    <collision name="Conveyor4">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-1.08750 -0.63000 0.77500"/>
+      <geometry>
+        <box size="0.29500 0.08000 0.06000"/>
+      </geometry>
+    </collision>
+    <visual name="conveyor_belt">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc2_osai/meshes/stl/conveyor_belt.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="link_Monitor">
+    <collision name="Monitor1">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 -0.06000 0.18000"/>
+      <geometry>
+        <box size="0.50000 0.40000 0.48000"/>
+      </geometry>
+    </collision>
+    <collision name="Monitor2">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 -0.12000 -0.26500"/>
+      <geometry>
+        <box size="0.18000 0.14000 0.42000"/>
+      </geometry>
+    </collision>
+    <collision name="Monitor3">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.08000 -0.12000 -0.52000"/>
+      <geometry>
+        <box size="0.34000 0.14000 0.10000"/>
+      </geometry>
+    </collision>
+    <collision name="monitor_vertical_plane">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.15000 0.47000 0.88000"/>
+      <geometry>
+        <box size="0.20000 3.52000 2.12000"/>
+      </geometry>
+    </collision>
+    <visual name="computer">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-1.05000 0.36000 -1.04000"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc2_osai/meshes/stl/computer.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="link_control_box_stand">
+    <collision name="control_box_stand_collision">
+      <origin rpy="0.00000 0.00000 -0.00000" xyz="-0.34709 -0.35000 -0.54860"/>
+      <geometry>
+        <box size="0.70000 0.70000 1.10000"/>
+      </geometry>
+    </collision>
+    <visual name="control_box_stand_visual">
+      <origin rpy="0.00000 0.00000 -0.00000" xyz="-0.34709 -0.35000 -0.54860"/>
+      <geometry>
+        <box size="0.70000 0.70000 1.10000"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="link_emergency_box">
+    <collision name="emergency_box_collision">
+      <origin rpy="0.00000 0.00000 -0.00000" xyz="-0.30000 -0.15786 -0.21919"/>
+      <geometry>
+        <box size="0.60000 0.32000 1.16000"/>
+      </geometry>
+    </collision>
+    <visual name="emergency_box">
+      <origin rpy="1.57080 0.00000 0.00000" xyz="-0.30000 0.00214 -0.39919"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc2_osai/meshes/stl/emergency_box.001.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="link_fixture">
+    <collision name="Fixture1">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.15300 -0.35550 0.86500"/>
+      <geometry>
+        <box size="0.10000 0.08500 0.21580"/>
+      </geometry>
+    </collision>
+    <collision name="FixturePin2">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.24000 -0.37050 0.98550"/>
+      <geometry>
+        <cylinder radius="0.00400" length="0.02700"/>
+      </geometry>
+    </collision>
+    <!-- Remove collision due to insert failure -->
+    <!-- <collision name="FixturePin3">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.24000 -0.34050 0.98550"/>
+      <geometry>
+        <cylinder radius="0.00400" length="0.02700"/>
+      </geometry>
+    </collision> -->
+    <!-- Remove collision due to insert failure -->
+    <collision name="FixturePin5">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.06800 -0.37050 0.98550"/>
+      <geometry>
+        <cylinder radius="0.00400" length="0.02700"/>
+      </geometry>
+    </collision>
+    <collision name="FixturePin6">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.06800 -0.34050 0.98550"/>
+      <geometry>
+        <cylinder radius="0.00400" length="0.02700"/>
+      </geometry>
+    </collision>
+    <visual name="fixture">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.16100 -0.04500 0.00000"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc2_osai/meshes/stl/fixture.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="link_fixture_slider_1">
+    <collision name="FixtureSlider1_1">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.00009 -0.00008 -0.00494"/>
+      <geometry>
+        <box size="0.03000 0.08500 0.01000"/>
+      </geometry>
+    </collision>
+    <collision name="FixtureSlider1_2">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.02409 0.03652 -0.00494"/>
+      <geometry>
+        <box size="0.01800 0.01160 0.01000"/>
+      </geometry>
+    </collision>
+    <collision name="FixtureSlider1_Pin1">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00041 0.03252 -0.00844"/>
+      <geometry>
+        <cylinder radius="0.00500" length="0.02700"/>
+      </geometry>
+    </collision>
+    <collision name="FixtureSlider1_Pin2">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00041 -0.03198 -0.00844"/>
+      <geometry>
+        <cylinder radius="0.00500" length="0.02700"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="link_fixture_slider_2">
+    <collision name="FixtureSlider2_1">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.00003 0.00003 -0.00494"/>
+      <geometry>
+        <box size="0.03200 0.08500 0.01000"/>
+      </geometry>
+    </collision>
+    <collision name="FixtureSlider2_2">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.02497 0.03663 -0.00494"/>
+      <geometry>
+        <box size="0.01800 0.01160 0.01000"/>
+      </geometry>
+    </collision>
+    <collision name="FixtureSlider2_Pin1">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.00153 0.03263 -0.00844"/>
+      <geometry>
+        <cylinder radius="0.00500" length="0.02700"/>
+      </geometry>
+    </collision>
+    <collision name="FixtureSlider2_Pin2">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.00153 -0.03187 -0.00844"/>
+      <geometry>
+        <cylinder radius="0.00500" length="0.02700"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="link_inspection_tool">
+    <collision name="InspectionTool1">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.00000 -0.02720 0.06000"/>
+      <geometry>
+        <box size="0.19040 0.21760 0.28000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="link_pallet">
+    <collision name="Pallet0">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.54500 0.18450 0.78600"/>
+      <geometry>
+        <box size="0.44000 0.59280 0.14200"/>
+      </geometry>
+    </collision>
+    <visual name="pallet">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.04500 -0.21000 0.00000"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc2_osai/meshes/stl/pallet.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="link_tripod_1">
+    <collision name="Tripod1">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 1.10000"/>
+      <geometry>
+        <box size="0.40000 0.40000 2.20000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="link_tripod_2">
+    <collision name="Tripod2">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 1.10000"/>
+      <geometry>
+        <box size="0.40000 0.44000 2.20000"/>
+      </geometry>
+    </collision>
+    <collision name="Tripod2_horizontal_bar">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.02641 0.20550 1.90836"/>
+      <geometry>
+        <box size="0.20000 0.20000 0.20000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="robot_platform"/>
+  <link name="world">
+    <collision name="Table1">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.15000 0.20250 0.33500"/>
+      <geometry>
+        <box size="1.60000 1.58600 0.76000"/>
+      </geometry>
+    </collision>
+    <collision name="table_plane_1">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.24000 -0.27000 0.75000"/>
+      <geometry>
+        <box size="1.76000 0.64000 0.06000"/>
+      </geometry>
+    </collision>
+    <collision name="table_plane_2">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.61000 0.64000 0.75000"/>
+      <geometry>
+        <box size="0.82000 0.70000 0.06000"/>
+      </geometry>
+    </collision>
+    <collision name="table_plane_3">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.20000 0.40000 0.75000"/>
+      <geometry>
+        <box size="0.80000 0.22000 0.06000"/>
+      </geometry>
+    </collision>
+    <visual name="table">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.15000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc2_osai/meshes/stl/table.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+</robot>
