@@ -103,8 +103,9 @@ Results of hypothesis testing for time per collision test in **UC6 with UR10 col
 
 ## Setup
 
-### Unzip test Data
-Unzip the data in ./data Follow the insurctions in the [README](./data/README.md)
+### Preparation
+* Unzip the data in `./data/`
+* Create folder `./results/`
 
 ### Build and Run Docker
 ```bash
