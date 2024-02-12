@@ -16,25 +16,24 @@ significance_alpha = 0.05
 
 for pc_name in os.listdir(result_path):
 
-    for name in os.listdir(f"{result_path}/{pc_name}/"):
+    for uc_folder_name in os.listdir(f"{result_path}/{pc_name}/"):
 
         results = {}
         results_mean = None
-        for dir in os.listdir(f"{result_path}/{pc_name}/{name}/"):
-
-            path = f"{result_path}/{pc_name}/{name}/{dir}/"
+        for test_dir in os.listdir(f"{result_path}/{pc_name}/{uc_folder_name}/"):
+            path = f"{result_path}/{pc_name}/{uc_folder_name}/{test_dir}/"
             result = {}  # in mirco sekunden
             result.update(get_cpp_result(path))
             result.update(get_rust_results(path))
             result.update(get_python_results(path))
 
-            path = f"{data_path}/{name}/{name}_{dir}.json"
+            path = f"{data_path}/{uc_folder_name}/{uc_folder_name}_{test_dir}.json"
             file = open(path, "r")
             json_data = json.load(file)
-            case_amount = len(json_data)
+            n_cases_per_test = len(json_data)
 
             for key in result:
-                result[key] /= case_amount
+                result[key] /= n_cases_per_test
 
             if results_mean == None:
                 results_mean = result
@@ -43,7 +42,6 @@ for pc_name in os.listdir(result_path):
                                 for key in set(results_mean) | set(result)}
 
             for key in result:
-
                 if key in results:
                     results[key].append(result[key])
                 else:
@@ -87,7 +85,7 @@ for pc_name in os.listdir(result_path):
                         for key in set(results_mean)}
 
         results_mean = dict(sorted(results_mean.items(), key=lambda item: item[1]))
-        print("---", name, "on", short_pc_names[pc_name], "---")
+        print("---", uc_folder_name, "on", short_pc_names[pc_name], "---")
         print("\n -- Mean: --")
         for key in results_mean:
             print(key, ':', "%.4f µs" % results_mean[key])
@@ -149,9 +147,9 @@ for pc_name in os.listdir(result_path):
             top=False,
             labelbottom=True)
 
-        ax.set_title(f"{name} on {short_pc_names[pc_name]}")
+        ax.set_title(f"{uc_folder_name} on {short_pc_names[pc_name]}")
         fig.tight_layout()
-        plt.savefig(f"{name}_on_{short_pc_names[pc_name]}_violin.pdf")
+        plt.savefig(f"{uc_folder_name}_on_{short_pc_names[pc_name]}_violin.pdf")
         #plt.show()
 
 
