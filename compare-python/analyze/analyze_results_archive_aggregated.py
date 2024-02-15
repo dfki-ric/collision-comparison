@@ -4,16 +4,19 @@ import numpy as np
 from matplotlib import pyplot as plt
 import scipy
 from scipy import stats
+import seaborn as sns
+import pandas as pd
 
 from src import get_cpp_result, get_rust_results, get_python_results
 from src.analyze_results import get_short_names, get_short_pc_names
 
-# Einheit micro sekunden (µs)
 
 result_path = "../results-archive"
 data_path = "../data"
 significance_alpha = 0.05
 
+data = {"computer": [], "implementation": [], "runtime": []}
+short_pc_names = get_short_pc_names()
 for pc_name in os.listdir(result_path):
     results = {}
     results_mean = None
@@ -45,14 +48,11 @@ for pc_name in os.listdir(result_path):
                 else:
                     results[key] = [result[key]]
 
-    pos = []
-    data = []
-    i = 0
     short_names = get_short_names()
     for key in short_names:
-        pos.append(i)
-        data.append(np.array(results[key]))
-        i += 1
+        data["computer"].extend([short_pc_names[pc_name]] * len(results[key]))
+        data["implementation"].extend([key] * len(results[key]))
+        data["runtime"].extend(results[key])
 
     cpp_short_names = {}
     cpp_data = []
@@ -74,8 +74,6 @@ for pc_name in os.listdir(result_path):
                 "distance3d Jolt (distance)", "distance3d Jolt (intersection)", "distance3d Original"]:
         python_short_names[key] = short_names[key]
         python_data.append(results[key])
-
-    short_pc_names = get_short_pc_names()
 
     #  Mean
     results_mean = {key: results_mean.get(key, 0) / len(results[key])
@@ -124,30 +122,31 @@ for pc_name in os.listdir(result_path):
     show_data_ds(rust_data, rust_short_names, "rust")
     show_data_ds(python_data, python_short_names, "python")
 
-    #  Violin Plot
-    fig = plt.figure()
-    ax = fig.add_subplot(1, 1, 1)
+data = pd.DataFrame(data)
+print(data.groupby("implementation").describe())
+#  Violin Plot
+fig = plt.figure(figsize=(6, 9))
 
-    ax.violinplot(data, pos, vert=False, widths=1,
-                showmeans=False, showextrema=True, showmedians=True)
+ax = plt.subplot(111)
+sns.violinplot(ax=ax, data=data, x="runtime", y="implementation", hue="computer",
+               split=True, inner="quart", density_norm="count", log_scale=True, cut=0)
 
-    ax.set_xscale('log')
-    plt.yticks(np.arange(0, len(short_names.values()), 1.0))
-    ax.set_yticklabels(short_names.values())
-    ax.set_xlabel("Time per collision check in µs")
-    ax.set_xlim(0.001, 8000)
+plt.yticks(np.arange(0, len(short_names.values()), 1.0))
+ax.set_yticklabels(short_names.values())
+ax.set_xlabel("Time per collision check [µs]")
+ax.set_xlim((1e-3, 1e4))
+ax.set_ylabel(None)
 
-    plt.tick_params(
-        axis='x',
-        which='both',
-        bottom=False,
-        top=False,
-        labelbottom=True)
+plt.tick_params(
+    axis='x',
+    which='both',
+    bottom=False,
+    top=False,
+    labelbottom=True)
 
-    ax.set_title(f"{short_pc_names[pc_name]}")
-    fig.tight_layout()
-    plt.savefig(f"{short_pc_names[pc_name]}_violin.pdf")
-    #plt.show()
+fig.tight_layout()
+plt.savefig(f"violin.pdf")
+#plt.show()
 
 
 
