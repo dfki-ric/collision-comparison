@@ -106,12 +106,15 @@ for pc_name in os.listdir(result_path):
 
             j = 0
             for result_b in data:
-                U1, p = scipy.stats.mannwhitneyu(result_a, result_b, alternative="less")
-                eff_size = U1 / (len(result_a) * len(result_b))
-                if p > significance_alpha:
-                    print(" & ns", end='')
+                if i == j:
+                    print(" & ", end='')
                 else:
-                    print(f" & {eff_size:.2f}", end='')
+                    U1, p = scipy.stats.mannwhitneyu(result_a, result_b, alternative="less")
+                    eff_size = U1 / (len(result_a) * len(result_b))
+                    if p > significance_alpha:
+                        print(" & ns", end='')
+                    else:
+                        print(f" & {eff_size:.2f}", end='')
                 j += 1
 
             print(" \\\\")
