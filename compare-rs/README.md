@@ -1,4 +1,4 @@
-# compare-rust 
+# compare-rs 
 
 This project conatins all the rust code used for benchmarking the rust libaries.
 
