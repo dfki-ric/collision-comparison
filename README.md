@@ -29,7 +29,7 @@ Statistical tests show that differences between the most commonly used C++ and R
 ## Setup
 
 ### Unzip test Data
-Unzip the data in ./data Follow the insurctions in the [README](./data/README.md)
+Unzip the data in ./data
 
 ### Build and Run Docker
 ```bash
