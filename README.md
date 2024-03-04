@@ -22,7 +22,7 @@ Statistical tests show that differences between the most commonly used C++ and R
 
 ## Folder-Structure
 - [compare-cpp/README](./compare-cpp/README.md)
-- [compare-rust/README](./compare-rust/README.md)
+- [compare-rs/README](./compare-rs/README.md)
 - [compare-python/README](./compare-python/README.md)
 - [data/README](./data/README.md)
 - [scripts/README](./scripts/README.md)
