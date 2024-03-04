@@ -1,4 +1,4 @@
-# comprae-c++
+# compare-c++
 
 This project contains all the code for benchmarking the c/c++ libaries. 
 
