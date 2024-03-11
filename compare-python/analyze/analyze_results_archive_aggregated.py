@@ -100,6 +100,7 @@ for pc_name in os.listdir(result_path):
     def show_data_ds(data, short_names, language):
 
         print(list(short_names.values()))
+        m = len(data) ** 2 - len(data)
         i = 0
         for result_a in data:
             print(list(short_names.values())[i], end='')
@@ -111,7 +112,12 @@ for pc_name in os.listdir(result_path):
                 else:
                     U1, p = scipy.stats.mannwhitneyu(result_a, result_b, alternative="less")
                     eff_size = U1 / (len(result_a) * len(result_b))
-                    if p > significance_alpha:
+                    # Bonferroni correction
+                    # https://en.wikipedia.org/wiki/Family-wise_error_rate
+                    # https://en.wikipedia.org/wiki/Bonferroni_correction
+                    alpha_corrected = significance_alpha / m
+                    #print(f" p={p} - alpha={alpha_corrected}")
+                    if p > alpha_corrected:
                         print(" & ns", end='')
                     else:
                         print(f" & {eff_size:.2f}", end='')
