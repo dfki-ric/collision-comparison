@@ -8,7 +8,7 @@ We also found that highly optimized C++ libraries are still considerably faster 
 Statistical tests show that differences between the most commonly used C++ libraries are significant, but mostly negligible.
 
 ## Results
-<img src="./doc/uc6_ines_coll.png" width="800" />
+<img src="./doc/usecases.svg" width="800" />
 
 ### Runtime Distributions
 
