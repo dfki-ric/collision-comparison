@@ -1,0 +1,486 @@
+<robot name="uc5_slvr" version="1.0">
+  <joint name="bag_dispenser_link_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 -0.04166" xyz="1.11686 -0.38263 1.00000"/>
+    <parent link="world"/>
+    <child link="cable_dispenser_link"/>
+  </joint>
+  <joint name="box_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-0.36025 -0.66562 0.77000"/>
+    <parent link="world"/>
+    <child link="box"/>
+  </joint>
+  <joint name="cable_above_conveyor_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-0.84874 0.69603 1.53195"/>
+    <parent link="world"/>
+    <child link="cable_above_conveyor"/>
+  </joint>
+  <joint name="camera_elements_above_conveyor_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-0.16092 0.67732 1.86794"/>
+    <parent link="world"/>
+    <child link="camera_elements_above_conveyor"/>
+  </joint>
+  <joint name="camera_elements_feeding_system_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-0.74299 -0.61294 0.91813"/>
+    <parent link="world"/>
+    <child link="camera_elements_feeding_system"/>
+  </joint>
+  <joint name="camera_elements_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="0.57513 0.13835 0.99537"/>
+    <parent link="world"/>
+    <child link="camera_elements_cable"/>
+  </joint>
+  <joint name="conveyor2_link_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 -0.03910" xyz="-1.02560 0.05155 0.37961"/>
+    <parent link="world"/>
+    <child link="feeding_system_link"/>
+  </joint>
+  <joint name="conveyor_belt_link_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 -0.04970" xyz="-1.21585 0.86120 0.44010"/>
+    <parent link="world"/>
+    <child link="conveyor_belt_link"/>
+  </joint>
+  <joint name="external_cover_on_feeding_machine_joint" type="revolute">
+    <limit lower="0.00000" upper="3.14000" effort="0.00000" velocity="0.00000"/>
+    <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+    <parent link="feeding_machine_pivot_point"/>
+    <child link="external_cover_on_feeding_machine_link"/>
+    <axis xyz="1.00000 0.00000 0.00000"/>
+  </joint>
+  <joint name="feeding_machine_pivot_point_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="0.02006 -1.35608 0.72816"/>
+    <parent link="feeding_system_link"/>
+    <child link="feeding_machine_pivot_point"/>
+  </joint>
+  <joint name="fence_link_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 -0.05247" xyz="-0.65000 -1.15000 1.10000"/>
+    <parent link="world"/>
+    <child link="fence_link"/>
+  </joint>
+  <joint name="fence_horizontal_link_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 -0.04970" xyz="0.0 0.0 1.9"/>
+    <parent link="world"/>
+    <child link="fence_horizontal_link"/>
+  </joint>
+  <joint name="pallet_external_cover_joint" type="prismatic">
+    <limit lower="0.00000" upper="1.00000" effort="0.00000" velocity="0.00000"/>
+    <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+    <parent link="pallet_external_cover_pivot_point"/>
+    <child link="pallet_external_cover"/>
+    <axis xyz="0.00000 1.00000 0.00000"/>
+  </joint>
+  <joint name="pallet_external_cover_pivot_point_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 0.05771" xyz="-0.12555 0.88596 0.13754"/>
+    <parent link="pallet_link"/>
+    <child link="pallet_external_cover_pivot_point"/>
+  </joint>
+  <joint name="pallet_link_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 -0.00524" xyz="1.05337 0.14496 0.53059"/>
+    <parent link="conveyor_belt_link"/>
+    <child link="pallet_link"/>
+  </joint>
+  <joint name="propeller_on_feeding_machine_joint" type="revolute">
+    <limit lower="0.00000" upper="3.14000" effort="0.00000" velocity="0.00000"/>
+    <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+    <parent link="feeding_machine_pivot_point"/>
+    <child link="propeller_on_feeding_machine_link"/>
+    <axis xyz="1.00000 0.00000 0.00000"/>
+  </joint>
+  <joint name="robot_base_joint" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.77000"/>
+    <parent link="world"/>
+    <child link="robot_base_link"/>
+  </joint>
+  <link name="box">
+    <collision name="box_collision">
+      <origin rpy="0.00000 0.00000 -0.06283" xyz="-0.04000 0.02000 -0.13000"/>
+      <geometry>
+        <box size="0.60000 0.40000 0.40000"/>
+      </geometry>
+    </collision>
+    <visual name="box_vis">
+      <origin rpy="0.00000 0.00000 1.51375" xyz="-1.72237 2.26027 0.66556"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc5_slvr/meshes/stl/box.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="cable_above_conveyor">
+    <collision name="cable_above_conveyor_coll">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.01327 0.00243 0.06805"/>
+      <geometry>
+        <cylinder radius="0.02000" length="1.26000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="cable_dispenser_link">
+    <collision name="cable_dispenser_coll">
+      <origin rpy="0.00000 0.00000 0.00698" xyz="-0.02160 0.23678 0.01900"/>
+      <geometry>
+        <box size="0.72000 0.16000 0.02000"/>
+      </geometry>
+    </collision>
+    <collision name="cable_table_coll">
+      <origin rpy="0.00000 0.00000 -0.00002" xyz="0.00032 -0.00777 -0.49000"/>
+      <geometry>
+        <box size="0.71000 0.71000 0.99800"/>
+      </geometry>
+    </collision>
+    <visual name="cable_guide">
+      <origin rpy="0.00000 0.00000 1.57822" xyz="-1.37829 1.27293 0.00500"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc5_slvr/meshes/stl/cable_guide.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+    <visual name="cable_table">
+      <origin rpy="0.00000 0.00000 -0.00000" xyz="1.04500 1.28500 0.00500"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc5_slvr/meshes/stl/cable_table.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="camera_elements_above_conveyor">
+    <collision name="camera_above_conveyor_beam_coll">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00152 0.11339 0.18327"/>
+      <geometry>
+        <box size="0.10000 0.22000 0.50000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="camera_elements_cable">
+    <collision name="Cube">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.10821 0.12836 0.90049"/>
+      <geometry>
+        <box size="0.22000 0.14000 0.10000"/>
+      </geometry>
+    </collision>
+    <collision name="camera_cable_beam_coll">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.12422 0.03877 -0.08844"/>
+      <geometry>
+        <box size="0.10000 0.10000 2.00000"/>
+      </geometry>
+    </collision>
+    <collision name="camera_cable_coll">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.10360 -0.04123 0.45188"/>
+      <geometry>
+        <box size="0.18000 0.10000 0.10000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="camera_elements_feeding_system">
+    <collision name="camera_feeding_system_beam_coll">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.02567 -0.00526 0.00000"/>
+      <geometry>
+        <box size="0.06000 0.06000 2.00000"/>
+      </geometry>
+    </collision>
+    <collision name="camera_feeding_system_coll">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.00997 0.05033 0.05133"/>
+      <geometry>
+        <box size="0.16000 0.09000 0.14000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="conveyor_belt_link">
+    <collision name="conveyor_belt_beam">
+      <origin rpy="0.00000 0.00000 -0.00000" xyz="2.57801 -0.39469 0.65000"/>
+      <geometry>
+        <box size="0.12000 0.08000 2.30000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_bottom_coll">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.20900 -0.07000"/>
+      <geometry>
+        <box size="5.96000 0.78000 0.87000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_guide_left_coll">
+      <origin rpy="0.00000 0.00000 -0.00000" xyz="0.38394 -0.13100 0.45000"/>
+      <geometry>
+        <box size="4.00000 0.10000 0.16000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_guide_right_coll">
+      <origin rpy="0.00000 0.00000 -0.00000" xyz="0.38394 0.44935 0.45000"/>
+      <geometry>
+        <box size="4.00000 0.14000 0.16000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_middle">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.12154 0.14950 0.39300"/>
+      <geometry>
+        <box size="0.10000 0.46400 0.03400"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_side_coll_1">
+      <origin rpy="0.00000 0.00000 -0.00000" xyz="2.27000 -0.27000 0.41000"/>
+      <geometry>
+        <box size="0.22000 0.18000 0.20000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_side_coll_2">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="1.94389 -0.21400 0.02200"/>
+      <geometry>
+        <box size="0.10000 0.04400 1.00000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_side_coll_2.001">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.12547 -0.20400 0.02200"/>
+      <geometry>
+        <box size="0.10000 0.04400 1.00000"/>
+      </geometry>
+    </collision>
+    <collision name="conveyor_belt_top_coll">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 2.00000"/>
+      <geometry>
+        <box size="5.96000 1.30000 0.42000"/>
+      </geometry>
+    </collision>
+    <collision name="new_bar">
+      <origin rpy="0.00000 0.00000 -0.00000" xyz="1.63633 -0.20590 0.03132"/>
+      <geometry>
+        <box size="0.20000 0.05000 1.00000"/>
+      </geometry>
+    </collision>
+    <visual name="conveyor_belt">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="2.32000 0.38500 0.49500"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc5_slvr/meshes/stl/conveyor_belt.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="external_cover_on_feeding_machine_link">
+    <visual name="external_cover1">
+      <origin rpy="0.00000 0.00000 -1.57080" xyz="-0.11401 1.46896 -0.30357"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc5_slvr/meshes/stl/external_cover.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+    <visual name="external_cover_support">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.78522 1.17264 -0.40550"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc5_slvr/meshes/stl/external_cover_support.001.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="feeding_machine_pivot_point"/>
+  <link name="feeding_system_link">
+    <collision name="feeding_machine_guide_1">
+      <origin rpy="0.00000 0.00000 -0.00000" xyz="0.08471 -0.20505 0.40500"/>
+      <geometry>
+        <box size="0.50000 0.04000 0.06400"/>
+      </geometry>
+    </collision>
+    <collision name="feeding_machine_guide_2">
+      <origin rpy="0.00000 0.00000 -0.00000" xyz="0.08471 0.20495 0.40500"/>
+      <geometry>
+        <box size="0.50000 0.04000 0.06400"/>
+      </geometry>
+    </collision>
+    <collision name="feeding_system_coll1">
+      <origin rpy="0.00000 0.00000 -0.00000" xyz="-0.0703 -0.08025 -0.01400"/>
+      <geometry>
+        <box size="1.2000 1.40000 0.81200"/>
+      </geometry>
+    </collision>
+    <collision name="feeding_system_coll2">
+      <origin rpy="0.00000 0.00000 -0.00000" xyz="0.56964 -0.28025 -0.01400"/>
+      <geometry>
+        <box size="0.0800 1.0000 0.81200"/>
+      </geometry>
+    </collision>
+    <visual name="feeding_system">
+      <origin rpy="0.00000 0.00000 -3.14159" xyz="5.88700 8.75400 -7.51800"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc5_slvr/meshes/stl/feeding.001.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="fence_link">
+    <collision name="fence_back_coll">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.57000 -0.23000 0.00000"/>
+      <geometry>
+        <box size="3.08000 0.86000 2.20000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="fence_horizontal_link">
+    <collision name="fence_back_coll">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <box size="2.00000 2.00000 0.05000"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="pallet_external_cover">
+    <collision name="external_cover_on_pallet_movable_coll">
+      <origin rpy="0.00000 0.00000 -0.00000" xyz="-0.02582 -1.14841 -0.04675"/>
+      <geometry>
+        <cylinder radius="0.15000" length="0.10800"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="pallet_external_cover_pivot_point"/>
+  <link name="pallet_link">
+    <collision name="engine_block">
+      <origin rpy="-0.00000 0.52360 0.00000" xyz="0.15509 -0.00416 0.05687"/>
+      <geometry>
+        <box size="0.07000 0.08600 0.02400"/>
+      </geometry>
+    </collision>
+    <collision name="engine_pin_1">
+      <origin rpy="0.00000 0.52360 -0.00000" xyz="0.14029 -0.00416 0.08687"/>
+      <geometry>
+        <cylinder radius="0.00200" length="0.03700"/>
+      </geometry>
+    </collision>
+    <collision name="engine_pin_2">
+      <origin rpy="0.00000 0.52360 -0.00000" xyz="0.18879 -0.00416 0.05887"/>
+      <geometry>
+        <cylinder radius="0.00200" length="0.03700"/>
+      </geometry>
+    </collision>
+    <collision name="engine_upper_part">
+      <origin rpy="0.00000 0.52360 0.00000" xyz="0.16349 -0.00416 0.07087"/>
+      <geometry>
+        <box size="0.04800 0.07640 0.02000"/>
+      </geometry>
+    </collision>
+    <collision name="external_cover_base_1">
+      <origin rpy="0.00000 0.00000 -1.57080" xyz="-0.06007 -0.23191 0.02517"/>
+      <geometry>
+        <box size="0.10000 0.10000 0.06000"/>
+      </geometry>
+    </collision>
+    <collision name="external_cover_base_2">
+      <origin rpy="0.00000 0.00000 -0.00000" xyz="-0.06804 0.15945 0.01537"/>
+      <geometry>
+        <box size="0.20400 0.20400 0.04000"/>
+      </geometry>
+    </collision>
+    <collision name="pallet_coll">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.00394 -0.00435 -0.01463"/>
+      <geometry>
+        <box size="0.62000 0.62000 0.02000"/>
+      </geometry>
+    </collision>
+    <collision name="pallet_previous">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.77394 -0.00435 -0.01463"/>
+      <geometry>
+        <box size="0.62000 0.62000 0.29000"/>
+      </geometry>
+    </collision>
+    <collision name="pallet_next">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.76606 -0.00435 -0.01463"/>
+      <geometry>
+        <box size="0.62000 0.62000 0.29000"/>
+      </geometry>
+    </collision>
+    <collision name="propeller_middle_bottom">
+      <origin rpy="0.00000 0.00000 -0.03244" xyz="-0.07067 0.15739 0.08337"/>
+      <geometry>
+        <cylinder radius="0.04200" length="0.09000"/>
+      </geometry>
+    </collision>
+    <collision name="propeller_middle_top">
+      <origin rpy="0.00000 0.00000 -0.03244" xyz="-0.07067 0.15739 0.14497"/>
+      <geometry>
+        <cylinder radius="0.00300" length="0.04850"/>
+      </geometry>
+    </collision>
+    <collision name="soldering_station_base_1">
+      <origin rpy="-0.00000 0.52360 -0.00000" xyz="0.16606 -0.00400 0.03637"/>
+      <geometry>
+        <box size="0.18000 0.15000 0.02000"/>
+      </geometry>
+    </collision>
+    <collision name="soldering_station_base_2">
+      <origin rpy="0.00000 0.00000 -0.00000" xyz="0.10014 -0.00395 0.03537"/>
+      <geometry>
+        <box size="0.02000 0.15000 0.08000"/>
+      </geometry>
+    </collision>
+    <collision name="under_external_cover">
+      <origin rpy="0.00000 0.00000 0.05494" xyz="-0.05654 -0.23247 0.09606"/>
+      <geometry>
+        <cylinder radius="0.04000" length="0.08000"/>
+      </geometry>
+    </collision>
+    <visual name="external_cover2">
+      <origin rpy="0.00000 0.00000 -3.14159" xyz="0.03515 -0.12807 0.03657"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc5_slvr/meshes/stl/external_cover.001.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+    <visual name="external_cover3">
+      <origin rpy="-3.14159 -0.00000 1.53871" xyz="-0.18312 -0.10537 0.16893"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc5_slvr/meshes/stl/External cover partB.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+    <visual name="motor">
+      <origin rpy="-1.04720 0.00000 1.57080" xyz="0.20328 -0.04641 0.07344"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc5_slvr/meshes/stl/motor.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+    <visual name="pallet">
+      <origin rpy="1.57080 0.00000 -3.14159" xyz="0.30010 -0.91591 -0.02484"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc5_slvr/meshes/stl/pallet.002.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="propeller_on_feeding_machine_link">
+    <collision name="propeller_support_1">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.09649 1.35496 -0.28337"/>
+      <geometry>
+        <box size="0.02000 0.36000 0.03000"/>
+      </geometry>
+    </collision>
+    <collision name="propeller_support_2">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.07351 1.35496 -0.28337"/>
+      <geometry>
+        <box size="0.02000 0.36000 0.03000"/>
+      </geometry>
+    </collision>
+    <collision name="propeller_support_3">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.01149 1.22496 -0.28337"/>
+      <geometry>
+        <box size="0.15000 0.10000 0.03000"/>
+      </geometry>
+    </collision>
+    <collision name="propeller_support_4">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.01149 1.48496 -0.28337"/>
+      <geometry>
+        <box size="0.15000 0.10000 0.03000"/>
+      </geometry>
+    </collision>
+    <visual name="propeller_on_feeding_machine_vis">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-0.06351 1.27896 -0.29737"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc5_slvr/meshes/stl/April_PROPELLER.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+    <visual name="propeller_support">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="-1.22601 1.17496 -0.40537"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc5_slvr/meshes/stl/propeller_support.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="robot_base_link">
+    <collision name="robot_base_coll">
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 -0.35000"/>
+      <geometry>
+        <cylinder radius="0.11000" length="0.68000"/>
+      </geometry>
+    </collision>
+    <visual name="robot_base">
+      <origin rpy="0.00000 -1.57080 0.00000" xyz="0.59000 -0.47500 -0.99000"/>
+      <geometry>
+        <mesh filename="package://april_use_case_description/uc5_slvr/meshes/stl/UR 10 E Frame.2.stl" scale="0.00100 0.00100 0.00100"/>
+      </geometry>
+    </visual>
+  </link>
+  <link name="world"/>
+</robot>

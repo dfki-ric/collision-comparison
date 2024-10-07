@@ -2,19 +2,20 @@
 # Benchmarking Collision Detection for Robotics
 
 ## Abstract
-Collision detection is needed in simulation, planning, and control. 
-In particular, Gilbert-Johnson-Keerthi (GJK) \cite{Gilbert1988} and its variations are widely used. We are interested in the question of how programming language, algorithm engineering, and implementation tricks influence its performance. 
-
-We develop a benchmark that resembles how GJK is used in a highly optimized collision detection pipeline for robotics and compare the performance of commonly used implementations of GJK. 
-We analyse not just the moments of the distribution of runtimes, but the whole distribution, which is relevant for real-time applications.
-
+Collision detection and distance calculation is needed in simulation, planning, and control.
+In particular, Gilbert-Johnson-Keerthi (GJK) and its variations are widely used.
+We are interested in the question of how programming language, algorithm engineering, and implementation tricks influence its performance.
+We develop a benchmark that resembles how GJK is used in a highly optimized collision detection pipeline for an arm with an anthropomorphic hand and compare the performance of commonly used implementations of GJK.
+We analyze not just the moments of the distribution of runtimes, but the whole distribution, which is relevant for real-time applications.
 Surprisingly, we obtain one of the best performances with the Jolt game engine, which is usually not used in robotics and does not implement the latest algorithmic developments.
 We also found that highly optimized C++ libraries are still considerably faster than more recently developed Rust libraries, and that Python cannot be used when performance is a constraint, even when highly optimized, compiled code is called.
+Statistical tests show that differences between the most commonly used C++ libraries are significant, but the effect size is often negligible.
 
-Statistical tests show that differences between the most commonly used C++ libraries are significant, but the effect size is mostly negligible.
+<img src="./doc/usecases.svg" width="800" />
 
 ## Results
-<img src="./doc/uc6_ines_coll.png" width="800" />
+
+### Runtime Distributions
 
 <p float="left">
   <img src="doc/uc1_ur10_collision_on_PC1_violin.png" width="400" />
@@ -23,8 +24,80 @@ Statistical tests show that differences between the most commonly used C++ libra
 
 <p float="left">
   <img src="doc/uc1_ur10_collision_on_PC2_violin.png" width="400" />
-  <img src="doc/uc6_ur10_collision_on_PC1_violin.png" width="400" />
+  <img src="doc/uc6_ur10_collision_on_PC2_violin.png" width="400" />
 </p>
+
+### UC1 with UR10 Collision Environment on PC1
+
+Results of hypothesis testing for time per collision test in **UC1 with UR10 collision environment on PC1**. The alternative hypothesis is $T_{\text{row}} < T_{\text{column}}$. *ns* indicates not significant results, i.e., $T_{\text{row}} \geq T_{\text{column}}$ was not rejected. When the result is significant, we report the common language effect size (the number of time measurements of the algorithm given in the row that are less than measurements of the algorithm in the column, 0 indicates the largest effect).
+
+#### C++ Group
+
+| | *HPP-FCL* | Jolt | libccd | Bullet |
+|-|-|-|-|-|
+| *HPP-FCL* |  | 0.44 | 0.36 | 0.11 |
+| Jolt | ns |  | 0.44 | 0.18 |
+| libccd | ns | ns |  | 0.19 |
+| Bullet | ns | ns | ns |  |
+
+#### Rust Group
+
+| |ncollide |c-rs nest |c-rs dist | *c-rs inter* |gjk-rs |
+|-|-|-|-|-|-|
+| ncollide | |0.03 |0.16 |ns |ns |
+| c-rs nest |ns | |ns |ns |ns |
+| c-rs dist |ns |0.20 | |ns |ns |
+| *c-rs inter* |0.36 |0.00 |0.02 | |0.41 |
+| gjk-rs |0.46 |0.08 |0.22 |ns | |
+
+#### Python Group
+
+| | *pybullet* | d3d tuple acc | d3d tuple no acc | d3d nest acc | d3d nest no acc | d3d jolt dist | d3d jolt inter | d3d org |
+|-|-|-|-|-|-|-|-|-|
+| *pybullet* |  | 0.02 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| d3d tuple acc | ns |  | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| d3d tuple no acc | ns | ns |  | 0.46 | 0.27 | 0.41 | ns | 0.43 |
+| d3d nest acc | ns | ns | ns |  | 0.12 | 0.46 | ns | 0.34 |
+| d3d nest no acc | ns | ns | ns | ns |  | ns | ns | ns |
+| d3d jolt dist | ns | ns | ns | ns | 0.31 |  | ns | 0.49 |
+| d3d jolt inter | ns | ns | 0.35 | 0.31 | 0.14 | 0.27 |  | 0.26 |
+| d3d org | ns | ns | ns | ns | 0.19 | ns | ns |  |
+
+### UC6 with UR10 Collision Environment on PC1
+
+Results of hypothesis testing for time per collision test in **UC6 with UR10 collision environment on PC1**. The alternative hypothesis is $T_{\text{row}} < T_{\text{column}}$. *ns* indicates not significant results, i.e., $T_{\text{row}} \geq T_{\text{column}}$ was not rejected. When the result is significant, we report the common language effect size (the number of time measurements of the algorithm given in the row that are less than measurements of the algorithm in the column, 0 indicates the largest effect).
+
+#### C++ Group
+
+| | HPP-FCL | *Jolt* | libccd | Bullet |
+|-|-|-|-|-|
+| HPP-FCL |  | ns | 0.41 | 0.21 |
+| *Jolt* | 0.43 |  | 0.34 | 0.16 |
+| libccd | ns | ns |  | 0.27 |
+| Bullet | ns | ns | ns |  |
+
+#### Rust Group
+
+| | ncollide | c-rs nest | c-rs dist | c-rs inter | *gjk-rs* |
+|-|-|-|-|-|-|
+| ncollide |  | 0.03 | 0.12 | 0.45 | ns |
+| c-rs nest | ns |  | ns | ns | ns |
+| c-rs dist | ns | 0.15 |  | ns | ns |
+| c-rs inter | ns | 0.01 | 0.09 |  | ns |
+| *gjk-rs* | 0.40 | 0.08 | 0.18 | 0.44 |  |
+
+#### Python Group
+
+| | *pybullet* | d3d tuple acc | d3d tuple no acc | d3d nest acc | d3d nest no acc | d3d jolt dist | d3d jolt inter | d3d org |
+|-|-|-|-|-|-|-|-|-|
+| *pybullet* |  | 0.14 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| d3d tuple acc | ns |  | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
+| d3d tuple no acc | ns | ns |  | ns | 0.42 | 0.48 | ns | ns |
+| d3d nest acc | ns | ns | 0.20 |  | 0.05 | 0.17 | 0.28 | 0.40 |
+| d3d nest no acc | ns | ns | ns | ns |  | ns | ns | ns |
+| d3d jolt dist | ns | ns | ns | ns | 0.42 |  | ns | ns |
+| d3d jolt inter | ns | ns | 0.37 | ns | 0.28 | 0.36 |  | ns |
+| d3d org | ns | ns | 0.20 | ns | 0.04 | 0.18 | 0.29 |  |
 
 ## Folder-Structure
 - [compare-cpp/README](./compare-cpp/README.md)
@@ -34,8 +107,9 @@ Statistical tests show that differences between the most commonly used C++ libra
 
 ## Setup
 
-### Unzip test Data
-Unzip the data in ./data
+### Preparation
+* Unzip the data in `./data/`
+* Create folder `./results/`
 
 ### Build and Run Docker
 ```bash

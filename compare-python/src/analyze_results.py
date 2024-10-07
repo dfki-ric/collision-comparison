@@ -1,10 +1,15 @@
 import json
+import warnings
 import os
 
 
 def get_cpp_result(path):
-    f = open(f"{path}/cpp_result.json")
-    result = json.load(f)  # in sekunden
+    try:
+        with open(f"{path}/cpp_result.json") as f:
+            result = json.load(f)  # in seconds
+    except FileNotFoundError:
+        warnings.warn(f"No results found under {path}")
+        return {}
 
     data = {}
     for r in result["results"]:
@@ -16,16 +21,24 @@ def get_cpp_result(path):
 
 
 def get_python_results(path):
-    f = open(f"{path}/distance3d_result.json")
-    distance3d_result = json.load(f)
+    try:
+        with open(f"{path}/distance3d_result.json") as f:
+            distance3d_result = json.load(f)
+    except FileNotFoundError:
+        warnings.warn(f"No results found under {path}")
+        return {}
 
     data = {}
     for name in distance3d_result:
         median = distance3d_result[name]
         data[f"distance3d {name}"] = median
 
-    f = open(f"{path}/pybullet_result.json")
-    pybullet_result = json.load(f)
+    try:
+        with open(f"{path}/pybullet_result.json") as f:
+            pybullet_result = json.load(f)
+    except FileNotFoundError:
+        warnings.warn(f"No results found under {path}")
+        return {}
 
     for name in pybullet_result:
         median = pybullet_result[name]
@@ -38,12 +51,19 @@ def get_rust_results(path):
     data = {}
 
     path = f"{path}criterion"
+    if not os.path.exists(path):
+        warnings.warn(f"No results found under {path}")
+        return {}
     for dir in os.listdir(path):
         if dir == "report":
             continue
 
-        f = open(f"{path}/{dir}/new/estimates.json")
-        result = json.load(f)  # in ns
+        try:
+            with open(f"{path}/{dir}/new/estimates.json") as f:
+                result = json.load(f)  # in ns
+        except FileNotFoundError:
+            warnings.warn(f"No results found under {path}")
+            return {}
 
         median = result["mean"]["point_estimate"] / 1000
         data[f"{dir}"] = median
@@ -66,10 +86,10 @@ def get_short_names():
         "gjk-rs_nasterov_gjk": "gjk-rs",
         "Pybullet": "pybullet",
 
-        "distance3d Nesterov (Primitives with acceleration)": "distance3d tuple jit",
-        "distance3d Nesterov (Primitives)": "distance3d tuple",
-        "distance3d Nesterov (with acceleration)": "distance3d nest jit",
-        "distance3d Nesterov": "distance3d nest",
+        "distance3d Nesterov (Primitives with acceleration)": "distance3d tuple acc",
+        "distance3d Nesterov (Primitives)": "distance3d tuple no acc",
+        "distance3d Nesterov (with acceleration)": "distance3d nest acc",
+        "distance3d Nesterov": "distance3d nest no acc",
         "distance3d Jolt (intersection)": "distance3d jolt inter",
         "distance3d Jolt (distance)": "distance3d jolt dist",
         "distance3d Original": "distance3d org",
@@ -81,4 +101,5 @@ def get_short_pc_names():
         "TEAM7-STUD-1B-U": "PC2",
         "Alexanders-PC": "PC3",
         "JoltTest": "PC4",
+        "UPLINX-3-U": "PC5",
     }

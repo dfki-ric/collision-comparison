@@ -3,6 +3,7 @@ import os
 import numpy as np
 from matplotlib import pyplot as plt
 import scipy
+from scipy import stats
 
 from src import get_cpp_result, get_rust_results, get_python_results
 from src.analyze_results import get_short_names, get_short_pc_names
@@ -11,28 +12,28 @@ from src.analyze_results import get_short_names, get_short_pc_names
 
 result_path = "../results-archive"
 data_path = "../data"
+significance_alpha = 0.05
 
 for pc_name in os.listdir(result_path):
 
-    for name in os.listdir(f"{result_path}/{pc_name}/"):
+    for uc_folder_name in os.listdir(f"{result_path}/{pc_name}/"):
 
         results = {}
         results_mean = None
-        for dir in os.listdir(f"{result_path}/{pc_name}/{name}/"):
-
-            path = f"{result_path}/{pc_name}/{name}/{dir}/"
+        for test_dir in os.listdir(f"{result_path}/{pc_name}/{uc_folder_name}/"):
+            path = f"{result_path}/{pc_name}/{uc_folder_name}/{test_dir}/"
             result = {}  # in mirco sekunden
             result.update(get_cpp_result(path))
             result.update(get_rust_results(path))
             result.update(get_python_results(path))
 
-            path = f"{data_path}/{name}/{name}_{dir}.json"
+            path = f"{data_path}/{uc_folder_name}/{uc_folder_name}_{test_dir}.json"
             file = open(path, "r")
             json_data = json.load(file)
-            case_amount = len(json_data)
+            n_cases_per_test = len(json_data)
 
             for key in result:
-                result[key] /= case_amount
+                result[key] /= n_cases_per_test
 
             if results_mean == None:
                 results_mean = result
@@ -41,7 +42,6 @@ for pc_name in os.listdir(result_path):
                                 for key in set(results_mean) | set(result)}
 
             for key in result:
-
                 if key in results:
                     results[key].append(result[key])
                 else:
@@ -85,7 +85,7 @@ for pc_name in os.listdir(result_path):
                         for key in set(results_mean)}
 
         results_mean = dict(sorted(results_mean.items(), key=lambda item: item[1]))
-        print("---", name, "on", short_pc_names[pc_name], "---")
+        print("---", uc_folder_name, "on", short_pc_names[pc_name], "---")
         print("\n -- Mean: --")
         for key in results_mean:
             print(key, ':', "%.4f µs" % results_mean[key])
@@ -99,30 +99,8 @@ for pc_name in os.listdir(result_path):
         # Normal test
         print(f"\n-- Normal Test --")
         for key in results:
-            statistic, p = scipy.stats.normaltest(results[key])
+            statistic, p = stats.normaltest(results[key])
             print(f"{short_names[key]}: {p:.2f}")
-
-        # ANOVA
-        print("\n-- ANOVA --")
-        print("ANOVA for every case as its own group:")
-        F, p = scipy.stats.f_oneway(*results.values())
-        print("F: ", F)
-        print("p: ", p)
-
-        print("ANOVA for every C/C++ case as its own group:")
-        F, p = scipy.stats.f_oneway(*cpp_data)
-        print("F: ", F)
-        print("p: ", p)
-
-        print("ANOVA for every Rust case as its own group:")
-        F, p = scipy.stats.f_oneway(*rust_data)
-        print("F: ", F)
-        print("p: ", p)
-
-        print("ANOVA for every Python case as its own group:")
-        F, p = scipy.stats.f_oneway(*python_data)
-        print("F: ", F)
-        print("p: ", p)
 
         def show_data_ds(data, short_names, language):
 
@@ -133,9 +111,12 @@ for pc_name in os.listdir(result_path):
 
                 j = 0
                 for result_b in data:
-                    statistics, _ = scipy.stats.ttest_ind(result_a, result_b)
-                    d = abs(statistics * np.sqrt((1 / len(result_a)) + (1 / len(result_b))))
-                    print(f" & {d:.2f}", end='')
+                    U1, p = scipy.stats.mannwhitneyu(result_a, result_b, alternative="less")
+                    eff_size = U1 / (len(result_a) * len(result_b))
+                    if p > significance_alpha:
+                        print(" & ns", end='')
+                    else:
+                        print(f" & {eff_size:.2f}", end='')
                     j += 1
 
                 print(" \\\\")
@@ -146,16 +127,12 @@ for pc_name in os.listdir(result_path):
         show_data_ds(rust_data, rust_short_names, "rust")
         show_data_ds(python_data, python_short_names, "python")
 
-
-
-
-
         #  Violin Plot
         fig = plt.figure()
         ax = fig.add_subplot(1, 1, 1)
 
-        ax.violinplot(data, pos, points=10000, vert=False, widths=1,
-                    showmeans=True, showextrema=True, showmedians=True)
+        ax.violinplot(data, pos, vert=False, widths=1,
+                    showmeans=False, showextrema=True, showmedians=True)
 
         ax.set_xscale('log')
         plt.yticks(np.arange(0, len(short_names.values()), 1.0))
@@ -170,10 +147,10 @@ for pc_name in os.listdir(result_path):
             top=False,
             labelbottom=True)
 
-        ax.set_title(f"{name} on {short_pc_names[pc_name]}")
+        ax.set_title(f"{uc_folder_name} on {short_pc_names[pc_name]}")
         fig.tight_layout()
-        plt.show()
-        plt.savefig(f"{name}_on_{short_pc_names[pc_name]}_violin.png")
+        plt.savefig(f"{uc_folder_name}_on_{short_pc_names[pc_name]}_violin.pdf")
+        #plt.show()
 
 
 
