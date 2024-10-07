@@ -2,7 +2,11 @@
 # Benchmarking Collision Detection for Robotics
 
 ## Abstract
-Collision detection and distance calculation is needed in simulation, planning, and control of humanoid robots. In particular, Gilbert-Johnson-Keerthi (GJK) and its variations are widely used. We are interested in the question of how programming language, algorithm engineering, and implementation tricks influence its performance. We develop a benchmark that resembles how GJK is used in a highly optimized collision detection pipeline for an arm with an anthropomorphic hand and compare the performance of commonly used implementations of GJK. We analyze not just the moments of the distribution of runtimes, but the whole distribution, which is relevant for real-time applications.
+Collision detection and distance calculation is needed in simulation, planning, and control.
+In particular, Gilbert-Johnson-Keerthi (GJK) and its variations are widely used.
+We are interested in the question of how programming language, algorithm engineering, and implementation tricks influence its performance.
+We develop a benchmark that resembles how GJK is used in a highly optimized collision detection pipeline for an arm with an anthropomorphic hand and compare the performance of commonly used implementations of GJK.
+We analyze not just the moments of the distribution of runtimes, but the whole distribution, which is relevant for real-time applications.
 Surprisingly, we obtain one of the best performances with the Jolt game engine, which is usually not used in robotics and does not implement the latest algorithmic developments.
 We also found that highly optimized C++ libraries are still considerably faster than more recently developed Rust libraries, and that Python cannot be used when performance is a constraint, even when highly optimized, compiled code is called.
 Statistical tests show that differences between the most commonly used C++ libraries are significant, but the effect size is often negligible.
@@ -97,9 +101,8 @@ Results of hypothesis testing for time per collision test in **UC6 with UR10 col
 
 ## Folder-Structure
 - [compare-cpp/README](./compare-cpp/README.md)
-- [compare-rust/README](./compare-rust/README.md)
+- [compare-rs/README](./compare-rs/README.md)
 - [compare-python/README](./compare-python/README.md)
-- [data/README](./data/README.md)
 - [scripts/README](./scripts/README.md)
 
 ## Setup
