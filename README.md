@@ -268,3 +268,12 @@ git clone git@github.com:ros-industrial/universal_robot.git
 cd ../..
 ```
 
+
+## Funding
+
+This project has been developed initially at the Robotics Innovation Center
+of the German Research Center for Artificial Intelligence (DFKI GmbH) in
+Bremen. At this phase the work was supported through a grant from the European
+Commission (870142).
+
+<img src="doc/DFKI_RIC_RGB.png" height="100px" />
