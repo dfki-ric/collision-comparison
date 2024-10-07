@@ -1,8 +1,8 @@
 
 # Benchmarking Convex-Convex Collision Detection for Robotics
 
-Maarten Behn$^1$,
-Alexander Fabisch$^1$
+Maarten Behn $^1$,
+Alexander Fabisch $^1$
 
 $^1$ Robotics Innovation Center, DFKI GmbH,
 Robert-Hooke-Straße 1,
