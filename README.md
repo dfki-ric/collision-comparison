@@ -1,5 +1,13 @@
 
-# Benchmarking Collision Detection for Robotics
+# Benchmarking Convex-Convex Collision Detection for Robotics
+
+Maarten Behn$^1$,
+Alexander Fabisch$^1$
+
+$^1$ Robotics Innovation Center, DFKI GmbH,
+Robert-Hooke-Straße 1,
+D-28359 Bremen,
+Germany
 
 ## Abstract
 Collision detection and distance calculation is needed in simulation, planning, and control.
@@ -17,87 +25,79 @@ Statistical tests show that differences between the most commonly used C++ libra
 
 ### Runtime Distributions
 
-<p float="left">
-  <img src="doc/uc1_ur10_collision_on_PC1_violin.png" width="400" />
-  <img src="doc/uc6_ur10_collision_on_PC1_violin.png" width="400" /> 
-</p>
+![Violin Plot](./doc/violin.svg)
 
-<p float="left">
-  <img src="doc/uc1_ur10_collision_on_PC2_violin.png" width="400" />
-  <img src="doc/uc6_ur10_collision_on_PC2_violin.png" width="400" />
-</p>
+### Results on PC1
 
-### UC1 with UR10 Collision Environment on PC1
-
-Results of hypothesis testing for time per collision test in **UC1 with UR10 collision environment on PC1**. The alternative hypothesis is $T_{\text{row}} < T_{\text{column}}$. *ns* indicates not significant results, i.e., $T_{\text{row}} \geq T_{\text{column}}$ was not rejected. When the result is significant, we report the common language effect size (the number of time measurements of the algorithm given in the row that are less than measurements of the algorithm in the column, 0 indicates the largest effect).
+Results of hypothesis testing for time per collision test *on PC1*. The alternative hypothesis is $T_{\text{row}} < T_{\text{column}}$. *ns* indicates not significant results, i.e., $T_{\text{row}} \geq T_{\text{column}}$ was not rejected. When the result is significant, we report the common language effect size (percentage of runtimes of the algorithm given in the row that are greater than runtimes of the algorithm in the column in pairwise comparisons, 0 indicates the largest effect).
 
 #### C++ Group
 
-| | *HPP-FCL* | Jolt | libccd | Bullet |
-|-|-|-|-|-|
-| *HPP-FCL* |  | 0.44 | 0.36 | 0.11 |
-| Jolt | ns |  | 0.44 | 0.18 |
-| libccd | ns | ns |  | 0.19 |
-| Bullet | ns | ns | ns |  |
+|           | *HPP-FCL* | Jolt | libccd  | Bullet |
+|-----------|-----------|------|---------|--------|
+| *HPP-FCL* |           | 0.47 | 0.41    | 0.20   |
+| Jolt      | ns        |      | 0.44    | 0.21   |
+| libccd    | ns        | ns   |         | 0.26   |
+| Bullet    | ns        | ns   | ns      |        |
 
 #### Rust Group
 
-| |ncollide |c-rs nest |c-rs dist | *c-rs inter* |gjk-rs |
-|-|-|-|-|-|-|
-| ncollide | |0.03 |0.16 |ns |ns |
-| c-rs nest |ns | |ns |ns |ns |
-| c-rs dist |ns |0.20 | |ns |ns |
-| *c-rs inter* |0.36 |0.00 |0.02 | |0.41 |
-| gjk-rs |0.46 |0.08 |0.22 |ns | |
+|            | *ncollide* | c-rs nest | c-rs dist | c-rs inter | gjk-rs |
+|------------|------------|-----------|-----------|------------|--------|
+| *ncollide* |            | 0.04      | 0.16      | 0.47       | ns     |
+| c-rs nest  | ns         |           | ns        | ns         | ns     |
+| c-rs dist  | ns         | 0.17      |           | ns         | ns     |
+| c-rs inter | ns         | 0.00      | 0.07      |            | 0.49   |
+| gjk-rs     | ns         | 0.10      | 0.24      | ns         |        |
 
 #### Python Group
 
-| | *pybullet* | d3d tuple acc | d3d tuple no acc | d3d nest acc | d3d nest no acc | d3d jolt dist | d3d jolt inter | d3d org |
-|-|-|-|-|-|-|-|-|-|
-| *pybullet* |  | 0.02 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
-| d3d tuple acc | ns |  | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
-| d3d tuple no acc | ns | ns |  | 0.46 | 0.27 | 0.41 | ns | 0.43 |
-| d3d nest acc | ns | ns | ns |  | 0.12 | 0.46 | ns | 0.34 |
-| d3d nest no acc | ns | ns | ns | ns |  | ns | ns | ns |
-| d3d jolt dist | ns | ns | ns | ns | 0.31 |  | ns | 0.49 |
-| d3d jolt inter | ns | ns | 0.35 | 0.31 | 0.14 | 0.27 |  | 0.26 |
-| d3d org | ns | ns | ns | ns | 0.19 | ns | ns |  |
+|                         | *PyBullet* | d3d tuple acc | d3d tuple no acc | d3d nest acc | d3d nest no acc | d3d jolt dist | d3d jolt inter | d3d org |
+|-------------------------|------------|---------------|------------------|--------------|-----------------|---------------|----------------|---------|
+| *PyBullet*              |            | 0.14          | 0.00             | 0.00         | 0.00            | 0.00          | 0.00           | 0.00    |
+| distance3d tuple acc    | ns         |               | 0.00             | 0.00         | 0.00            | 0.00          | 0.00           | 0.00    |
+| distance3d tuple no acc | ns         | ns            |                  | ns           | 0.35            | 0.45          | ns             | ns      |
+| distance3d nest acc     | ns         | ns            | 0.42             |              | 0.12            | 0.37          | ns             | 0.39    |
+| distance3d nest no acc  | ns         | ns            | ns               | ns           |                 | ns            | ns             | ns      |
+| distance3d jolt dist    | ns         | ns            | ns               | ns           | 0.37            |               | ns             | ns      |
+| distance3d jolt inter   | ns         | ns            | 0.38             | 0.45         | 0.24            | 0.33          |                | 0.43    |
+| distance3d org          | ns         | ns            | 0.44             | ns           | 0.14            | 0.40          | ns             |         |
 
-### UC6 with UR10 Collision Environment on PC1
+### Results on PC2
 
-Results of hypothesis testing for time per collision test in **UC6 with UR10 collision environment on PC1**. The alternative hypothesis is $T_{\text{row}} < T_{\text{column}}$. *ns* indicates not significant results, i.e., $T_{\text{row}} \geq T_{\text{column}}$ was not rejected. When the result is significant, we report the common language effect size (the number of time measurements of the algorithm given in the row that are less than measurements of the algorithm in the column, 0 indicates the largest effect).
+Results of hypothesis testing for time per collision test *on PC2*.
 
 #### C++ Group
 
 | | HPP-FCL | *Jolt* | libccd | Bullet |
 |-|-|-|-|-|
-| HPP-FCL |  | ns | 0.41 | 0.21 |
-| *Jolt* | 0.43 |  | 0.34 | 0.16 |
-| libccd | ns | ns |  | 0.27 |
-| Bullet | ns | ns | ns |  |
+| HPP-FCL | |ns |0.47 |0.24 |
+| *Jolt* |0.35 | |0.32 |0.14 |
+| libccd |ns |ns | |0.26 |
+| Bullet |ns |ns |ns | |
 
 #### Rust Group
 
 | | ncollide | c-rs nest | c-rs dist | c-rs inter | *gjk-rs* |
 |-|-|-|-|-|-|
-| ncollide |  | 0.03 | 0.12 | 0.45 | ns |
-| c-rs nest | ns |  | ns | ns | ns |
-| c-rs dist | ns | 0.15 |  | ns | ns |
-| c-rs inter | ns | 0.01 | 0.09 |  | ns |
-| *gjk-rs* | 0.40 | 0.08 | 0.18 | 0.44 |  |
+| ncollide | |0.04 |0.18 |ns |ns |
+| c-rs nest |ns | |ns |ns |ns |
+| c-rs dist |ns |0.17 | |ns |ns |
+| c-rs inter |ns |0.01 |0.08 | |0.49 |
+| *gjk-rs* |0.47 |0.10 |0.24 |ns | |
 
 #### Python Group
 
-| | *pybullet* | d3d tuple acc | d3d tuple no acc | d3d nest acc | d3d nest no acc | d3d jolt dist | d3d jolt inter | d3d org |
+| | *PyBullet* | d3d tuple acc | d3d tuple no acc | d3d nest acc | d3d nest no acc | d3d jolt dist | d3d jolt inter | d3d org |
 |-|-|-|-|-|-|-|-|-|
-| *pybullet* |  | 0.14 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
-| d3d tuple acc | ns |  | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 |
-| d3d tuple no acc | ns | ns |  | ns | 0.42 | 0.48 | ns | ns |
-| d3d nest acc | ns | ns | 0.20 |  | 0.05 | 0.17 | 0.28 | 0.40 |
-| d3d nest no acc | ns | ns | ns | ns |  | ns | ns | ns |
-| d3d jolt dist | ns | ns | ns | ns | 0.42 |  | ns | ns |
-| d3d jolt inter | ns | ns | 0.37 | ns | 0.28 | 0.36 |  | ns |
-| d3d org | ns | ns | 0.20 | ns | 0.04 | 0.18 | 0.29 |  |
+| *PyBullet* | |0.14 |0.00 |0.00 |0.00 |0.00 |0.00 |0.00 |
+| distance3d tuple acc |ns | |0.00 |0.00 |0.00 |0.00 |0.00 |0.00 |
+| distance3d tuple no acc |ns |ns | |0.49 |0.33 |0.47 |ns |ns |
+| distance3d nest acc |ns |ns |ns | |0.18 |ns |ns |ns |
+| distance3d nest no acc |ns |ns |ns |ns | |ns |ns |ns |
+| distance3d jolt dist |ns |ns |ns |ns |0.32 | |ns |ns |
+| distance3d jolt inter |ns |ns |0.38 |0.35 |0.20 |0.34 | |0.36 |
+| distance3d org |ns |ns |0.49 |0.46 |0.14 |0.48 |ns | |
 
 ## Folder-Structure
 - [compare-cpp/README](./compare-cpp/README.md)
