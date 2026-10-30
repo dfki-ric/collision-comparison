@@ -62,8 +62,12 @@ def get_rust_results(path):
         if dir == "report":
             continue
 
+        estimates_path = Path(path, dir, "new", "estimates.json")
+        if not estimates_path.exists():
+            # benchmark groups (used for flat sampling) are stored in target/criterion/<name>/all_cases
+            estimates_path = Path(path, dir, "all_cases", "new", "estimates.json")
         try:
-            with open(f"{path}/{dir}/new/estimates.json") as f:
+            with open(estimates_path) as f:
                 result = json.load(f)  # in ns
         except FileNotFoundError:
             # e.g., the benchmark crashed: skip only this algorithm, keep the results of the others

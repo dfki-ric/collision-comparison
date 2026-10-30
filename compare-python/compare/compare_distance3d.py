@@ -48,14 +48,15 @@ def benchmark_nesterov_accelerated_primitives_with_acceleration():
         gjk_nesterov_accelerated_primitives(cases[i][0][0], cases[i][1][0], use_nesterov_acceleration=True)
 
 
-# Run all functions once to force numba to compile them.
-# This avoids a constant overhead for the first time the benchmarks are run.
-# Simply using @njit(cache=True) does not seem to help with this
-benchmark_original()
-benchmark_jolt_intersection()
-benchmark_jolt_distance()
-benchmark_nesterov_accelerated()
-benchmark_nesterov_accelerated_with_acceleration()
+# Warm-up: run all functions 10 times before the measurement, as for the other implementations.
+# The first run forces numba to compile them, which avoids a constant overhead for the first time the benchmarks
+# are run (simply using @njit(cache=True) does not seem to help with this).
+for _ in range(10):
+    benchmark_original()
+    benchmark_jolt_intersection()
+    benchmark_jolt_distance()
+    benchmark_nesterov_accelerated()
+    benchmark_nesterov_accelerated_with_acceleration()
 
 result = {}
 
