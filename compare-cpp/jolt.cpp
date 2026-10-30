@@ -166,9 +166,10 @@ namespace compare::Jolt {
         Mat44 transform_1_to_0 = jolt_case.transform0.InversedRotationTranslation() * jolt_case.transform1;
         TransformedConvexObject transformed1(transform_1_to_0, *collider1_support);
 
+        // maximum squared distance FLT_MAX: never stop early, always compute the distance
         float dist_squared = closestPoint.GetClosestPoints(
             *collider0_support, transformed1,
-            0.000001f, 100.0f,
+            0.000001f, FLT_MAX,
             initialSeparatingAxis,
             outPointA, outPointB
             );
