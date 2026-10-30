@@ -88,9 +88,10 @@ cd JoltPhysics/Build \
  && make -j 8 \
  && cd ../../..
 pwd
+# libccd must be built in double precision: in single precision, its GJK misses most intersections of small meshes
 cd libccd \
  && mkdir -p build && cd build \
- && cmake -G "Unix Makefiles" .. \
+ && cmake -G "Unix Makefiles" -DENABLE_DOUBLE_PRECISION=ON .. \
  && make \
  && cd ../..
 
