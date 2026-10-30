@@ -84,7 +84,9 @@ namespace compare::Jolt {
             // increase resolution of the hull (=number of points inside the hull) as much as possible
             // also keep in mind that jolt automatically simplifies all meshes to a maximum of 256 vertices
             // when converting to a convex hull
-            mesh_settings.mHullTolerance = 1e-10;
+            // 1e-4 (0.1 mm) is the smallest tolerance for which Jolt can build the hulls of all meshes in the
+            // benchmark data, with smaller values hull building fails for some meshes (Jolt's default is 1e-3)
+            mesh_settings.mHullTolerance = 1e-4;
             auto result = new JPH::Shape::ShapeResult();
             auto mesh = new JPH::ConvexHullShape(mesh_settings, *result);
 
