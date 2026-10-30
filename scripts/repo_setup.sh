@@ -23,6 +23,9 @@ unzip_dataset() {
 }
 
 unzip_dataset uc1_ur10_collision
+unzip_dataset uc2_ur10_collision
+unzip_dataset uc5_ur10_collision
+unzip_dataset uc6_ur10_collision
 unzip_dataset complex_env_dual_arm_collision
 unzip_dataset complex_env_dual_arm_collision_max256verts
 unzip_dataset icospheres_of_different_vertex_counts

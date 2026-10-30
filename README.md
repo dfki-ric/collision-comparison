@@ -44,10 +44,11 @@ docker buildx build -t compare .
 ### 2. Start a container
 From the root of the repository:
 ```bash
-docker run --mount type=bind,source=".",target="/collision-comparison" --rm -it --entrypoint bash compare
+docker run --mount type=bind,source=".",target="/collision-comparison" -e BENCHMARK_COMPUTER=PC1 --rm -it --entrypoint bash compare
 cd /collision-comparison
 ```
 The conda environment `collision_env` is activated automatically.
+Replace `PC1` with a name for the computer: it is stored with the results (the host name of a container is random).
 Alternatively, open the repository as a dev container (see `.devcontainer/devcontainer.json`).
 
 ### 3. Set up the repository
@@ -75,14 +76,15 @@ bash scripts/setup_repo_and_start_all_benchmarks.sh
 
 To run only specific benchmarks, comment out the others in `scripts/setup_repo_and_start_all_benchmarks.sh`,
 or run the scripts in `scripts/benchmarks` directly, e.g., `bash scripts/benchmarks/benchmark_uc1_ur10.sh`.
-The results of each case file are stored in `results/`, and case files that already have results are skipped,
-so empty `results/` before you start a different benchmark.
+The results of each case file are stored in `results/<dataset>/<case file number>/`. Case files that already have
+results are skipped, so an interrupted benchmark can simply be restarted and continues where it stopped.
+To repeat a benchmark from scratch, delete its folder in `results/`.
 
 ## Results
-### How many Folders are done?
+### How many case files are done?
+Number of finished case files per dataset:
 ```bash
-cd results
-tree -L 1 | tail -1
+for d in results/*/; do echo "$d $(ls "$d" | grep -c '^[0-9]*$')"; done
 ```
 
 ### Analyzing Results
