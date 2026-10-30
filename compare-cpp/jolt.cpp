@@ -94,10 +94,20 @@ namespace compare::Jolt {
         }
     }
 
+    Mat44 get_shape_transform(Collider collider){
+        Mat44 transform = get_transform(collider);
+        // Jolt's cylinders and capsules are aligned with the y axis, the data uses the z axis:
+        // rotate by 90 degrees about x, which maps y to z
+        if (collider.type == ColliderType::Cylinder || collider.type == ColliderType::Capsule){
+            transform = transform * Mat44::sRotationX(0.5f * JPH::JPH_PI);
+        }
+        return transform;
+    }
+
     void get_case(Collider collider0, Collider collider1, JoltCase& jolt_case){
 
-        jolt_case.transform0 = get_transform(collider0);
-        jolt_case.transform1 = get_transform(collider1);
+        jolt_case.transform0 = get_shape_transform(collider0);
+        jolt_case.transform1 = get_shape_transform(collider1);
 
         get_collider(collider0, jolt_case.collider0);
         get_collider(collider1, jolt_case.collider1);
