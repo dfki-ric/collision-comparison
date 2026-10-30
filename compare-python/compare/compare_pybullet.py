@@ -1,9 +1,9 @@
 import json
+import timeit
 
 import numpy as np
 import pybullet as pb
 import pytransform3d.rotations as pr
-from distance3d import benchmark
 from src import get_nao_bvh, load_test_file
 
 COLLISION_SHAPES = [
@@ -77,20 +77,19 @@ last_collision_pair = collision_objects[-1]
 dist = pb.getClosestPoints(last_collision_pair[0], last_collision_pair[1], np.inf, physicsClientId=pcid)[0][8]
 dist = pb.getClosestPoints(last_collision_pair[0], last_collision_pair[1], np.inf, physicsClientId=pcid)[0][8]
 
-timer = benchmark.Timer()
-timer.start("pybullet")
-#pb.performCollisionDetection(pcid)
-for _ in range(10):
+def benchmark_pybullet():
+    #pb.performCollisionDetection(pcid)
     for (c1, c2) in collision_objects:
             dist = pb.getClosestPoints(c1, c2, np.inf, physicsClientId=pcid)[0][8]
             #dist = len(pb.getContactPoints(c1, c2, physicsClientId=pcid)) > 0
 
 result = {}
 
-duration = timer.stop("pybullet")
-micro = duration * 1000000
-result["Pybullet"] = micro / 10.0
-print(f"Pybullet: {micro}")
+# same as for distance3d: median of 10 repetitions
+times = timeit.repeat(benchmark_pybullet, repeat=10, number=1)
+micro = np.median(times) * 1000000
+result["Pybullet"] = micro
+print(f"Pybullet: {micro:.2f}")
 
 pb.disconnect(physicsClientId=pcid)
 

@@ -60,30 +60,30 @@ benchmark_nesterov_accelerated_with_acceleration()
 result = {}
 
 times = timeit.repeat(benchmark_original, repeat=10, number=1)
-micro = np.mean(times) * 1000000
+micro = np.median(times) * 1000000
 result["Original"] = micro
 print(f"Original: {micro:.2f}")
 
 
 
 times = timeit.repeat(benchmark_jolt_intersection, repeat=10, number=1)
-micro = np.mean(times) * 1000000
+micro = np.median(times) * 1000000
 result["Jolt (intersection)"] = micro
 print(f"Jolt (intersection): {micro:.2f}")
 
 times = timeit.repeat(benchmark_jolt_distance, repeat=10, number=1)
-micro = np.mean(times) * 1000000
+micro = np.median(times) * 1000000
 result["Jolt (distance)"] = micro
 print(f"Jolt (distance): {micro:.2f}")
 
 
 times = timeit.repeat(benchmark_nesterov_accelerated, repeat=10, number=1)
-micro = np.mean(times) * 1000000
+micro = np.median(times) * 1000000
 result["Nesterov"] = micro
 print(f"Nesterov: {micro:.2f}")
 
 times = timeit.repeat(benchmark_nesterov_accelerated_with_acceleration, repeat=10, number=1)
-micro = np.mean(times) * 1000000
+micro = np.median(times) * 1000000
 result["Nesterov (with acceleration)"] = micro
 print(f"Nesterov (with acceleration): {micro:.2f}")
 

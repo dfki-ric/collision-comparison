@@ -69,7 +69,7 @@ def get_rust_results(path):
             warnings.warn(f"No rust results found under {path}")
             return {}
 
-        median = result["mean"]["point_estimate"] / 1000
+        median = result["median"]["point_estimate"] / 1000
         data[f"{dir}"] = median
 
     return data
