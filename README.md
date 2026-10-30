@@ -68,7 +68,7 @@ cd ..
 ```
 
 ### 5. Run the benchmarks
-Run all benchmarks (this takes about 48 hours). The script runs the setup, all benchmarks, and compiles the results
+Run all benchmarks (this takes several days). The script runs the setup, all benchmarks, and compiles the results
 into CSV files:
 ```bash
 bash scripts/setup_repo_and_start_all_benchmarks.sh
@@ -78,7 +78,8 @@ To run only specific benchmarks, comment out the others in `scripts/setup_repo_a
 or run the scripts in `scripts/benchmarks` directly, e.g., `bash scripts/benchmarks/benchmark_uc1_ur10.sh`.
 The results of each case file are stored in `results/<dataset>/<case file number>/`. Case files that already have
 results are skipped, so an interrupted benchmark can simply be restarted and continues where it stopped.
-To repeat a benchmark from scratch, delete its folder in `results/`.
+Case files that failed (missing case file, crashed benchmark) are listed in `results/<dataset>/failures.log`, get no
+results folder and are run again after a restart. To repeat a benchmark from scratch, delete its folder in `results/`.
 
 ## Results
 ### How many case files are done?
@@ -88,8 +89,21 @@ for d in results/*/; do echo "$d $(ls "$d" | grep -c '^[0-9]*$')"; done
 ```
 
 ### Analyzing Results
-The CSV files generated during the previous step can be used in the evaluation notebooks located in `compare-python/analyze_backup/analyze_new`.
-Every row in a CSV file contains the time per collision query (median of the repetitions) for every algorithm, for that case file.
+Every benchmark writes a CSV file `<dataset>_<computer>_<timestamp>.csv` to the root of the repository. Every row
+corresponds to one case file and contains the time for all collision checks of the case file in microseconds (median
+of 10 repetitions after 10 warm-up runs) for every implementation, the number of collision checks, and, for the
+icosphere sweeps, the number of faces and the distances.
+
+The analysis checks the data quality, computes statistics of the runtime distributions with violin plots, and
+compares implementations pairwise (paired probability of improvement and speedup with bootstrap confidence intervals):
+```bash
+cd compare-python/analyze
+python run_analysis.py ../../<dataset>_<computer>_<timestamp>.csv [...] --results-dir ../../results --output analysis_output
+```
+Each CSV file is one task (one benchmark on one computer). The comparisons are averaged over all given CSV files,
+so the selection of CSV files determines the aggregation. `--results-dir` is only needed to check the warm-up with
+the individual measured runs. See `python run_analysis.py --help` for the output files.
+The old analysis scripts and notebooks are in `compare-python/analyze_backup`.
 
 ## Funding
 
