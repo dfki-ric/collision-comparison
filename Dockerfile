@@ -1,149 +1,64 @@
+# Environment for the benchmarks: system packages, Rust and a conda environment with the Python dependencies.
+# The libraries themselves are downloaded and built by scripts/repo_setup.sh in the mounted repository (see README.md).
 FROM ubuntu:24.04
 
-# --- Dependencies ---
+# use bash, so that "source" works in RUN commands
+SHELL ["/bin/bash", "-c"]
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Build tools and libraries for the C++ benchmark (HPP-FCL needs Eigen, Boost and assimp, Bullet needs OpenGL headers)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential\
-    libeigen3-dev \
-    libboost-all-dev \
-    libassimp-dev \
+    build-essential \
     clang \
-    ninja-build \
-    curl \
-    libglu1-mesa-dev \
-    liboctomap-dev \
-    python3 \
-    python3-pip \
-    python3-venv \
-    python3-dev \
-    git \
     cmake \
     make \
-    libcmocka-dev \
+    ninja-build \
+    git \
+    ca-certificates \
+    curl \
     wget \
     unzip \
     zip \
+    libeigen3-dev \
+    libboost-all-dev \
+    libassimp-dev \
+    liboctomap-dev \
+    libglu1-mesa-dev \
+    # runtime dependencies of open3d:
+    libgl1 \
+    libglx0 \
+    libegl1 \
+    libglu1-mesa \
+    libgomp1 \
+    libusb-1.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender1 \
+    libxi6 \
+    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
-## Install Rust
+# the repository is mounted from the host and belongs to another user than root:
+# allow git to work in it (e.g., for the submodules of HPP-FCL)
+RUN git config --global --add safe.directory '*'
+
+# Rust
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
-# --- Long Libary Builds ---
-RUN #mkdir collision-comparison
-
-# Jolt
-#RUN cd collision-comparison \
-# && git clone https://github.com/MaartenBehn/JoltPhysics.git \
-# && cd JoltPhysics \
-# && git checkout No-broadphase \
-# && cd Build \
-# && sh ./cmake_linux_clang_gcc.sh Distribution \
-# && cd Linux_Distribution \
-# && make -j 8
-
-# Libccd
-#RUN cd collision-comparison \
-# && git clone https://github.com/danfis/libccd.git \
-# && cd libccd \
-# && mkdir build && cd build \
-# && cmake -G "Unix Makefiles" .. \
-# && make
-
-# Bullet
-#RUN cd collision-comparison \
-# && git clone https://github.com/MaartenBehn/bullet3.git
-
-# Fcl
-#RUN cd collision-comparison \
-# && git clone https://github.com/MaartenBehn/hpp-fcl.git \
-# && cd hpp-fcl \
-# && git submodule update --init
-
-# OpenGJK
-#RUN git clone https://github.com/MattiaMontanari/openGJK.git \
-# && cd openGJK \
-# && cmake -E make_directory build \
-# && cmake -E chdir build cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
-# && cmake --build build
-
-
-# Compare-cpp dependecies
-#RUN cd collision-comparison \
-# && git clone https://github.com/nlohmann/json.git \
-# && git clone https://github.com/martinus/nanobench.git \
-# && git clone https://github.com/g-truc/glm.git
-
-# Install miniconda
+# Miniconda with the environment collision_env
 RUN cd /tmp \
     && wget https://repo.anaconda.com/miniconda/Miniconda3-py313_26.1.1-1-Linux-x86_64.sh \
     && bash ./Miniconda3-py313_26.1.1-1-Linux-x86_64.sh -b -p /opt/miniconda \
     && rm Miniconda3-py313_26.1.1-1-Linux-x86_64.sh
-
-# Set up miniconda environment
-SHELL ["/bin/bash", "-c"]
 RUN source /opt/miniconda/bin/activate \
     && conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main \
     && conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r \
     && conda create --name collision_env python=3.12 -y
 
-# Activate the miniconda env when entering the container
+# activate the environment when entering the container
 RUN echo "source /opt/miniconda/bin/activate collision_env" >> ~/.bashrc
 
-# distance3d
-#RUN cd collision-comparison \
-# && git clone https://github.com/MaartenBehn/distance3d.git
-
-# Install distance3d
-#RUN cd collision-comparison \
-# && source /opt/miniconda/bin/activate collision_env \
-# && pip install -e ./distance3d
-
-# Install Pybullet and needed python dependencies
+# Python dependencies (distance3d is installed from its repository by scripts/repo_setup.sh)
 RUN source /opt/miniconda/bin/activate collision_env \
- && pip install pybullet open3d
-
-# collision-rs
-#RUN cd collision-comparison \
-# && git clone https://github.com/MaartenBehn/collision-rs.git
-
-# gjk-rs
-#RUN cd collision-comparison \
-# && git clone https://github.com/MaartenBehn/gjk-rs.git
-
-# --- Copy folders ---
-#ADD results collision-comparison/results
-#ADD scripts collision-comparison/scripts
-#ADD data collision-comparison/data
-
-# --- Compare-cpp ---
-#ADD compare-cpp collision-comparison/compare-cpp
-#RUN rm -rf collision-comparison/compare-cpp/build_release
-
-#RUN cd collision-comparison/compare-cpp \
-# && mkdir build_release/
-
-#RUN cd collision-comparison/ \
-# && sh scripts/compile/compile_compare_release.sh
-
-
-# --- Compare-Python ---
-#ADD compare-python collision-comparison/compare-python
-
-#ENV PYTHONPATH="${PYTHONPATH}:collision-comparison/compare-python"
-
-# Run python benchmark once
-#RUN cd collision-comparison \
-# && sh scripts/benchmarks/benchmark_python.sh
-
-
-# --- Compare-rs ---
-#ADD compare-rs collision-comparison/compare-rs
-#RUN rm -rf collision-comparison/compare-rs/target
-
-# set the shell to bash instead of sh, else the "source" command will not work
-SHELL ["/bin/bash", "-c"]
-
-# Run rust benchmark once
-#RUN cd collision-comparison \
-# && source "$HOME/.cargo/env" \
-# && sh scripts/benchmarks/benchmark_rust.sh
-
+    && pip install pybullet open3d pandas

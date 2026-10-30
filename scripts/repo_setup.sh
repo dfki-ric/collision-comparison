@@ -1,116 +1,83 @@
 #!/bin/bash
-source ~/.bashrc
+# Sets up the repository for the benchmarks. Run it from the repository root inside the Docker container,
+# which provides the system packages and Python dependencies (see Dockerfile).
+# It unpacks the benchmark data, downloads and builds the libraries, and compiles the C++ benchmark.
+# It can be run again: data, repositories and builds that already exist are kept.
 
 source /opt/miniconda/bin/activate collision_env
 
-# temporary: better move this to the Dockerfile
-apt update -y
-apt install -y unzip
-pip install open3d
-pip install pandas
+# stop at the first failing step
+set -e
 
-# install open3d dependencies manually because this was causing problems before:
-apt-get update && apt-get install -y --no-install-recommends \
-    libgl1 \
-    libglx0 \
-    libegl1 \
-    libglu1-mesa \
-    libgomp1 \
-    libusb-1.0-0 \
-    libsm6 \
-    libxext6 \
-    libxrender1 \
-    libxi6 \
-    libglib2.0-0
+# Benchmark data
 
 mkdir -p results
 
-if [ ! -d "data/complex_env_dual_arm_collision" ]; then
-  echo "Unzipping main benchmark data..."
-  cd data
-  unzip -q complex_env_dual_arm_collision.zip
-  cd ..
-fi
+unzip_dataset() {
+  local name=$1
+  if [ -d "data/$name" ]; then
+    return
+  fi
+  echo "Unzipping $name..."
+  (cd data && unzip -q "$name.zip")
+}
 
-if [ ! -d "data/complex_env_dual_arm_collision_max256verts" ]; then
-  echo "Unzipping benchmark data for simplified meshes..."
-  cd data
-  unzip -q complex_env_dual_arm_collision_max256verts.zip
-  cd ..
-fi
+unzip_dataset uc1_ur10_collision
+unzip_dataset complex_env_dual_arm_collision
+unzip_dataset complex_env_dual_arm_collision_max256verts
+unzip_dataset icospheres_of_different_vertex_counts
+unzip_dataset icospheres_fixed_size_distance_sweep
 
-if [ ! -d "data/icospheres_of_different_vertex_counts" ]; then
-  echo "Unzipping benchmark data for icospheres of different vertex counts..."
-  cd data
-  unzip -q icospheres_of_different_vertex_counts.zip
-  cd ..
-fi
-
+# too large for GitHub, it has to be generated (see README.md)
 if [ ! -d "data/icospheres_of_different_high_vertex_counts" ]; then
-  echo "Unzipping benchmark data for icospheres of high vertex counts..."
-  cd data
-  unzip -q icospheres_of_different_high_vertex_counts.zip
-  cd ..
+  echo "Note: data/icospheres_of_different_high_vertex_counts is missing, generate it with" \
+       "compare-python/test_file/from_icospheres_of_different_high_vertex_counts.py"
 fi
 
-if [ ! -d "data/uc1_ur10_collision" ]; then
-  echo "Unzipping primitive benchmark data..."
-  cd data
-  unzip -q uc1_ur10_collision.zip
-  cd ..
-fi
+# Libraries and dependencies
 
-if [ ! -d "data/icospheres_fixed_size_distance_sweep" ]; then
-  echo "Unzipping benchmark data for icosphere distance sweep..."
-  cd data
-  unzip -q icospheres_fixed_size_distance_sweep.zip
-  cd ..
-fi
+clone() {
+  local url=$1
+  local dir
+  dir=$(basename "$url" .git)
+  if [ ! -d "$dir" ]; then
+    git clone "$url"
+  fi
+}
 
+# collision detection libraries (forks contain changes for the benchmark)
+clone https://github.com/MaartenBehn/JoltPhysics.git
+clone https://github.com/danfis/libccd.git
+clone https://github.com/MaartenBehn/bullet3.git
+clone https://github.com/MaartenBehn/hpp-fcl.git
+clone https://github.com/AlexanderFabisch/distance3d.git
 
-# Clone algorithms not already in repo:
-git clone https://github.com/MaartenBehn/JoltPhysics.git
-git clone https://github.com/danfis/libccd.git
-git clone https://github.com/MaartenBehn/bullet3.git
-git clone https://github.com/MaartenBehn/hpp-fcl.git
+# dependencies of the C++ benchmark
+clone https://github.com/nlohmann/json.git
+clone https://github.com/martinus/nanobench.git
+clone https://github.com/g-truc/glm.git
 
-git clone https://github.com/AlexanderFabisch/distance3d.git
+# Build
 
-# Clone dependencies for the C++ part of the benchmarks:
-git clone https://github.com/nlohmann/json.git
-git clone https://github.com/martinus/nanobench.git
-git clone https://github.com/g-truc/glm.git
-
-# Compile algorithms:
-cd JoltPhysics/Build \
+(cd JoltPhysics/Build \
  && sh ./cmake_linux_clang_gcc.sh Distribution \
  && cd Linux_Distribution \
- && make -j 8 \
- && cd ../../..
-pwd
+ && make -j "$(nproc)")
+
 # libccd must be built in double precision: in single precision, its GJK misses most intersections of small meshes
-cd libccd \
- && mkdir -p build && cd build \
+(mkdir -p libccd/build \
+ && cd libccd/build \
  && cmake -G "Unix Makefiles" -DENABLE_DOUBLE_PRECISION=ON .. \
- && make \
- && cd ../..
+ && make -j "$(nproc)")
 
-cd hpp-fcl \
- && git submodule update --init \
- && cd ..
+# HPP-FCL and Bullet are built together with the C++ benchmark (see compare-cpp/CMakeLists.txt)
+(cd hpp-fcl && git submodule update --init)
 
-cd openGJK \
- && cmake -E make_directory build \
- && cmake -E chdir build cmake -DCMAKE_BUILD_TYPE=Release -G Ninja .. \
- && cmake --build build \
- && cd ..
+# distance3d still uses np.row_stack, which was removed in numpy 2.5, so numpy is pinned to 2.4
+pip install -e ./distance3d "numpy==2.4"
 
-pip install -e ./distance3d
+mkdir -p compare-cpp/build_release
+bash scripts/compile/compile_compare_release.sh
 
-mkdir -p compare-cpp/build_release/ \
- && bash scripts/compile/compile_compare_release.sh
-
+# remove old Rust builds, the Rust benchmark builds everything again
 rm -rf compare-rs/target
-
-# distance3d still uses np.row_stack, which was removed in numpy 2.5. As a workaround, pin the numpy version to 2.4:
-pip install numpy==2.4
