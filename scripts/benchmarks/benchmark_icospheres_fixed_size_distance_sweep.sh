@@ -30,5 +30,5 @@ do
 
 done
 
-python3 compare-python/analyze_new/compile_CSV_from_results.py results data/icospheres_fixed_size_distance_sweep
+python3 compare-python/analyze_backup/analyze_new/compile_CSV_from_results.py results data/icospheres_fixed_size_distance_sweep
 

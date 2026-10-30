@@ -29,5 +29,5 @@ do
   ((i=i+1))
 done
 
-python3 compare-python/analyze_new/compile_CSV_from_results.py results data/complex_env_dual_arm_collision
+python3 compare-python/analyze_backup/analyze_new/compile_CSV_from_results.py results data/complex_env_dual_arm_collision
 

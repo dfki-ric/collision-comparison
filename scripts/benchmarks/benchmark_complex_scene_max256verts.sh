@@ -28,5 +28,5 @@ do
    fi
 done
 
-python3 compare-python/analyze_new/compile_CSV_from_results.py results data/complex_env_dual_arm_collision_max256verts
+python3 compare-python/analyze_backup/analyze_new/compile_CSV_from_results.py results data/complex_env_dual_arm_collision_max256verts
 

@@ -86,7 +86,7 @@ tree -L 1 | tail -1
 ```
 
 ### Analyzing Results
-The CSV files generated during the previous step can be used in the evaluation notebooks located in `compare-python/analyze_new`.
+The CSV files generated during the previous step can be used in the evaluation notebooks located in `compare-python/analyze_backup/analyze_new`.
 Every row in a CSV file contains the time per collision query (median of the repetitions) for every algorithm, for that case file.
 
 ## Funding
