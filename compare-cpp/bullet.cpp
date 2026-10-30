@@ -13,10 +13,11 @@
 namespace compare::Bullet {
     btTransform get_transform(Collider collider){
         return btTransform(
+                // btMatrix3x3 takes rows, colliderToOrigen[r][c] is row r, column c
                 btMatrix3x3(
-                        btVector3(collider.colliderToOrigen[0][0], collider.colliderToOrigen[1][0], collider.colliderToOrigen[2][0]),
-                        btVector3(collider.colliderToOrigen[0][1], collider.colliderToOrigen[1][1], collider.colliderToOrigen[2][1]),
-                        btVector3(collider.colliderToOrigen[0][2], collider.colliderToOrigen[1][2], collider.colliderToOrigen[2][2])),
+                        btVector3(collider.colliderToOrigen[0][0], collider.colliderToOrigen[0][1], collider.colliderToOrigen[0][2]),
+                        btVector3(collider.colliderToOrigen[1][0], collider.colliderToOrigen[1][1], collider.colliderToOrigen[1][2]),
+                        btVector3(collider.colliderToOrigen[2][0], collider.colliderToOrigen[2][1], collider.colliderToOrigen[2][2])),
                 btVector3(collider.colliderToOrigen[0][3], collider.colliderToOrigen[1][3], collider.colliderToOrigen[2][3]));
     }
 
