@@ -14,20 +14,17 @@ pub struct NcollideCollider{
 }
 
 pub fn get_collider(collider: &Collider) -> NcollideCollider {
+    // na::Matrix3::new takes the entries row by row, collider.transform.col(c)[r] is row r, column c
     let matrix = na::Matrix3::new(
-        collider.transform.col(0)[0], collider.transform.col(0)[1], collider.transform.col(0)[2],
-        collider.transform.col(1)[0], collider.transform.col(1)[1], collider.transform.col(1)[2],
-        collider.transform.col(2)[0], collider.transform.col(2)[1], collider.transform.col(2)[2]);
+        collider.transform.col(0)[0], collider.transform.col(1)[0], collider.transform.col(2)[0],
+        collider.transform.col(0)[1], collider.transform.col(1)[1], collider.transform.col(2)[1],
+        collider.transform.col(0)[2], collider.transform.col(1)[2], collider.transform.col(2)[2]);
 
     let rotation = na::Rotation3::from_matrix(&matrix);
     let pos = na::Vector3::new(collider.center[0], collider.center[1], collider.center[2]);
 
-    let axis_angle = if rotation.axis_angle().is_some() {
-            *rotation.axis_angle().unwrap().0} 
-        else {
-            na::Vector3::new(0.0, 0.0, 0.0)
-        };
-    let transform = Isometry3::new(pos, axis_angle);
+    // Isometry3::new expects the rotation axis scaled by the rotation angle
+    let transform = Isometry3::new(pos, rotation.scaled_axis());
 
     NcollideCollider{
         ball: Ball::new(collider.radius),
