@@ -66,8 +66,9 @@ def get_rust_results(path):
             with open(f"{path}/{dir}/new/estimates.json") as f:
                 result = json.load(f)  # in ns
         except FileNotFoundError:
-            warnings.warn(f"No rust results found under {path}")
-            return {}
+            # e.g., the benchmark crashed: skip only this algorithm, keep the results of the others
+            warnings.warn(f"No rust results found under {path}/{dir}")
+            continue
 
         median = result["median"]["point_estimate"] / 1000
         data[f"{dir}"] = median

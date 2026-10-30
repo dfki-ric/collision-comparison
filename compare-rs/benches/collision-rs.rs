@@ -61,7 +61,9 @@ fn fast_config() -> Criterion {
 criterion_group! {
     name = benches;
     config = fast_config();
-    targets = original_benchmark_test_file, original_distance_benchmark_test_file, nasterov_benchmark_test_file
+    // collision-rs' GJK distance panics on some cases (degenerate simplex), which aborts this benchmark binary:
+    // run it last, so that the other benchmarks still produce results
+    targets = original_benchmark_test_file, nasterov_benchmark_test_file, original_distance_benchmark_test_file
 }
 criterion_main!(benches);
 
