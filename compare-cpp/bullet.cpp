@@ -44,6 +44,8 @@ namespace compare::Bullet {
 
         if (collider.type == ColliderType::Box){
             bullet_collider.box = btBoxShape(btVector3(get_size_x(collider) / 2, get_size_y(collider) / 2, get_size_z(collider) / 2));
+            // decrease collision margin from 4cm to 0.1mm to increase precision (the margin rounds the corners)
+            bullet_collider.box.setMargin(0.0001f);
             bullet_collider.shape = &bullet_collider.box;
         }
 
