@@ -134,8 +134,9 @@ namespace compare::Jolt {
 
         // include the convex radius (radius of spheres and capsules), so that the full shapes are tested
         auto supportMode = JPH::ConvexShape::ESupportMode::IncludeConvexRadius;
-        auto buffer0 = JPH::ConvexShape::SupportBuffer();
-        auto buffer1 = JPH::ConvexShape::SupportBuffer();
+        // default-initialized: "= SupportBuffer()" would zero 2 x 4 KB on every call
+        JPH::ConvexShape::SupportBuffer buffer0;
+        JPH::ConvexShape::SupportBuffer buffer1;
         auto scale = JPH::Vec3(1,1,1);
         auto collider0_support = jolt_case.collider0.shape->GetSupportFunction(supportMode, buffer0, scale);
         auto collider1_support = jolt_case.collider1.shape->GetSupportFunction(supportMode, buffer1, scale);
@@ -152,8 +153,9 @@ namespace compare::Jolt {
         JPH::Vec3 initialSeparatingAxis(0,0,0);
 
         auto supportMode = JPH::ConvexShape::ESupportMode::ExcludeConvexRadius;
-        auto buffer0 = JPH::ConvexShape::SupportBuffer();
-        auto buffer1 = JPH::ConvexShape::SupportBuffer();
+        // default-initialized: "= SupportBuffer()" would zero 2 x 4 KB on every call
+        JPH::ConvexShape::SupportBuffer buffer0;
+        JPH::ConvexShape::SupportBuffer buffer1;
         auto scale = JPH::Vec3(1,1,1);
         auto collider0_support = jolt_case.collider0.shape->GetSupportFunction(supportMode, buffer0, scale);
         auto collider1_support = jolt_case.collider1.shape->GetSupportFunction(supportMode, buffer1, scale);
