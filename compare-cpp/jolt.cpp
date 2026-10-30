@@ -56,7 +56,8 @@ namespace compare::Jolt {
         }
 
         if (collider.type == ColliderType::Cylinder){
-            auto cylinder = new CylinderShape(get_height(collider) / 2, get_radius(collider), JPH::min(get_height(collider) / 2, get_radius(collider)));
+            // convex radius 0: the shape must not be rounded, otherwise it differs from the reference geometry
+            auto cylinder = new CylinderShape(get_height(collider) / 2, get_radius(collider), 0.0f);
             jolt_collider.shape = cylinder;
         }
 
@@ -66,8 +67,8 @@ namespace compare::Jolt {
         }
 
         if (collider.type == ColliderType::Box){
-            auto box = new BoxShape(JPH::Vec3(get_size_x(collider) / 2, get_size_y(collider) / 2, get_size_z(collider) / 2),
-                                          JPH::min(get_size_x(collider) / 2, JPH::min(get_size_y(collider) / 2, get_size_z(collider) / 2)));
+            // convex radius 0: the shape must not be rounded, otherwise it differs from the reference geometry
+            auto box = new BoxShape(JPH::Vec3(get_size_x(collider) / 2, get_size_y(collider) / 2, get_size_z(collider) / 2), 0.0f);
             jolt_collider.shape = box;
         }
 
@@ -78,7 +79,8 @@ namespace compare::Jolt {
                 jolt_collider.vertexList.push_back(vertex);
             }
 
-            auto mesh_settings = JPH::ConvexHullShapeSettings(jolt_collider.vertexList);
+            // convex radius 0: the default (5 cm) shrinks the hull and rounds it
+            auto mesh_settings = JPH::ConvexHullShapeSettings(jolt_collider.vertexList, 0.0f);
             // increase resolution of the hull (=number of points inside the hull) as much as possible
             // also keep in mind that jolt automatically simplifies all meshes to a maximum of 256 vertices
             // when converting to a convex hull
@@ -113,7 +115,8 @@ namespace compare::Jolt {
         GJKClosestPoint closestPoint;
         JPH::Vec3 initialSeparatingAxis(0,0,0);
 
-        auto supportMode = JPH::ConvexShape::ESupportMode::ExcludeConvexRadius;
+        // include the convex radius (radius of spheres and capsules), so that the full shapes are tested
+        auto supportMode = JPH::ConvexShape::ESupportMode::IncludeConvexRadius;
         auto buffer0 = JPH::ConvexShape::SupportBuffer();
         auto buffer1 = JPH::ConvexShape::SupportBuffer();
         auto scale = JPH::Vec3(1,1,1);
@@ -151,7 +154,9 @@ namespace compare::Jolt {
             outPointA, outPointB
             );
 
-        return JPH::sqrt(dist_squared);
+        // GJK ran on the shapes without their convex radius (radius of spheres and capsules), so subtract it
+        float convex_radius = collider0_support->GetConvexRadius() + collider1_support->GetConvexRadius();
+        return JPH::max(0.0f, JPH::sqrt(dist_squared) - convex_radius);
     }
 }
 
