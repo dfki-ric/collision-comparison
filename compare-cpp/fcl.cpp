@@ -58,50 +58,49 @@ namespace compare::FCL {
 
     void get_collider(Collider collider, FCLCollider& fcl_collider){
         if (collider.type == ColliderType::Sphere){
-            fcl_collider.sphere = Sphere(get_radius(collider));
-            fcl_collider.shape = &fcl_collider.sphere;
+            fcl_collider.shape = new Sphere(get_radius(collider));
         }
 
         if (collider.type == ColliderType::Cylinder){
-            fcl_collider.cylinder = Cylinder(get_radius(collider), get_height(collider));
-            fcl_collider.shape = &fcl_collider.cylinder;
+            fcl_collider.shape = new Cylinder(get_radius(collider), get_height(collider));
         }
 
         if (collider.type == ColliderType::Capsule){
-            fcl_collider.capsule = Capsule(get_radius(collider), get_height(collider));
-            fcl_collider.shape = &fcl_collider.capsule;
+            fcl_collider.shape = new Capsule(get_radius(collider), get_height(collider));
         }
 
         if (collider.type == ColliderType::Box){
-            fcl_collider.box = Box(get_size_x(collider), get_size_y(collider), get_size_z(collider));
-            fcl_collider.shape = &fcl_collider.box;
+            fcl_collider.shape = new Box(get_size_x(collider), get_size_y(collider), get_size_z(collider));
         }
 
         if (collider.type == ColliderType::Mesh){
 
-            unsigned int vertex_count = get_vertex_count(collider);
-            fcl_collider.vertecies = new Vec3f[vertex_count];
+            const unsigned int vertex_count = get_vertex_count(collider);
+            const auto vertices = new Vec3f[vertex_count];
             for (int i = 0; i < vertex_count; i++){
-                fcl_collider.vertecies[i][0] = collider.vertecies[i].x;
-                fcl_collider.vertecies[i][1] = collider.vertecies[i].y;
-                fcl_collider.vertecies[i][2] = collider.vertecies[i].z;
+                vertices[i][0] = collider.vertecies[i].x;
+                vertices[i][1] = collider.vertecies[i].y;
+                vertices[i][2] = collider.vertecies[i].z;
             }
 
-            unsigned int index_count = get_index_count(collider);
-            unsigned int triangle_count = index_count / 3;
-            fcl_collider.triangles = new Triangle[triangle_count];
+            const unsigned int index_count = get_index_count(collider);
+            const unsigned int triangle_count = index_count / 3;
+            const auto triangles = new Triangle[triangle_count];
             for (int i = 0; i < triangle_count; i++){
-                fcl_collider.triangles[i][0] = collider.indicies[i * 3];
-                fcl_collider.triangles[i][1] = collider.indicies[i * 3 + 1];
-                fcl_collider.triangles[i][2] = collider.indicies[i * 3 + 2];
+                triangles[i][0] = collider.indicies[i * 3];
+                triangles[i][1] = collider.indicies[i * 3 + 1];
+                triangles[i][2] = collider.indicies[i * 3 + 2];
             }
 
-            fcl_collider.convex = Convex<Triangle>(true, fcl_collider.vertecies, vertex_count, fcl_collider.triangles, triangle_count);
-            fcl_collider.shape = &fcl_collider.convex;
+            fcl_collider.shape = new Convex<Triangle>(
+                true,
+                vertices, vertex_count,
+                triangles, triangle_count
+                );
         }
     }
 
-    void get_case(Collider collider0, Collider collider1, FCLCase& fcl_case){
+    void get_case(Collider collider0, Collider collider1, FCLCase& fcl_case, bool force_linear_support_func){
 
         Transform3f transform0 = get_transform(collider0);
         Transform3f transform1 = get_transform(collider1);
@@ -109,35 +108,83 @@ namespace compare::FCL {
         get_collider(collider0, fcl_case.collider0);
         get_collider(collider1, fcl_case.collider1);
 
+        if (force_linear_support_func) {
+            fcl_case.mink_diff.linear_log_convex_threshold = INT32_MAX;
+        }
         fcl_case.mink_diff.set(fcl_case.collider0.shape, fcl_case.collider1.shape, transform0, transform1);
     }
 
-    void get_cases(Case* base_cases, FCLCase* fcl_cases, int length){
+    void get_cases(Case* base_cases, FCLCase* fcl_cases, int length, bool force_linear_support_func){
 
         for (int i = 0; i < length; i++) {
-            get_case(base_cases[i].collider0, base_cases[i].collider1, fcl_cases[i]);
+            get_case(base_cases[i].collider0, base_cases[i].collider1, fcl_cases[i], force_linear_support_func);
         }
     }
 
-    float get_distance(FCLCase& fcl_case){
+    float get_distance_nesterov(FCLCase& fcl_case){
         unsigned int max_iterations = 128;
         FCL_REAL tolerance = 1e-6;
         GJK gjk(max_iterations, tolerance);
         gjk.gjk_variant = GJKVariant::NesterovAcceleration;
 
-        // Same init for both solvers
-        Vec3f init_guess = Vec3f(1, 0, 0);
-        support_func_guess_t init_support_guess;
-        init_support_guess.setZero();
+        // use origin of collider 1 in the frame of collider 0 as initial support function guess
+        Vec3f init_guess = -fcl_case.mink_diff.ot1;
+        GJK::Status res_gjk = gjk.evaluate(fcl_case.mink_diff, init_guess);
 
-        // Evaluate both solvers twice, make sure they give the same solution
-        GJK::Status res_gjk = gjk.evaluate(fcl_case.mink_diff, init_guess, init_support_guess);
-
-        // std::cout << "gjk iterations:\n" << gjk.getIterations() << "\n";
-
-        // std::cout << "gjk dist:\n" << gjk.distance << "\n";
-
+        if (res_gjk  == GJK::Status::Failed){
+            std::cerr << "HPP-FCL failed to converge while calculating distance" << std::endl;
+        }
         return  gjk.distance;
+    }
+
+    bool get_intersection_nesterov(FCLCase& fcl_case){
+        unsigned int max_iterations = 128;
+        FCL_REAL tolerance = 1e-6;
+        GJK gjk(max_iterations, tolerance);
+        gjk.gjk_variant = GJKVariant::NesterovAcceleration;
+        gjk.setDistanceEarlyBreak(0);   // if the distance was proven to be more than 0, exit early
+
+        // use origin of collider 1 in the frame of collider 0 as initial support function guess
+        Vec3f init_guess = -fcl_case.mink_diff.ot1;
+        GJK::Status res_gjk = gjk.evaluate(fcl_case.mink_diff, init_guess);
+
+        if (res_gjk  == GJK::Status::Failed){
+            std::cerr << "HPP-FCL failed to converge while calculating intersection" << std::endl;
+        }
+        return res_gjk == GJK::Status::Inside;
+    }
+
+    float get_distance_default(FCLCase& fcl_case){
+        unsigned int max_iterations = 128;
+        FCL_REAL tolerance = 1e-6;
+        GJK gjk(max_iterations, tolerance);
+        gjk.gjk_variant = GJKVariant::DefaultGJK;
+
+        // use origin of collider 1 in the frame of collider 0 as initial support function guess
+        Vec3f init_guess = -fcl_case.mink_diff.ot1;
+        GJK::Status res_gjk = gjk.evaluate(fcl_case.mink_diff, init_guess);
+
+        if (res_gjk  == GJK::Status::Failed){
+            std::cerr << "HPP-FCL failed to converge while calculating distance" << std::endl;
+        }
+        return  gjk.distance;
+    }
+
+    bool get_intersection_default(FCLCase& fcl_case){
+        unsigned int max_iterations = 128;
+        FCL_REAL tolerance = 1e-6;
+        GJK gjk(max_iterations, tolerance);
+        gjk.gjk_variant = GJKVariant::DefaultGJK;
+        gjk.setDistanceEarlyBreak(0);   // if the distance was proven to be more than 0, exit early
+
+        // use origin of collider 1 in the frame of collider 0 as initial support function guess
+        Vec3f init_guess = -fcl_case.mink_diff.ot1;
+        GJK::Status res_gjk = gjk.evaluate(fcl_case.mink_diff, init_guess);
+
+        if (res_gjk  == GJK::Status::Failed){
+            std::cerr << "HPP-FCL failed to converge while calculating intersection" << std::endl;
+        }
+        return res_gjk == GJK::Status::Inside;
     }
 }
 

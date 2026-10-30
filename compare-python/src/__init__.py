@@ -12,7 +12,9 @@ from .load_uc1 import get_uc1_bvh
 from .load_uc2 import get_uc2_bvh
 from .load_uc5 import get_uc5_bvh
 from .load_uc6 import get_uc6_bvh
+from .load_complex_env import get_complex_env_bvh
 from .load_ur10 import get_ur10_tm, get_u10_bvh_complex, get_ur10_bvh_from_tm
+from .load_dual_arm import get_dual_arm_tm, get_dual_arm_bvh_from_tm
 from .test_file import write_test_file, load_test_file
 
 uc1_ur10_offset = np.eye(4)
@@ -28,6 +30,10 @@ uc5_ur10_offset[:3, 3] = np.array([0.37, 0.67, -1])
 
 uc6_ur10_offset = np.eye(4)
 uc6_ur10_offset[:3, 3] = np.array([1, -1, -1.5])
+
+complex_env_dual_arm_offset = np.eye(4)
+complex_env_dual_arm_offset[:3, :3] = Rotation.from_euler('xyz', [0, 0, 0], degrees=True).as_matrix()
+complex_env_dual_arm_offset[:3, 3] = np.array([0, 0, 0])
 
 def set_random_joints(tm):
     for joint in tm._joints:

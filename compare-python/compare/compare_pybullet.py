@@ -18,7 +18,7 @@ def _pybullet_pos_orn(A2B):
     return pos, orn
 
 
-def get_multibody(shape, pcid):
+def get_multibody(shape, mesh_path, pcid):
     if type(shape).__name__ == "Cylinder":
         pos, orn = _pybullet_pos_orn(shape.cylinder2origin)
         collision = pb.createCollisionShape(
@@ -30,16 +30,25 @@ def get_multibody(shape, pcid):
             shapeType=pb.GEOM_CAPSULE, radius=shape.radius, height=shape.height,
             physicsClientId=pcid)
     elif type(shape).__name__ == "Sphere":
-        pos, orn = shape.center, np.array([0.0, 0.0, 0.0, 1.0])
+        pos, orn = shape.center(), np.array([0.0, 0.0, 0.0, 1.0])
         collision = pb.createCollisionShape(
             shapeType=pb.GEOM_SPHERE, radius=shape.radius,
             physicsClientId=pcid)
-    else:
-        assert type(shape).__name__ == "Box"
+    elif type(shape).__name__ == "Box":
         pos, orn = _pybullet_pos_orn(shape.box2origin)
         collision = pb.createCollisionShape(
             shapeType=pb.GEOM_BOX, halfExtents=0.5 * shape.size,
             physicsClientId=pcid)
+    elif type(shape).__name__ == "MeshGraph":
+        pos, orn = _pybullet_pos_orn(shape.mesh2origin)
+        collision = pb.createCollisionShape(
+            shapeType=pb.GEOM_MESH,
+            fileName = str(mesh_path),
+            physicsClientId=pcid
+        )
+    else:
+        print("Error: Unknown collider type")
+        exit(1)
 
     multibody = pb.createMultiBody(
         baseMass=1, baseInertialFramePosition=[0, 0, 0],
@@ -54,27 +63,33 @@ pcid = pb.connect(pb.DIRECT)
 collision_objects = []
 
 cases = load_test_file("../data/current.json")
-for case in cases:
-    collider1 = case[0]
-    collider2 = case[1]
+for (collider1, mesh_path_1), (collider2, mesh_path_2) in cases:
 
-    multibody1 = get_multibody(collider1, pcid)
-    multibody2 = get_multibody(collider1, pcid)
+    multibody1 = get_multibody(collider1, mesh_path_1, pcid)
+    multibody2 = get_multibody(collider2, mesh_path_2, pcid)
 
     collision_objects.append((multibody1, multibody2))
+
+# Make sure the internal data structures are already initialized/ caches are  warmed up before starting the actual benchmark
+# Use the last entry of the case file so that during the actual benchmark,
+# PyBullet cannot reuse a potentially cached result for the first case:
+last_collision_pair = collision_objects[-1]
+dist = pb.getClosestPoints(last_collision_pair[0], last_collision_pair[1], np.inf, physicsClientId=pcid)[0][8]
+dist = pb.getClosestPoints(last_collision_pair[0], last_collision_pair[1], np.inf, physicsClientId=pcid)[0][8]
 
 timer = benchmark.Timer()
 timer.start("pybullet")
 #pb.performCollisionDetection(pcid)
-for (c1, c2) in collision_objects:
-        dist = pb.getClosestPoints(c1, c2, np.inf, physicsClientId=pcid)[0][8]
-        #dist = len(pb.getContactPoints(c1, c2, physicsClientId=pcid)) > 0
+for _ in range(10):
+    for (c1, c2) in collision_objects:
+            dist = pb.getClosestPoints(c1, c2, np.inf, physicsClientId=pcid)[0][8]
+            #dist = len(pb.getContactPoints(c1, c2, physicsClientId=pcid)) > 0
 
 result = {}
 
 duration = timer.stop("pybullet")
 micro = duration * 1000000
-result["Pybullet"] = micro
+result["Pybullet"] = micro / 10.0
 print(f"Pybullet: {micro}")
 
 pb.disconnect(physicsClientId=pcid)

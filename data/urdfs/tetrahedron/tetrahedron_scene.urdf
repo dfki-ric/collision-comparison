@@ -1,0 +1,22 @@
+<robot name="tetrahedron_scene" version="1.0">
+  <link name="world"/>
+  <joint name="tetrahedron_joint" type="fixed">
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+    <parent link="world"/>
+    <child link="tetrahedron"/>
+  </joint>
+  <link name="tetrahedron">
+    <collision name="tetrahedron_collision">
+      <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="tetrahedron.obj"/>
+      </geometry>
+    </collision>
+    <visual name="tetrahedron_visual">
+      <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="tetrahedron.obj"/>
+      </geometry>
+    </visual>
+  </link>
+</robot>

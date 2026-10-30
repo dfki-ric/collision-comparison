@@ -14,8 +14,8 @@ namespace compare::Bullet {
     btTransform get_transform(Collider collider){
         return btTransform(
                 btMatrix3x3(
-                        btVector3(collider.colliderToOrigen[0][1], collider.colliderToOrigen[1][0], collider.colliderToOrigen[2][0]),
-                        btVector3(collider.colliderToOrigen[0][2], collider.colliderToOrigen[1][1], collider.colliderToOrigen[2][1]),
+                        btVector3(collider.colliderToOrigen[0][0], collider.colliderToOrigen[1][0], collider.colliderToOrigen[2][0]),
+                        btVector3(collider.colliderToOrigen[0][1], collider.colliderToOrigen[1][1], collider.colliderToOrigen[2][1]),
                         btVector3(collider.colliderToOrigen[0][2], collider.colliderToOrigen[1][2], collider.colliderToOrigen[2][2])),
                 btVector3(collider.colliderToOrigen[0][3], collider.colliderToOrigen[1][3], collider.colliderToOrigen[2][3]));
     }
@@ -28,6 +28,8 @@ namespace compare::Bullet {
 
         if (collider.type == ColliderType::Cylinder){
             bullet_collider.cylinder = btCylinderShapeX(btVector3(get_radius(collider), 0.0 , get_height(collider) / 2));
+            // decrease collision margin from 4cm to 0.1mm to increase precision
+            bullet_collider.cylinder.setMargin(0.0001f);
             bullet_collider.shape = &bullet_collider.cylinder;
         }
 
@@ -39,6 +41,26 @@ namespace compare::Bullet {
         if (collider.type == ColliderType::Box){
             bullet_collider.box = btBoxShape(btVector3(get_size_x(collider) / 2, get_size_y(collider) / 2, get_size_z(collider) / 2));
             bullet_collider.shape = &bullet_collider.box;
+        }
+
+        if (collider.type == ColliderType::Mesh){
+            bullet_collider.mesh = btConvexHullShape();
+            for (int i = 0; i < get_vertex_count(collider); i++){
+                auto vertex = btVector3(
+                    collider.vertecies[i].x,
+                    collider.vertecies[i].y,
+                    collider.vertecies[i].z
+                    );
+                bullet_collider.mesh.addPoint(vertex, false);
+            }
+            // unsure if this is even needed for our purposes,
+            // but it's safer to just keep all the data structures up to date:
+            bullet_collider.mesh.recalcLocalAabb();
+
+            // decrease collision margin from 4cm to 0.1mm to increase precision
+            bullet_collider.mesh.setMargin(0.0001f);
+
+            bullet_collider.shape = &bullet_collider.mesh;
         }
     }
 
@@ -83,20 +105,19 @@ namespace compare::Bullet {
 
     float get_distance(BulletCase& bullet_case) {
         btVoronoiSimplexSolver voronoiSimplexSolver = btVoronoiSimplexSolver();
-        btMinkowskiPenetrationDepthSolver convexPenetrationDepthSolver = btMinkowskiPenetrationDepthSolver();
 
         btDiscreteCollisionDetectorInterface::ClosestPointInput input;
         input.m_transformA = bullet_case.transform0;
         input.m_transformB = bullet_case.transform1;
-        input.m_maximumDistanceSquared = 1000.0;
+        // input.m_maximumDistanceSquared = 1000.0;
 
         btPointCollector result;
 
         Draw draw = Draw();
 
-        btGjkPairDetector pairDetector = btGjkPairDetector(bullet_case.collider0.shape, bullet_case.collider1.shape, &voronoiSimplexSolver, &convexPenetrationDepthSolver);
+        btGjkPairDetector pairDetector = btGjkPairDetector(bullet_case.collider0.shape, bullet_case.collider1.shape, &voronoiSimplexSolver, nullptr);
         pairDetector.getClosestPointsNonVirtual(input, result, &draw);
 
-        return result.m_distance;
+        return result.m_hasResult ? result.m_distance : -1.0f;
     }
 }

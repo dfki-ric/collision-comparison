@@ -6,6 +6,7 @@
 #include "BulletCollision/CollisionShapes/btCapsuleShape.h"
 #include "BulletCollision/CollisionShapes/btCylinderShape.h"
 #include "BulletCollision/CollisionShapes/btBoxShape.h"
+#include "BulletCollision/CollisionShapes/btConvexHullShape.h"
 
 using compare::Base::Collider;
 using compare::Base::ColliderType;
@@ -17,6 +18,7 @@ namespace compare::Bullet {
         btCapsuleShapeX capsule;
         btCylinderShape cylinder;
         btBoxShape box;
+        btConvexHullShape mesh;
 
         btConvexShape* shape;
     };

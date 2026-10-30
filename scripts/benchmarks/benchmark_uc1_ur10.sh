@@ -1,9 +1,9 @@
 #!/bin/bash
 
-until [ $i -gt 9999 ]
+i=1
+until [ $i -gt 1000 ]
 do
   echo i: $i
-  ((i=i+1))
 
    if [ ! -d "results/$i" ]; then
 
@@ -11,21 +11,24 @@ do
     cp "data/uc1_ur10_collision/uc1_ur10_collision_$i.json" "data/current.json"
 
     echo --- CPP ---
-    sh scripts/benchmarks/benchmark_cpp.sh
+    bash scripts/benchmarks/benchmark_cpp.sh
 
     echo --- RUST ---
-    sh scripts/benchmarks/benchmark_rust.sh
+    bash scripts/benchmarks/benchmark_rust.sh
 
     echo --- Python ---
-    sh scripts/benchmarks/benchmark_python.sh
+    bash scripts/benchmarks/benchmark_python.sh
 
     echo --- Copy Result ---
     mkdir "results/$i"
-    cp "compare-python/pybullet_result.json" "results/$i/";
-    cp "compare-python/distance3d_result.json" "results/$i/";
-    cp "compare-cpp/cpp_result.json" "results/$i/";
-    cp -a "compare-rs/target/criterion" "results/$i/";
+    mv "compare-python/pybullet_result.json" "results/$i/";
+    mv "compare-python/distance3d_result.json" "results/$i/";
+    mv "compare-cpp/cpp_result.json" "results/$i/";
+    mv "compare-rs/target/criterion" "results/$i/";
    fi
+  ((i=i+1))
+
 done
 
+python3 compare-python/analyze_new/compile_CSV_from_results.py results data/uc1_ur10_collision
 

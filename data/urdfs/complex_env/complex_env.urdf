@@ -1,0 +1,676 @@
+<?xml version="1.0" ?>
+<robot name="dual_arm_env">
+  <!-- create link fixed to the "world" -->
+  <link name="world"/>
+  <material name="Grey">
+    <color rgba="0.80000 0.80000 0.80000 1.00000"/>
+  </material>
+  <!-- Blender Environment (Links) -->
+<!--  <link name="floor">-->
+<!--    <collision>-->
+<!--      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>-->
+<!--      <geometry>-->
+<!--        <box size="5.00000 3.00000 0.10000"/>-->
+<!--      </geometry>-->
+<!--    </collision>-->
+<!--  </link>-->
+  <link name="right_arm_base" />
+  <link name="left_arm_base" />
+<!--  <link name="table">-->
+<!--    <collision>-->
+<!--      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>-->
+<!--      <geometry>-->
+<!--        <box size="0.70000 0.70000 0.75000"/>-->
+<!--      </geometry>-->
+<!--    </collision>-->
+<!--    <visual>-->
+<!--      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>-->
+<!--      <geometry>-->
+<!--        <box size="0.70000 0.70000 0.75000"/>-->
+<!--      </geometry>-->
+<!--      <material name="Grey"/>-->
+<!--    </visual>-->
+<!--  </link>-->
+<!--  <link name="table_at_front">-->
+<!--    <collision>-->
+<!--      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>-->
+<!--      <geometry>-->
+<!--        <box size="0.80000 1.60000 0.71000"/>-->
+<!--      </geometry>-->
+<!--    </collision>-->
+<!--    <visual>-->
+<!--      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>-->
+<!--      <geometry>-->
+<!--        <box size="0.80000 1.60000 0.71000"/>-->
+<!--      </geometry>-->
+<!--      <material name="Grey"/>-->
+<!--    </visual>-->
+<!--  </link>-->
+  <!-- Blender Environment (Joints) -->
+<!--  <joint name="floor_joint" type="fixed">-->
+<!--    <origin rpy="0.00000 0.00000 0.00000" xyz="0.50000 0.00000 -0.05000"/>-->
+<!--    <parent link="world"/>-->
+<!--    <child link="floor"/>-->
+<!--  </joint>-->
+<!--  <joint name="table_at_front_joint" type="fixed">-->
+<!--    <origin rpy="0.00000 0.00000 1.57080" xyz="0.29017 0.64904 0.35500"/>-->
+<!--    <parent link="world"/>-->
+<!--    <child link="table_at_front"/>-->
+<!--  </joint>-->
+<!--  <joint name="table_joint" type="fixed">-->
+<!--    <origin rpy="0.00000 0.00000 0.00000" xyz="0.09048359841108322 -0.10995670408010483 0.375"/>-->
+<!--    <parent link="world"/>-->
+<!--    <child link="table"/>-->
+<!--  </joint>-->
+  <joint name="ur10_base_joint_connection" type="fixed">
+    <origin rpy="0.00000 0.00000 1.5708" xyz="1.0 0.0 1.0"/>
+    <parent link="world"/>
+    <child link="left_arm_base"/>
+  </joint>
+  <joint name="ur5_base_joint_connection" type="fixed">
+    <origin rpy="0.00000 0.00000 0.00000" xyz="-1.0 0.0 1.0"/>
+    <parent link="world"/>
+    <child link="right_arm_base"/>
+  </joint>
+  <!-- Randomly placed objects -->
+  <link name="a_toy_airplane_0">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/a_toy_airplane/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/a_toy_airplane/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="a_toy_airplane_0_joint" type="fixed">
+    <origin rpy="-2.28270 0.06424 3.13332" xyz="0.57273 0.08650 0.19915"/>
+    <parent link="right_arm_base"/>
+    <child link="a_toy_airplane_0"/>
+  </joint>
+  <link name="banana_1">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/banana/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/banana/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="banana_1_joint" type="fixed">
+    <origin rpy="0.15938 2.56654 -0.85291" xyz="-1.11090 0.39493 0.53727"/>
+    <parent link="right_arm_base"/>
+    <child link="banana_1"/>
+  </joint>
+  <link name="banana_2">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/banana/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/banana/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="banana_2_joint" type="fixed">
+    <origin rpy="2.85843 -0.62918 1.49911" xyz="0.41082 -0.50321 0.32349"/>
+    <parent link="left_arm_base"/>
+    <child link="banana_2"/>
+  </joint>
+  <link name="hammer_3">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/hammer/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/hammer/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="hammer_3_joint" type="fixed">
+    <origin rpy="2.08303 -0.91782 2.40552" xyz="0.64824 -0.33116 0.42121"/>
+    <parent link="right_arm_base"/>
+    <child link="hammer_3"/>
+  </joint>
+  <link name="bleach_cleanser_4">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/bleach_cleanser/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/bleach_cleanser/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="bleach_cleanser_4_joint" type="fixed">
+    <origin rpy="-0.27300 0.99831 2.76835" xyz="-0.08968 -0.58731 0.39906"/>
+    <parent link="left_arm_base"/>
+    <child link="bleach_cleanser_4"/>
+  </joint>
+  <link name="cracker_box_5">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/cracker_box/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/cracker_box/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="cracker_box_5_joint" type="fixed">
+    <origin rpy="-0.12713 -1.23592 1.88030" xyz="-0.56161 -0.50363 0.91910"/>
+    <parent link="right_arm_base"/>
+    <child link="cracker_box_5"/>
+  </joint>
+  <link name="cracker_box_6">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/cracker_box/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/cracker_box/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="cracker_box_6_joint" type="fixed">
+    <origin rpy="2.72787 0.77450 -2.66800" xyz="0.15316 0.56430 0.34842"/>
+    <parent link="left_arm_base"/>
+    <child link="cracker_box_6"/>
+  </joint>
+  <link name="strawberry_7">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/strawberry/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/strawberry/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="strawberry_7_joint" type="fixed">
+    <origin rpy="1.53802 -2.77240 0.96076" xyz="0.86467 -0.56679 0.20161"/>
+    <parent link="left_arm_base"/>
+    <child link="strawberry_7"/>
+  </joint>
+  <link name="bowl_8">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/bowl/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/bowl/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="bowl_8_joint" type="fixed">
+    <origin rpy="1.59825 -2.28394 -1.47126" xyz="-0.15414 -0.34125 0.85405"/>
+    <parent link="left_arm_base"/>
+    <child link="bowl_8"/>
+  </joint>
+  <link name="strawberry_9">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/strawberry/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/strawberry/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="strawberry_9_joint" type="fixed">
+    <origin rpy="1.62992 -2.78473 -0.87827" xyz="0.51064 0.20361 1.12176"/>
+    <parent link="right_arm_base"/>
+    <child link="strawberry_9"/>
+  </joint>
+  <link name="a_toy_airplane_10">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/a_toy_airplane/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/a_toy_airplane/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="a_toy_airplane_10_joint" type="fixed">
+    <origin rpy="-2.98235 1.44151 -3.00874" xyz="0.25991 0.14912 0.95980"/>
+    <parent link="right_arm_base"/>
+    <child link="a_toy_airplane_10"/>
+  </joint>
+  <link name="strawberry_11">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/strawberry/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/strawberry/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="strawberry_11_joint" type="fixed">
+    <origin rpy="0.14509 -3.12943 0.56208" xyz="0.32143 -0.13679 0.37842"/>
+    <parent link="left_arm_base"/>
+    <child link="strawberry_11"/>
+  </joint>
+  <link name="bleach_cleanser_12">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/bleach_cleanser/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/bleach_cleanser/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="bleach_cleanser_12_joint" type="fixed">
+    <origin rpy="0.72407 1.52342 -2.43087" xyz="0.49049 0.11375 0.18459"/>
+    <parent link="right_arm_base"/>
+    <child link="bleach_cleanser_12"/>
+  </joint>
+  <link name="mug_13">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/mug/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/mug/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="mug_13_joint" type="fixed">
+    <origin rpy="0.66071 -2.85400 -1.48320" xyz="-0.25129 0.65399 0.46320"/>
+    <parent link="left_arm_base"/>
+    <child link="mug_13"/>
+  </joint>
+  <link name="mug_14">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/mug/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/mug/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="mug_14_joint" type="fixed">
+    <origin rpy="-1.72456 1.01052 -1.15418" xyz="-0.28700 -0.99592 0.55608"/>
+    <parent link="left_arm_base"/>
+    <child link="mug_14"/>
+  </joint>
+  <link name="rubiks_cube_15">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/rubiks_cube/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/rubiks_cube/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="rubiks_cube_15_joint" type="fixed">
+    <origin rpy="0.11489 1.76595 -0.08217" xyz="0.03205 -0.13024 0.39989"/>
+    <parent link="right_arm_base"/>
+    <child link="rubiks_cube_15"/>
+  </joint>
+  <link name="hammer_16">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/hammer/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/hammer/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="hammer_16_joint" type="fixed">
+    <origin rpy="0.66651 -0.50419 -3.02829" xyz="0.49509 -0.12801 0.13718"/>
+    <parent link="left_arm_base"/>
+    <child link="hammer_16"/>
+  </joint>
+  <link name="rubiks_cube_17">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/rubiks_cube/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/rubiks_cube/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="rubiks_cube_17_joint" type="fixed">
+    <origin rpy="-2.06899 -0.29286 -1.68606" xyz="-0.01854 0.99459 0.13216"/>
+    <parent link="right_arm_base"/>
+    <child link="rubiks_cube_17"/>
+  </joint>
+  <link name="powerdrill_18">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/powerdrill/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/powerdrill/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="powerdrill_18_joint" type="fixed">
+    <origin rpy="-1.56589 0.57326 0.78015" xyz="0.12748 1.15295 0.57592"/>
+    <parent link="right_arm_base"/>
+    <child link="powerdrill_18"/>
+  </joint>
+  <link name="rubiks_cube_19">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/rubiks_cube/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/rubiks_cube/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="rubiks_cube_19_joint" type="fixed">
+    <origin rpy="-3.11128 -2.91854 -0.57349" xyz="-0.47499 0.24952 0.33200"/>
+    <parent link="left_arm_base"/>
+    <child link="rubiks_cube_19"/>
+  </joint>
+  <link name="cracker_box_20">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/cracker_box/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/cracker_box/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="cracker_box_20_joint" type="fixed">
+    <origin rpy="-3.01717 1.57447 -2.48045" xyz="0.72929 0.44894 0.08773"/>
+    <parent link="right_arm_base"/>
+    <child link="cracker_box_20"/>
+  </joint>
+  <link name="a_toy_airplane_21">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/a_toy_airplane/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/a_toy_airplane/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="a_toy_airplane_21_joint" type="fixed">
+    <origin rpy="0.89070 -1.80673 2.55451" xyz="-0.80537 0.18320 0.26905"/>
+    <parent link="right_arm_base"/>
+    <child link="a_toy_airplane_21"/>
+  </joint>
+  <link name="a_toy_airplane_22">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/a_toy_airplane/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/a_toy_airplane/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="a_toy_airplane_22_joint" type="fixed">
+    <origin rpy="0.50942 -2.81968 -0.51512" xyz="-0.82991 0.36700 0.54016"/>
+    <parent link="right_arm_base"/>
+    <child link="a_toy_airplane_22"/>
+  </joint>
+  <link name="hammer_23">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/hammer/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/hammer/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="hammer_23_joint" type="fixed">
+    <origin rpy="-3.01918 2.89447 -2.39646" xyz="-0.55862 -0.92186 0.58946"/>
+    <parent link="right_arm_base"/>
+    <child link="hammer_23"/>
+  </joint>
+  <link name="powerdrill_24">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/powerdrill/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/powerdrill/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="powerdrill_24_joint" type="fixed">
+    <origin rpy="-3.02187 1.16434 -2.50597" xyz="0.60987 -0.06337 0.24590"/>
+    <parent link="left_arm_base"/>
+    <child link="powerdrill_24"/>
+  </joint>
+  <link name="hammer_25">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/hammer/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/hammer/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="hammer_25_joint" type="fixed">
+    <origin rpy="1.96073 -2.76466 0.86265" xyz="0.05178 -0.32250 0.47753"/>
+    <parent link="left_arm_base"/>
+    <child link="hammer_25"/>
+  </joint>
+  <link name="mug_26">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/mug/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/mug/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="mug_26_joint" type="fixed">
+    <origin rpy="-1.35491 -0.79858 2.73488" xyz="-0.49708 -0.30999 0.04335"/>
+    <parent link="left_arm_base"/>
+    <child link="mug_26"/>
+  </joint>
+  <link name="mug_27">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/mug/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/mug/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="mug_27_joint" type="fixed">
+    <origin rpy="-0.79549 1.35669 -2.26405" xyz="-0.59216 0.03559 0.06914"/>
+    <parent link="right_arm_base"/>
+    <child link="mug_27"/>
+  </joint>
+  <link name="rubiks_cube_28">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/rubiks_cube/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/rubiks_cube/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="rubiks_cube_28_joint" type="fixed">
+    <origin rpy="-2.63573 2.19956 0.88588" xyz="0.54105 0.51926 0.09200"/>
+    <parent link="left_arm_base"/>
+    <child link="rubiks_cube_28"/>
+  </joint>
+  <link name="bleach_cleanser_29">
+    <collision>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/bleach_cleanser/nontextured.stl"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0.00000 0.00000 0.00000" xyz="0.00000 0.00000 0.00000"/>
+      <geometry>
+        <mesh filename="meshes/ycb-google_64k/bleach_cleanser/nontextured.stl"/>
+      </geometry>
+      <material name="Grey"/>
+    </visual>
+  </link>
+  <joint name="bleach_cleanser_29_joint" type="fixed">
+    <origin rpy="1.74177 1.40441 -0.01288" xyz="0.76036 0.11881 0.67458"/>
+    <parent link="right_arm_base"/>
+    <child link="bleach_cleanser_29"/>
+  </joint>
+</robot>

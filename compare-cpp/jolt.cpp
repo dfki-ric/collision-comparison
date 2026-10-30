@@ -10,7 +10,7 @@
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/Body/BodyActivationListener.h>
 #include <Jolt/Physics/Collision/CollideShape.h>
-#include <Jolt/Physics/Collision/Shape/MeshShape.h>
+#include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
 #include <Jolt/Geometry/GJKClosestPoint.h>
 #include <Jolt/Physics/Collision/CollisionDispatch.h>
 #include <Jolt/RegisterTypes.h>
@@ -21,6 +21,7 @@ using JPH::SubShapeIDCreator;
 using JPH::CollideShapeSettings;
 using JPH::GJKClosestPoint;
 using JPH::TransformedConvexObject;
+using JPH::Array;
 
 namespace compare::Jolt {
 
@@ -71,25 +72,21 @@ namespace compare::Jolt {
         }
 
         if (collider.type == ColliderType::Mesh){
-
             unsigned int vertex_count = get_vertex_count(collider);
             for (int i = 0; i < vertex_count; i++){
-                JPH::Float3 vertex = JPH::Float3(collider.vertecies[i].x, collider.vertecies[i].y, collider.vertecies[i].z);
+                auto vertex = JPH::Vec3(collider.vertecies[i].x, collider.vertecies[i].y, collider.vertecies[i].z);
                 jolt_collider.vertexList.push_back(vertex);
             }
 
-
-            unsigned int index_count = get_index_count(collider);
-            unsigned int triangle_count = index_count / 3;
-            JPH::IndexedTriangleList indexedTriangleList;
-            for (int i = 0; i < triangle_count; i++){
-                indexedTriangleList.emplace_back(collider.indicies[i * 3], collider.indicies[i * 3 + 1], collider.indicies[i * 3 + 2]);
-            }
-
-            auto mesh_settings = JPH::MeshShapeSettings(jolt_collider.vertexList, indexedTriangleList);
+            auto mesh_settings = JPH::ConvexHullShapeSettings(jolt_collider.vertexList);
+            // increase resolution of the hull (=number of points inside the hull) as much as possible
+            // also keep in mind that jolt automatically simplifies all meshes to a maximum of 256 vertices
+            // when converting to a convex hull
+            mesh_settings.mHullTolerance = 1e-10;
             auto result = new JPH::Shape::ShapeResult();
-            auto mesh = new JPH::MeshShape(mesh_settings, *result);
+            auto mesh = new JPH::ConvexHullShape(mesh_settings, *result);
 
+            if (result->HasError()) { std::cerr << result->GetError() << std::endl;}
             jolt_collider.shape = mesh;
 
         }
@@ -111,30 +108,50 @@ namespace compare::Jolt {
         }
     }
 
-    class Collector : public JPH::CollideShapeCollector {
-    public:
-        int hits;
-
-        void AddHit(const ResultType &inResult){
-            hits++;
-        }
-    };
 
     bool get_intersection(JoltCase& jolt_case){
+        GJKClosestPoint closestPoint;
+        JPH::Vec3 initialSeparatingAxis(0,0,0);
 
-        Collector collector = Collector();
-        collector.hits = 0;
-        JPH::CollideShapeSettings settings = JPH::CollideShapeSettings();
-        JPH::SubShapeIDCreator part1, part2;
-        JPH::CollisionDispatch::sCollideShapeVsShape(
-            jolt_case.collider0.shape,
-            jolt_case.collider1.shape,
-            JPH::Vec3::sReplicate(1.0f),
-            JPH::Vec3::sReplicate(1.0f),
-            jolt_case.transform0, jolt_case.transform1,
-            part1, part2, settings, collector);
+        auto supportMode = JPH::ConvexShape::ESupportMode::ExcludeConvexRadius;
+        auto buffer0 = JPH::ConvexShape::SupportBuffer();
+        auto buffer1 = JPH::ConvexShape::SupportBuffer();
+        auto scale = JPH::Vec3(1,1,1);
+        auto collider0_support = jolt_case.collider0.shape->GetSupportFunction(supportMode, buffer0, scale);
+        auto collider1_support = jolt_case.collider1.shape->GetSupportFunction(supportMode, buffer1, scale);
 
-        return collector.hits > 0;
+        // Bring collider1 into collider0's local space:
+        Mat44 transform_1_to_0 = jolt_case.transform0.InversedRotationTranslation() * jolt_case.transform1;
+        TransformedConvexObject transformed1(transform_1_to_0, *collider1_support);
+
+        return closestPoint.Intersects(*collider0_support, transformed1, 0.000001f, initialSeparatingAxis);
+    }
+
+    float get_distance(JoltCase& jolt_case){
+        GJKClosestPoint closestPoint;
+        JPH::Vec3 initialSeparatingAxis(0,0,0);
+
+        auto supportMode = JPH::ConvexShape::ESupportMode::ExcludeConvexRadius;
+        auto buffer0 = JPH::ConvexShape::SupportBuffer();
+        auto buffer1 = JPH::ConvexShape::SupportBuffer();
+        auto scale = JPH::Vec3(1,1,1);
+        auto collider0_support = jolt_case.collider0.shape->GetSupportFunction(supportMode, buffer0, scale);
+        auto collider1_support = jolt_case.collider1.shape->GetSupportFunction(supportMode, buffer1, scale);
+        JPH::Vec3 outPointA;
+        JPH::Vec3 outPointB;
+
+        // Bring collider1 into collider0's local space:
+        Mat44 transform_1_to_0 = jolt_case.transform0.InversedRotationTranslation() * jolt_case.transform1;
+        TransformedConvexObject transformed1(transform_1_to_0, *collider1_support);
+
+        float dist_squared = closestPoint.GetClosestPoints(
+            *collider0_support, transformed1,
+            0.000001f, 100.0f,
+            initialSeparatingAxis,
+            outPointA, outPointB
+            );
+
+        return JPH::sqrt(dist_squared);
     }
 }
 

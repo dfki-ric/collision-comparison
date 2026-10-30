@@ -13,9 +13,20 @@ data/*
 !data/current.json
 !data/uc1_ur10_collision.zip
 !data/uc6_ur10_collision.zip
+!data/complex_env_dual_arm_collision.zip
+!data/complex_env_dual_arm_collision_max256verts.zip
+!data/icospheres_of_different_vertex_counts.zip
+!data/icospheres_fixed_size_distance_sweep.zip
 
 venv/*
 results/*
 results-archive/*
 
 results.zip
+
+# temporary results of the latest benchmark and the current benchmark case file
+compare-python/distance3d_result.json
+compare-python/pybullet_result.json
+compare-cpp/cpp_result.json
+
+data/current.json

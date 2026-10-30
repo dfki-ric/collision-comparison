@@ -16,7 +16,7 @@ gjk = { path = "../gjk-rs" }
 collision = { path = "../collision-rs" }
 
 [dev_dependencies]
-criterion = { version = "0.4", features = ["html_reports"]}
+criterion = "0.4"
 
 [[bench]]
 name = "gjk-rs"

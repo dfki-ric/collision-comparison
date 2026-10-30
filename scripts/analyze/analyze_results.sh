@@ -1,3 +1,5 @@
 #!/bin/bash
+export PYTHONPATH="${PYTHONPATH}:collision-comparison/compare-python"
+
 cd compare-python
-../venv/bin/python3 analyze/analyze_results_archive.py
+python3 analyze/analyze_results_archive.py

@@ -4,6 +4,7 @@
 #include "fcl.h"
 #include "bullet.h"
 #include "libccd.h"
+#include "openGJK.h"
 
 #include <iostream>
 
@@ -17,6 +18,7 @@ using compare::FCL::FCLCase;
 using compare::Jolt::JoltCase;
 using compare::Bullet::BulletCase;
 using compare::libccd::LibccdCase;
+using compare::OpenGJK::OpenGJKCase;
 
 bool is_distance_correct(float test_dist, float base_dist){
     return (base_dist <= 0 && test_dist <= 0) || abs(base_dist - test_dist) < 0.1;
@@ -28,34 +30,74 @@ void gen(std::string const& typeName, char const* mustacheTemplate, ankerl::nano
 
 int main(){
 
-    char* path = "../data/current.json";
+    const char* path = "../data/current.json";
 
     compare::Jolt::init();
 
     Case base_cases[200];
-    int cases_length = load_cases(path, &base_cases[0], cases_length);
+    const int cases_length = load_cases(path, &base_cases[0], 200);
 
-    FCLCase fcl_cases[cases_length];
-    compare::FCL::get_cases(&base_cases[0], &fcl_cases[0], cases_length);
+    std::vector<FCLCase> fcl_cases_nesterov(cases_length);
+    compare::FCL::get_cases(&base_cases[0], &fcl_cases_nesterov[0], cases_length, false);
 
-    JoltCase jolt_cases[cases_length];
+    std::vector<FCLCase> fcl_cases_nesterov_lin_support(cases_length);
+    compare::FCL::get_cases(&base_cases[0], &fcl_cases_nesterov_lin_support[0], cases_length, true);
+
+    std::vector<FCLCase> fcl_cases_nesterov_intersection(cases_length);
+    compare::FCL::get_cases(&base_cases[0], &fcl_cases_nesterov_intersection[0], cases_length, false);
+
+    std::vector<FCLCase> fcl_cases_nesterov_intersection_lin_support(cases_length);
+    compare::FCL::get_cases(&base_cases[0], &fcl_cases_nesterov_intersection_lin_support[0], cases_length, true);
+
+    std::vector<FCLCase> fcl_cases_default(cases_length);
+    compare::FCL::get_cases(&base_cases[0], &fcl_cases_default[0], cases_length, false);
+
+    std::vector<FCLCase> fcl_cases_default_lin_support(cases_length);
+    compare::FCL::get_cases(&base_cases[0], &fcl_cases_default_lin_support[0], cases_length, true);
+
+    std::vector<FCLCase> fcl_cases_default_intersection(cases_length);
+    compare::FCL::get_cases(&base_cases[0], &fcl_cases_default_intersection[0], cases_length, false);
+
+    std::vector<FCLCase> fcl_cases_default_intersection_lin_support(cases_length);
+    compare::FCL::get_cases(&base_cases[0], &fcl_cases_default_intersection_lin_support[0], cases_length, true);
+
+    std::vector<JoltCase> jolt_cases(cases_length);
     compare::Jolt::get_cases(&base_cases[0], &jolt_cases[0], cases_length);
 
-    BulletCase bullet_cases[cases_length];
+    std::vector<JoltCase> jolt_cases_dist(cases_length);
+    compare::Jolt::get_cases(&base_cases[0], &jolt_cases_dist[0], cases_length);
+
+    std::vector<BulletCase> bullet_cases(cases_length);
     compare::Bullet::get_cases(&base_cases[0], &bullet_cases[0], cases_length);
 
-    LibccdCase libccd_cases[cases_length];
-    compare::libccd::get_cases(&base_cases[0], &libccd_cases[0], cases_length);
+    std::vector<LibccdCase> libccd_cases(cases_length);
+    compare::libccd::get_cases(&base_cases[0], &libccd_cases[0], cases_length, false);
 
+    std::vector<LibccdCase> libccd_cases_lin_support(cases_length);
+    compare::libccd::get_cases(&base_cases[0], &libccd_cases_lin_support[0], cases_length, true);
+
+    std::vector<OpenGJKCase> openGJK_cases(cases_length);
+    compare::OpenGJK::get_cases(&base_cases[0], &openGJK_cases[0], cases_length);
+
+    std::vector<OpenGJKCase> openGJK_cases_lin_support(cases_length);
+    compare::OpenGJK::get_cases(&base_cases[0], &openGJK_cases_lin_support[0], cases_length);
+
+#define NDEBUG
 #ifdef NDEBUG
     std::cout << "\n\n";
 
     ankerl::nanobench::Bench bench;
-    bench.minEpochIterations(1000);
+    bench.minEpochIterations(10);
 
     bench.run("libccd intersection", [&] {
         for (int i = 0; i < cases_length; i++) {
             compare::libccd::get_intersection(libccd_cases[i]);
+        }
+    });
+
+    bench.run("libccd intersection linear support", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            compare::libccd::get_intersection(libccd_cases_lin_support[i]);
         }
     });
 
@@ -65,9 +107,57 @@ int main(){
         }
     });
 
+    bench.run("Jolt distance", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            compare::Jolt::get_distance(jolt_cases_dist[i]);
+        }
+    });
+
     bench.run("FCL distance", [&] {
         for (int i = 0; i < cases_length; i++) {
-            compare::FCL::get_distance(fcl_cases[i]);
+            compare::FCL::get_distance_nesterov(fcl_cases_nesterov[i]);
+        }
+    });
+
+    bench.run("FCL distance linear support", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            compare::FCL::get_distance_nesterov(fcl_cases_nesterov_lin_support[i]);
+        }
+    });
+
+    bench.run("FCL intersection", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            compare::FCL::get_intersection_nesterov(fcl_cases_nesterov_intersection[i]);
+        }
+    });
+
+    bench.run("FCL intersection linear support", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            compare::FCL::get_intersection_nesterov(fcl_cases_nesterov_intersection_lin_support[i]);
+        }
+    });
+
+    bench.run("FCL distance defaultGJK", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            compare::FCL::get_distance_default(fcl_cases_default[i]);
+        }
+    });
+
+    bench.run("FCL distance defaultGJK linear support", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            compare::FCL::get_distance_default(fcl_cases_default_lin_support[i]);
+        }
+    });
+
+    bench.run("FCL intersection defaultGJK", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            compare::FCL::get_intersection_default(fcl_cases_default_intersection[i]);
+        }
+    });
+
+    bench.run("FCL intersection defaultGJK linear support", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            compare::FCL::get_intersection_default(fcl_cases_default_intersection_lin_support[i]);
         }
     });
 
@@ -77,38 +167,42 @@ int main(){
         }
     });
 
+    bench.run("openGJK distance", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            compare::OpenGJK::get_distance(openGJK_cases[i], false);
+        }
+    });
+
+    bench.run("openGJK distance linear support", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            compare::OpenGJK::get_distance(openGJK_cases_lin_support[i], true);
+        }
+    });
+
     std::ofstream renderOut("./cpp_result.json");
     ankerl::nanobench::render(ankerl::nanobench::templates::json(), bench, renderOut);
 
-	return 0;
-#endif
-
-    for (int i = 0; i < cases_length; i++) {
-
-        float base_distance = compare::Base::get_distance(&base_cases[i]);
-        float fcl_distance = compare::FCL::get_distance(fcl_cases[i]);
-        float bullet_distance = compare::Bullet::get_distance(bullet_cases[i]);
-
-        bool base_intersect   = base_distance <= 0;
-        bool libccd_intersect = compare::libccd::get_intersection(libccd_cases[i]);
-        bool fcl_intersect    = fcl_distance <= 0;
-        bool jolt_intersect   = compare::Jolt::get_intersection(jolt_cases[i]);
-        bool bullet_intersect = bullet_distance <= 0;
-
-        bool libccd_correct = libccd_intersect == base_intersect;
-        bool fcl_correct = is_distance_correct(fcl_distance, base_distance);
-        bool jolt_correct = jolt_intersect == base_intersect;
-        bool bullet_correct = is_distance_correct(bullet_distance, base_distance);
-
-        if (!libccd_correct || !fcl_correct || !jolt_correct || !bullet_correct){
-            std::cout << "Not correct case: " << i << "\n"
-                      << "distance3d Intersect: " << base_intersect   << " Distance: " << base_distance   << "\n"
-                      << "libccd     Intersect: " << libccd_intersect << " Distance: " << "/"             << " -> " << libccd_correct << "\n"
-                      << "FCL        Intersect: " << fcl_intersect    << " Distance: " << fcl_distance    << " -> " << fcl_correct    <<  "\n"
-                      << "Jolt       Intersect: " << jolt_intersect   << " Distance: " << "/"             << " -> " << jolt_correct   << "\n"
-                      << "Bullet     Intersect: " << bullet_intersect << " Distance: " << bullet_distance << " -> " << bullet_correct << "\n";
-        }
+#else
+    for (int i = 0; i < cases_length; i++)
+    {
+        std::cout
+        << "\n\n--===[ Case  " << i << " ]===--\n"
+        << "[Reference] distance3d Distance: " << compare::Base::get_distance(&base_cases[i]) << "\n"
+        << "Intersection Algorithms:" << "\n"
+        << "\tlibccd                Intersect: " << compare::libccd::get_intersection(libccd_cases[i]) << "\n"
+        << "\tlibccd (lin supp.)    Intersect: " << compare::libccd::get_intersection(libccd_cases_lin_support[i]) << "\n"
+        << "\tHPP-FCL               Intersect: " << compare::FCL::get_intersection_nesterov(fcl_cases_nesterov_intersection[i]) << "\n"
+        << "\tHPP-FCL (lin supp.)   Intersect: " << compare::FCL::get_intersection_nesterov(fcl_cases_nesterov_intersection_lin_support[i]) << "\n"
+        << "\tJolt                  Intersect: " << compare::Jolt::get_intersection(jolt_cases[i]) << "\n"
+        << "Distance Algorithms:" << "\n"
+        << "\tHPP-FCL               Distance: " << compare::FCL::get_distance_nesterov(fcl_cases_nesterov[i]) << "\n"
+        << "\tHPP-FCL (lin supp.)   Distance: " << compare::FCL::get_distance_nesterov(fcl_cases_nesterov_lin_support[i]) << "\n"
+        << "\tBullet                Distance: " << compare::Bullet::get_distance(bullet_cases[i]) << "\n"
+        << "\tJolt Distance         Distance: " << compare::Jolt::get_distance(jolt_cases_dist[i]) << "\n"
+        << "\tOpenGJK               Distance: " << compare::OpenGJK::get_distance(openGJK_cases[i], false) << "\n"
+        << "\tOpenGJK (lin supp.)   Distance: " << compare::OpenGJK::get_distance(openGJK_cases_lin_support[i], true) << "\n";
     }
+#endif
 
     return 0;
 }

@@ -1,12 +1,13 @@
 use gjk::colliders::{ColliderType, Collider};
 use ncollide3d::{shape::{Ball, Cuboid, Cylinder, Capsule}, na::{Isometry3, self}};
-
+use ncollide3d::shape::ConvexHull;
 
 pub struct NcollideCollider{
     pub ball: Ball<f64>,
     pub cuboid: Cuboid<f64>,
     pub cylinder: Cylinder<f64>,
-    pub capluse: Capsule<f64>,
+    pub capsule: Capsule<f64>,
+    pub mesh: ConvexHull<f64>,
 
     pub typ: ColliderType,
     pub transform: Isometry3<f64>
@@ -32,7 +33,23 @@ pub fn get_collider(collider: &Collider) -> NcollideCollider {
         ball: Ball::new(collider.radius),
         cuboid: Cuboid::new(na::Vector3::new(collider.size[0] / 2.0, collider.size[1] / 2.0, collider.size[2] / 2.0)),
         cylinder: Cylinder::new(collider.height / 2.0, collider.radius),
-        capluse: Capsule::new(collider.height / 2.0, collider.radius),
+        capsule: Capsule::new(collider.height / 2.0, collider.radius),
+        mesh: if collider.typ == ColliderType::Mesh
+        {
+            ConvexHull::try_from_points(
+                & collider.vertices
+                    .iter()
+                    .map( | v| na::Point3::new(v.x, v.y, v.z))
+                    .collect:: < Vec<_ > > ()
+            ).expect("ConvexHull::try_from_points failed")
+        } else {
+            let dummy_points = Vec::from([
+                na::Point3::new(0.0,0.0,0.0),
+                na::Point3::new(1.0,0.0,0.0),
+                na::Point3::new(0.0,1.0,0.0),
+            ]);
+            ConvexHull::try_from_points(&dummy_points).expect("ConvexHull::try_from_points failed")
+        },
         transform: transform,
         typ: collider.typ,
     }   

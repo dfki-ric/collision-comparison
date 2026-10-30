@@ -14,7 +14,7 @@ pub fn get_collider(collider: &Collider) -> (Matrix4<f64>, Primitive3<f64>){
         x if x == ColliderType::Sphere => {
             Primitive3::Sphere(Sphere::new(collider.radius))
         },
-        x if x == ColliderType::Capluse => {
+        x if x == ColliderType::Capsule => {
             Primitive3::Capsule(Capsule::new(collider.height * 0.5, collider.radius))
         },
         x if x == ColliderType::Cylinder => {
@@ -22,7 +22,11 @@ pub fn get_collider(collider: &Collider) -> (Matrix4<f64>, Primitive3<f64>){
         },    
         x if x == ColliderType::Box => {
             Primitive3::Cuboid(Cuboid::new(collider.size.x, collider.size.y, collider.size.z))
-        },    
+        },
+        x if x == ColliderType::Mesh => {
+            collider.convex_mesh.clone()
+        },
+
         _ => todo!(),
     };
 

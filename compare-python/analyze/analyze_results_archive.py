@@ -1,9 +1,11 @@
+import datetime
 import json
 import os
 import numpy as np
 from matplotlib import pyplot as plt
 import scipy
 from scipy import stats
+import pandas as pd
 
 from src import get_cpp_result, get_rust_results, get_python_results
 from src.analyze_results import get_short_names, get_short_pc_names
@@ -14,10 +16,12 @@ result_path = "../results-archive"
 data_path = "../data"
 significance_alpha = 0.05
 
+long_names = list(get_short_names().keys())
+
 for pc_name in os.listdir(result_path):
 
     for uc_folder_name in os.listdir(f"{result_path}/{pc_name}/"):
-
+        dataframe_records = []
         results = {}
         results_mean = None
         for test_dir in os.listdir(f"{result_path}/{pc_name}/{uc_folder_name}/"):
@@ -47,6 +51,18 @@ for pc_name in os.listdir(result_path):
                 else:
                     results[key] = [result[key]]
 
+            dataframe_records.append({
+                "file": int(test_dir),
+                **result
+            })
+
+
+        df = pd.DataFrame.from_records(dataframe_records)
+        df.sort_values(by="file", ascending=True, inplace=True)
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        csv_filename = f"{uc_folder_name}_{timestamp}.csv"
+        df.to_csv(csv_filename, index=False)
+
         pos = []
         data = []
         i = 0
@@ -58,7 +74,7 @@ for pc_name in os.listdir(result_path):
 
         cpp_short_names = {}
         cpp_data = []
-        for key in ["FCL distance", "Jolt intersection", "libccd intersection", "Bullet distance"]:
+        for key in ["FCL distance", "Jolt intersection", "libccd intersection", "Bullet distance", "openGJK distance"]:
             cpp_short_names[key] = short_names[key]
             cpp_data.append(results[key])
 
@@ -71,8 +87,7 @@ for pc_name in os.listdir(result_path):
 
         python_short_names = {}
         python_data = []
-        for key in ["Pybullet", "distance3d Nesterov (Primitives with acceleration)", "distance3d Nesterov (Primitives)",
-                    "distance3d Nesterov (with acceleration)", "distance3d Nesterov",
+        for key in ["Pybullet", "distance3d Nesterov (with acceleration)", "distance3d Nesterov",
                     "distance3d Jolt (distance)", "distance3d Jolt (intersection)", "distance3d Original"]:
             python_short_names[key] = short_names[key]
             python_data.append(results[key])
@@ -138,7 +153,7 @@ for pc_name in os.listdir(result_path):
         plt.yticks(np.arange(0, len(short_names.values()), 1.0))
         ax.set_yticklabels(short_names.values())
         ax.set_xlabel("Time per collision check in µs")
-        ax.set_xlim(0.001, 8000)
+        # ax.set_xlim(0.001, 8000)
 
         plt.tick_params(
             axis='x',

@@ -1,3 +1,4 @@
+use std::time::Duration;
 use collision::{algorithm::minkowski::GJK3};
 use compare::{collision::get_cases, load_data};
 use criterion::{criterion_group, criterion_main, Criterion};
@@ -48,7 +49,20 @@ fn nasterov_benchmark_test_file(c: &mut Criterion) {
     ));
 }
 
-criterion_group!(benches, original_benchmark_test_file, original_distance_benchmark_test_file, nasterov_benchmark_test_file);
+fn fast_config() -> Criterion {
+    // Change some values to speed up benchmarking with minimal loss in data quality:
+    Criterion::default()
+        .warm_up_time(Duration::from_millis(1000)) // default: 3s
+        .measurement_time(Duration::from_secs(2)) // default: 5s
+        .sample_size(50) // default: 100
+}
+
+
+criterion_group! {
+    name = benches;
+    config = fast_config();
+    targets = original_benchmark_test_file, original_distance_benchmark_test_file, nasterov_benchmark_test_file
+}
 criterion_main!(benches);
 
 

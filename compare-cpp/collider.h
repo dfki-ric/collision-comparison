@@ -44,6 +44,6 @@ namespace compare::Base {
 
     float get_distance(Case* base_case);
 
-    int load_cases(char* path, Case* cases, int length);
+    int load_cases(const char* path, Case* cases, int length);
 }
 

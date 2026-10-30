@@ -8,7 +8,7 @@ def get_cpp_result(path):
         with open(f"{path}/cpp_result.json") as f:
             result = json.load(f)  # in seconds
     except FileNotFoundError:
-        warnings.warn(f"No results found under {path}")
+        warnings.warn(f"No C++ results found under {path}")
         return {}
 
     data = {}
@@ -21,28 +21,27 @@ def get_cpp_result(path):
 
 
 def get_python_results(path):
+    data = {}
+
     try:
         with open(f"{path}/distance3d_result.json") as f:
             distance3d_result = json.load(f)
-    except FileNotFoundError:
-        warnings.warn(f"No results found under {path}")
-        return {}
 
-    data = {}
-    for name in distance3d_result:
-        median = distance3d_result[name]
-        data[f"distance3d {name}"] = median
+            for name in distance3d_result:
+                median = distance3d_result[name]
+                data[f"distance3d {name}"] = median
+    except FileNotFoundError:
+        warnings.warn(f"No python[distance3d] results found under {path}")
 
     try:
         with open(f"{path}/pybullet_result.json") as f:
             pybullet_result = json.load(f)
-    except FileNotFoundError:
-        warnings.warn(f"No results found under {path}")
-        return {}
 
-    for name in pybullet_result:
-        median = pybullet_result[name]
-        data[f"{name}"] = median
+            for name in pybullet_result:
+                median = pybullet_result[name]
+                data[f"{name}"] = median
+    except FileNotFoundError:
+        warnings.warn(f"No python[pybullet] results found under {path}")
 
     return data
 
@@ -52,7 +51,7 @@ def get_rust_results(path):
 
     path = f"{path}criterion"
     if not os.path.exists(path):
-        warnings.warn(f"No results found under {path}")
+        warnings.warn(f"No rust results found under {path}")
         return {}
     for dir in os.listdir(path):
         if dir == "report":
@@ -62,7 +61,7 @@ def get_rust_results(path):
             with open(f"{path}/{dir}/new/estimates.json") as f:
                 result = json.load(f)  # in ns
         except FileNotFoundError:
-            warnings.warn(f"No results found under {path}")
+            warnings.warn(f"No rust results found under {path}")
             return {}
 
         median = result["mean"]["point_estimate"] / 1000
@@ -74,9 +73,16 @@ def get_rust_results(path):
 def get_short_names():
     return {
         "FCL distance": "HPP-FCL",
-        "Jolt intersection": "Jolt",
+        "FCL distance linear support": "HPP-FCL lin supp.",
+        "FCL intersection": "HPP-FCL inter",
+        "FCL intersection linear support": "HPP-FCL inter lin supp.",
+        "Jolt intersection": "Jolt inter",
+        "Jolt distance": "Jolt",
         "libccd intersection": "libccd",
+        "libccd intersection linear support": "libccd lin. supp.",
         "Bullet distance": "Bullet",
+        "openGJK distance": "openGJK",
+        "openGJK distance linear support": "openGJK lin supp.",
 
         "ncollide_distance": "ncollide",
         "collision-rs_nasterov_gjk": "collision-rs nest",
@@ -86,8 +92,6 @@ def get_short_names():
         "gjk-rs_nasterov_gjk": "gjk-rs",
         "Pybullet": "pybullet",
 
-        "distance3d Nesterov (Primitives with acceleration)": "distance3d tuple acc",
-        "distance3d Nesterov (Primitives)": "distance3d tuple no acc",
         "distance3d Nesterov (with acceleration)": "distance3d nest acc",
         "distance3d Nesterov": "distance3d nest no acc",
         "distance3d Jolt (intersection)": "distance3d jolt inter",

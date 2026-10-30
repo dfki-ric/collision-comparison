@@ -1,3 +1,4 @@
+use std::time::Duration;
 use compare::load_data;
 use criterion::{criterion_group, criterion_main, Criterion};
 use gjk::{colliders::Collider, gjk::GJKNesterov};
@@ -19,5 +20,18 @@ fn bench_nesterov_accelerated(c: &mut Criterion) {
     ));
 }
 
-criterion_group!(benches, bench_nesterov_accelerated);
+fn fast_config() -> Criterion {
+    // Change some values to speed up benchmarking with minimal loss in data quality:
+    Criterion::default()
+        .warm_up_time(Duration::from_millis(1000)) // default: 3s
+        .measurement_time(Duration::from_secs(2)) // default: 5s
+        .sample_size(50) // default: 100
+}
+
+
+criterion_group! {
+    name = benches;
+    config = fast_config();
+    targets = bench_nesterov_accelerated
+}
 criterion_main!(benches);
