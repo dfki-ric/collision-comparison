@@ -178,8 +178,10 @@ impl GJKNesterov
         ab_dot_a0: f64,
     ) {
         self.ray = (ab.dot(b) * a + ab_dot_a0 * b) / ab.length_squared();
-        self.simplex[0] = self.simplex[b_index];
-        self.simplex[1] = self.simplex[a_index];
+        // read the vertices before writing: the simplex is reordered in place (HPP-FCL writes to a separate simplex)
+        let (vertex_a, vertex_b) = (self.simplex[a_index], self.simplex[b_index]);
+        self.simplex[0] = vertex_b;
+        self.simplex[1] = vertex_a;
         self.simplex_len = 2;
     }
     
@@ -191,25 +193,29 @@ impl GJKNesterov
         abc: DVec3,
         abc_dot_a0: f64,
     ) -> bool {
+        // read the vertices before writing: the simplex is reordered in place (HPP-FCL writes to a separate
+        // simplex), e.g., for face ADB (b_index 0, c_index 2), writing simplex[0] first would overwrite vertex D
+        let (vertex_a, vertex_b, vertex_c) = (self.simplex[a_index], self.simplex[b_index], self.simplex[c_index]);
+
         if abc_dot_a0 == 0.0 {
-            self.simplex[0] = self.simplex[c_index];
-            self.simplex[1] = self.simplex[b_index];
-            self.simplex[2] = self.simplex[a_index];
+            self.simplex[0] = vertex_c;
+            self.simplex[1] = vertex_b;
+            self.simplex[2] = vertex_a;
             self.simplex_len = 3;
-    
+
             self.ray = DVec3::ZERO;
             return true;
         }
-    
+
         if abc_dot_a0 > 0.0 {
-            self.simplex[0] = self.simplex[c_index];
-            self.simplex[1] = self.simplex[b_index];
+            self.simplex[0] = vertex_c;
+            self.simplex[1] = vertex_b;
         } else {
-            self.simplex[0] = self.simplex[b_index];
-            self.simplex[1] = self.simplex[c_index];
+            self.simplex[0] = vertex_b;
+            self.simplex[1] = vertex_c;
         }
-    
-        self.simplex[2] = self.simplex[a_index];
+
+        self.simplex[2] = vertex_a;
         self.simplex_len = 3;
     
         self.ray = -abc_dot_a0 / abc.length_squared() * abc;
