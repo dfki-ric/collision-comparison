@@ -82,7 +82,8 @@ int main(){
     std::vector<OpenGJKCase> openGJK_cases_lin_support(cases_length);
     compare::OpenGJK::get_cases(&base_cases[0], &openGJK_cases_lin_support[0], cases_length);
 
-#define NDEBUG
+// Release builds (CMAKE_BUILD_TYPE=Release, see scripts/compile/compile_compare_release.sh) define NDEBUG and run
+// the benchmark, debug builds (scripts/compile/compile_compare_debug.sh) print the results of all algorithms instead.
 #ifdef NDEBUG
     std::cout << "\n\n";
 
