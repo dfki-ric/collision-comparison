@@ -111,6 +111,11 @@ namespace compare::Jolt {
 
         get_collider(collider0, jolt_case.collider0);
         get_collider(collider1, jolt_case.collider1);
+
+        // Jolt stores shapes relative to their center of mass (only nonzero for convex hulls),
+        // so the support functions are offset by it and we have to move the shapes back:
+        jolt_case.transform0 = jolt_case.transform0 * Mat44::sTranslation(jolt_case.collider0.shape->GetCenterOfMass());
+        jolt_case.transform1 = jolt_case.transform1 * Mat44::sTranslation(jolt_case.collider1.shape->GetCenterOfMass());
     }
 
     
