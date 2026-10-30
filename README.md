@@ -95,5 +95,9 @@ This project has been developed initially at the Robotics Innovation Center
 of the German Research Center for Artificial Intelligence (DFKI GmbH) in
 Bremen. At this phase the work was supported through a grant from the European
 Commission (870142).
+Later, this work was partially supported by the German Federal Ministry of Research,
+Technology and Space (BMFTR) under the Robotics Institute Germany (RIG) and partially
+financed by the German Federal Ministry of Research, Technology and Space (BMFTR) through
+the ActGPT project, grant number 01IW25002.
 
 <img src="doc/DFKI_RIC_RGB.png" height="100px" />
