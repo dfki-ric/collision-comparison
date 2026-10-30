@@ -85,20 +85,12 @@ def compile_results(path_to_result_dir: Path, path_to_case_files: Path):
     for result_file in os.listdir(path_to_result_dir):
         # fetch the results for all algorithms for the current file
         file_result_path = Path(path_to_result_dir, result_file)
-        result = {}  # in microseconds
+        # time for all collision checks of the case file in microseconds
+        # (not divided by the number of checks: a case file corresponds to one robot configuration)
+        result = {}
         result.update(get_cpp_result(file_result_path))
         result.update(get_rust_results(file_result_path))
         result.update(get_python_results(file_result_path))
-
-        # open the corresponding case file to count how many cases were in it:
-        path_to_case_file = Path(path_to_case_files, f"{path_to_case_files.name}_{result_file}.json")
-        with open(path_to_case_file, "r") as f:
-            json_data = json.load(f)
-            n_cases_per_test = len(json_data)
-
-        # compute mean time per case for all algorithms:
-        for key in result:
-            result[key] /= n_cases_per_test
 
         dataframe_records.append({
             "file": int(result_file),

@@ -1,9 +1,9 @@
 #!/bin/bash
 
-until [ $i -gt 999 ]
+i=1
+until [ $i -gt 1000 ]
 do
   echo i: $i
-  ((i=i+1))
 
    if [ ! -d "results/$i" ]; then
 
@@ -26,6 +26,7 @@ do
     mv "compare-cpp/cpp_result.json" "results/$i/";
     mv "compare-rs/target/criterion" "results/$i/";
    fi
+  ((i=i+1))
 done
 
 python3 compare-python/analyze_new/compile_CSV_from_results.py results data/complex_env_dual_arm_collision
