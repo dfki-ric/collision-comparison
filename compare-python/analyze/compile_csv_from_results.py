@@ -148,6 +148,7 @@ def compile_results(path_to_result_dir: Path, path_to_case_files: Path, computer
 
         dataframe_records.append({
             "file": int(result_file),
+            "benchmark": path_to_case_files.name,
             "computer": computer,
             **get_case_file_info(path_to_case_files, int(result_file), mesh_face_counts, target_distances),
             **result
