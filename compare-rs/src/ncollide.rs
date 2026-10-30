@@ -1,6 +1,7 @@
 use gjk::colliders::{ColliderType, Collider};
 use ncollide3d::{shape::{Ball, Cuboid, Cylinder, Capsule}, na::{Isometry3, self}};
-use ncollide3d::shape::ConvexHull;
+use ncollide3d::shape::{ConvexHull, Shape, SupportMap};
+use ncollide3d::query;
 
 pub struct NcollideCollider{
     pub ball: Ball<f64>,
@@ -56,6 +57,38 @@ pub fn get_collider(collider: &Collider) -> NcollideCollider {
         transform: transform,
         typ: collider.typ,
     }   
+}
+
+fn get_shape(collider: &NcollideCollider) -> &dyn Shape<f64> {
+    match collider.typ {
+        ColliderType::Sphere   => &collider.ball,
+        ColliderType::Box      => &collider.cuboid,
+        ColliderType::Capsule  => &collider.capsule,
+        ColliderType::Mesh     => &collider.mesh,
+        ColliderType::Cylinder => unreachable!("Cylinder does not implement the Shape trait"),
+    }
+}
+
+fn get_support_map(collider: &NcollideCollider) -> &dyn SupportMap<f64> {
+    match collider.typ {
+        ColliderType::Sphere   => &collider.ball,
+        ColliderType::Box      => &collider.cuboid,
+        ColliderType::Cylinder => &collider.cylinder,
+        ColliderType::Capsule  => &collider.capsule,
+        ColliderType::Mesh     => &collider.mesh,
+    }
+}
+
+/// Distance between two colliders, used by benches/ncollide.rs.
+#[inline]
+pub fn distance(collider0: &NcollideCollider, collider1: &NcollideCollider) -> f64 {
+    if collider0.typ == ColliderType::Cylinder || collider1.typ == ColliderType::Cylinder {
+        // Cylinder does not implement the Shape trait, so query::distance() cannot be used. For two support maps,
+        // query::distance() calls query::distance_support_map_support_map() anyway, so we call it directly.
+        return query::distance_support_map_support_map(&collider0.transform, get_support_map(collider0),
+                                                       &collider1.transform, get_support_map(collider1));
+    }
+    query::distance(&collider0.transform, get_shape(collider0), &collider1.transform, get_shape(collider1))
 }
 
 pub fn get_cases(cases: &Vec<(Collider, Collider, f64)>) -> Vec<(NcollideCollider, NcollideCollider, f64)> {
