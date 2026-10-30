@@ -13,8 +13,11 @@
 
 namespace compare::libccd {
 
+    // Note: colliderToOrigen[r][c] stores row r, column c of the transformation, but glm treats the first index as the
+    // column, so glm::mat3x3(colliderToOrigen) is the TRANSPOSED rotation R^T. Hence, world -> local directions are
+    // glm::mat3x3(colliderToOrigen) * dir (= R^T dir) and local -> world points use glm::transpose(...) (= R).
     glm::vec3 transform_point(glm::mat4x4 A2B, glm::vec3 point_in_A){
-        return glm::vec3(A2B[0][3], A2B[1][3], A2B[2][3]) + glm::mat3x3(A2B) * point_in_A;
+        return glm::vec3(A2B[0][3], A2B[1][3], A2B[2][3]) + glm::transpose(glm::mat3x3(A2B)) * point_in_A;
     }
 
     void sphere_support(const void *_collider, const ccd_vec3_t *_dir, ccd_vec3_t *_vec){
@@ -39,7 +42,7 @@ namespace compare::libccd {
         ccd_vec3_t dir;
         ccdVec3Copy(&dir, _dir);
 
-        glm::vec3 local_dir = glm::transpose(glm::mat3x3(collider.colliderToOrigen)) * glm::vec3(dir.v[0], dir.v[1], dir.v[2]);
+        glm::vec3 local_dir = glm::mat3x3(collider.colliderToOrigen) * glm::vec3(dir.v[0], dir.v[1], dir.v[2]);
         float s = glm::sqrt(local_dir[0] * local_dir[0] + local_dir[1] * local_dir[1]);
 
 
@@ -74,7 +77,7 @@ namespace compare::libccd {
         ccd_vec3_t dir;
         ccdVec3Copy(&dir, _dir);
 
-        glm::vec3 local_dir = glm::transpose(glm::mat3x3(collider.colliderToOrigen)) * glm::vec3(dir.v[0], dir.v[1], dir.v[2]);
+        glm::vec3 local_dir = glm::mat3x3(collider.colliderToOrigen) * glm::vec3(dir.v[0], dir.v[1], dir.v[2]);
         float s = glm::sqrt(local_dir[0] * local_dir[0] + local_dir[1] * local_dir[1] + local_dir[2] * local_dir[2]);
 
         glm::vec3 local_vertex;
@@ -105,7 +108,7 @@ namespace compare::libccd {
         ccd_vec3_t dir;
         ccdVec3Copy(&dir, _dir);
 
-        glm::vec3 local_dir = glm::transpose(glm::mat3x3(collider.colliderToOrigen)) * glm::vec3(dir.v[0], dir.v[1], dir.v[2]);
+        glm::vec3 local_dir = glm::mat3x3(collider.colliderToOrigen) * glm::vec3(dir.v[0], dir.v[1], dir.v[2]);
 
         glm::vec3 local_vertex;
         local_vertex[0] = Base::get_size_x(collider) * (0.5f * (local_dir[0] >= 0) + -0.5f * (local_dir[0] < 0));
@@ -123,7 +126,7 @@ namespace compare::libccd {
 
         ccd_vec3_t dir;
         ccdVec3Copy(&dir, _dir);
-        const glm::vec3 local_dir = glm::transpose(glm::mat3x3(collider.colliderToOrigen)) * glm::vec3(dir.v[0], dir.v[1], dir.v[2]);
+        const glm::vec3 local_dir = glm::mat3x3(collider.colliderToOrigen) * glm::vec3(dir.v[0], dir.v[1], dir.v[2]);
 
         ccd_real_t score = 0;
         ccd_real_t max_score = 0;
@@ -152,7 +155,7 @@ namespace compare::libccd {
         const Collider &collider = wrapper->collider;
         ccd_vec3_t dir;
         ccdVec3Copy(&dir, _dir);
-        const glm::vec3 local_dir = glm::transpose(glm::mat3x3(collider.colliderToOrigen)) * glm::vec3(dir.v[0], dir.v[1], dir.v[2]);
+        const glm::vec3 local_dir = glm::mat3x3(collider.colliderToOrigen) * glm::vec3(dir.v[0], dir.v[1], dir.v[2]);
 
         // if for some reason the body does not have any vertices,
         // trying to look up the vertex at index 0 would lead to undefined behavior
