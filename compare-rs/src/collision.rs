@@ -1,14 +1,20 @@
-use cgmath::Matrix4;
+use cgmath::{Matrix4, Rad};
 use collision::primitive::{Primitive3, Sphere, Capsule, Cylinder, Cuboid};
 use gjk::colliders::{Collider, ColliderType};
 
 pub fn get_collider(collider: &Collider) -> (Matrix4<f64>, Primitive3<f64>){
-    let transform = Matrix4::<f64>::new(
+    let mut transform = Matrix4::<f64>::new(
         collider.transform.col(0)[0], collider.transform.col(0)[1], collider.transform.col(0)[2], 0.0,
         collider.transform.col(1)[0], collider.transform.col(1)[1], collider.transform.col(1)[2], 0.0,
         collider.transform.col(2)[0], collider.transform.col(2)[1], collider.transform.col(2)[2], 0.0,
         collider.center[0], collider.center[1], collider.center[2], 1.0
     );
+
+    // collision-rs' cylinders and capsules are aligned with the y axis, the data uses the z axis:
+    // rotate by 90 degrees about x, which maps y to z
+    if collider.typ == ColliderType::Cylinder || collider.typ == ColliderType::Capsule {
+        transform = transform * Matrix4::from_angle_x(Rad(std::f64::consts::FRAC_PI_2));
+    }
 
     let primitive = match collider.typ {
         x if x == ColliderType::Sphere => {
