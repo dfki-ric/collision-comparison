@@ -24,7 +24,13 @@ pub fn get_collider(collider: &Collider) -> NcollideCollider {
     let pos = na::Vector3::new(collider.center[0], collider.center[1], collider.center[2]);
 
     // Isometry3::new expects the rotation axis scaled by the rotation angle
-    let transform = Isometry3::new(pos, rotation.scaled_axis());
+    let mut transform = Isometry3::new(pos, rotation.scaled_axis());
+
+    // ncollide's cylinders and capsules are aligned with the y axis, the data uses the z axis:
+    // rotate by 90 degrees about x, which maps y to z
+    if collider.typ == ColliderType::Cylinder || collider.typ == ColliderType::Capsule {
+        transform = transform * Isometry3::rotation(na::Vector3::x() * std::f64::consts::FRAC_PI_2);
+    }
 
     NcollideCollider{
         ball: Ball::new(collider.radius),
