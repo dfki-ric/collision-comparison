@@ -135,6 +135,10 @@ namespace compare::OpenGJK {
         gkSimplex s;
         s.nvrtx = 0;
 
+        // start hill climbing at vertex 0 in every query (like HPP-FCL), so repeated runs do not reuse the result
+        openGJK_case.collider0.last_support_vertex = 0;
+        openGJK_case.collider1.last_support_vertex = 0;
+
         /* Compute distance */
         const gkFloat dd = compute_minimum_distance(openGJK_case.collider0, openGJK_case.collider1, &s, force_linear_support_func);
 

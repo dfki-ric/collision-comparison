@@ -309,6 +309,9 @@ namespace compare::libccd {
     }
 
     bool get_intersection(LibccdCase& libccd_case) {
+        // start hill climbing at vertex 0 in every query (like HPP-FCL), so repeated runs do not reuse the result
+        libccd_case.collider0.last_support_vertex = 0;
+        libccd_case.collider1.last_support_vertex = 0;
         int intersect = ccdGJKIntersect(&libccd_case.collider0, &libccd_case.collider1, &libccd_case.ccd);
         return intersect == 1;
     }
