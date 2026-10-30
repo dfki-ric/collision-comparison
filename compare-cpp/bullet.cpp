@@ -28,7 +28,10 @@ namespace compare::Bullet {
         }
 
         if (collider.type == ColliderType::Cylinder){
-            bullet_collider.cylinder = btCylinderShapeX(btVector3(get_radius(collider), 0.0 , get_height(collider) / 2));
+            // btCylinderShape is aligned with the y axis (half extents: radius, half height, radius),
+            // get_shape_transform() rotates it to the z axis used by the data
+            // (assigning a btCylinderShapeZ to the btCylinderShape member would slice it back to a y-axis cylinder)
+            bullet_collider.cylinder = btCylinderShape(btVector3(get_radius(collider), get_height(collider) / 2, get_radius(collider)));
             // decrease collision margin from 4cm to 0.1mm to increase precision
             bullet_collider.cylinder.setMargin(0.0001f);
             bullet_collider.shape = &bullet_collider.cylinder;
@@ -65,9 +68,19 @@ namespace compare::Bullet {
         }
     }
 
+    btTransform get_shape_transform(Collider collider){
+        btTransform transform = get_transform(collider);
+        // Bullet's cylinder is aligned with the y axis, the data uses the z axis:
+        // rotate by 90 degrees about x, which maps y to z
+        if (collider.type == ColliderType::Cylinder){
+            transform = transform * btTransform(btQuaternion(btVector3(1, 0, 0), SIMD_HALF_PI));
+        }
+        return transform;
+    }
+
     void get_case(Collider collider0, Collider collider1, BulletCase& bullet_case){
-        bullet_case.transform0 = get_transform(collider0);
-        bullet_case.transform1 = get_transform(collider1);
+        bullet_case.transform0 = get_shape_transform(collider0);
+        bullet_case.transform1 = get_shape_transform(collider1);
 
         get_collider(collider0, bullet_case.collider0);
         get_collider(collider1, bullet_case.collider1);
