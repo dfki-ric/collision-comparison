@@ -4,13 +4,14 @@ Usage (from compare-python/analyze):
     python run_analysis.py CSV [CSV ...] [--results-dir ../../results] [--output analysis_output]
 
 Every CSV file (written by compile_csv_from_results.py) contains the results of one benchmark on one computer, which
-is one task. The comparisons are averaged over all tasks of the given CSV files with equal weight, so the selection
-of CSV files determines the aggregation (e.g., only the UR10 use cases, or one computer).
+is one task. The comparisons are computed separately for each geometry (primitive or mesh benchmarks, see
+BENCHMARK_GEOMETRY in load_results.py) and computer, and averaged over the tasks of the group with equal weight.
 
 Output files:
 - data_quality_missing.csv, data_quality_overhead.csv, data_quality_lag.csv, data_quality_first_run.csv
 - summary.csv and violin_<benchmark>_<computer>.pdf
-- comparisons_within_language.csv/.tex, comparisons_best_per_language.csv/.tex, comparisons_variants.csv/.tex
+- comparisons_within_language_<geometry>_<computer>.csv/.tex, comparisons_best_per_language_<geometry>_<computer>.csv/.tex,
+  comparisons_variants_<geometry>_<computer>.csv/.tex
 """
 import argparse
 import os
@@ -19,7 +20,7 @@ from pathlib import Path
 import data_quality
 import descriptive
 import comparisons
-from load_results import load_results, tasks, to_long
+from load_results import load_results, tasks, comparison_groups, to_long
 
 
 def main():
@@ -51,21 +52,25 @@ def main():
     for benchmark, computer in tasks(df):
         descriptive.violin_plot(long, benchmark, computer, out(f"violin_{benchmark}_{computer}.pdf"))
 
-    # 6. pairwise comparisons
+    # 6. pairwise comparisons, separately per geometry (primitives or meshes) and computer
     options = {"n_resamples": args.resamples, "random_state": args.seed}
-    for name, table, caption in [
-        ("within_language", comparisons.within_language(df, **options),
-         "Pairwise comparison of implementations of the same language."),
-        ("best_per_language", comparisons.best_per_language(df, **options),
-         "Pairwise comparison of the fastest implementation of each language."),
-        ("variants", comparisons.variants(df, **options),
-         "Variants (X) compared to their base implementation (Y)."),
-    ]:
-        table.to_csv(out(f"comparisons_{name}.csv"), index=False)
-        caption += (" Probability of improvement and speedup of X over Y (paired, averaged over tasks)"
-                    " with 95\\,\\% bootstrap confidence intervals.")
-        with open(out(f"comparisons_{name}.tex"), "w") as f:
-            f.write(comparisons.to_latex(table, caption, f"tab:comparisons-{name.replace('_', '-')}"))
+    for (geometry, computer), group in comparison_groups(df).items():
+        benchmarks = sorted(group["benchmark"].unique())
+        print(f"Comparisons for {geometry} on {computer}: {benchmarks}")
+        for name, table, caption in [
+            ("within_language", comparisons.within_language(group, **options),
+             "Pairwise comparison of implementations of the same language"),
+            ("best_per_language", comparisons.best_per_language(group, **options),
+             "Pairwise comparison of the fastest implementation of each language"),
+            ("variants", comparisons.variants(group, **options),
+             "Variants (X) compared to their base implementation (Y)"),
+        ]:
+            suffix = f"{name}_{geometry}_{computer}"
+            table.to_csv(out(f"comparisons_{suffix}.csv"), index=False)
+            caption += (f" ({geometry} on {computer}). Probability of improvement and speedup of X over Y"
+                        " (paired, averaged over tasks) with 95\\,\\% bootstrap confidence intervals.")
+            with open(out(f"comparisons_{suffix}.tex"), "w") as f:
+                f.write(comparisons.to_latex(table, caption, f"tab:comparisons-{suffix.replace('_', '-')}"))
     print(f"Results written to {args.output}")
 
 

@@ -11,6 +11,18 @@ import pandas as pd
 from algo_metadata import algo_metadata
 
 METADATA_COLUMNS = ["file", "benchmark", "computer", "n_checks", "reference_distance", "n_faces", "target_distance"]
+# Geometry of each benchmark: primitive and mesh benchmarks are never aggregated in one comparison.
+BENCHMARK_GEOMETRY = {
+    "uc1_ur10_collision": "primitives",
+    "uc2_ur10_collision": "primitives",
+    "uc5_ur10_collision": "primitives",
+    "uc6_ur10_collision": "primitives",
+    "complex_env_dual_arm_collision": "meshes",
+    "complex_env_dual_arm_collision_max256verts": "meshes",
+    "icospheres_of_different_vertex_counts": "meshes",
+    "icospheres_of_different_high_vertex_counts": "meshes",
+    "icospheres_fixed_size_distance_sweep": "meshes",
+}
 
 
 def load_results(csv_paths):
@@ -19,6 +31,9 @@ def load_results(csv_paths):
     for column in ["benchmark", "computer"]:
         if column not in df.columns:
             raise ValueError(f"Column '{column}' is missing: the CSV files must be written by compile_csv_from_results.py")
+    unknown_benchmarks = sorted(set(df["benchmark"]) - set(BENCHMARK_GEOMETRY))
+    if unknown_benchmarks:
+        raise ValueError(f"Benchmarks without geometry in BENCHMARK_GEOMETRY: {unknown_benchmarks}")
     unknown = [c for c in df.columns if c not in METADATA_COLUMNS and c not in algo_metadata]
     if unknown:
         warnings.warn(f"Columns without metadata in algo_metadata.py are ignored: {unknown}")
@@ -33,6 +48,13 @@ def algorithm_columns(df):
 def tasks(df):
     """One table per task, i.e., per benchmark and computer, sorted by case file: {(benchmark, computer): table}."""
     return {key: task.sort_values("file") for key, task in df.groupby(["benchmark", "computer"], sort=True)}
+
+
+def comparison_groups(df):
+    """Groups of tasks that are aggregated in comparisons, i.e., per geometry and computer:
+    {(geometry, computer): table}. Primitive and mesh benchmarks, and different computers, are never aggregated."""
+    geometry = df["benchmark"].map(BENCHMARK_GEOMETRY)
+    return {key: group for key, group in df.groupby([geometry, df["computer"]], sort=True)}
 
 
 def to_long(df):

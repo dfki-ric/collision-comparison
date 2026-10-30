@@ -100,8 +100,9 @@ compares implementations pairwise (paired probability of improvement and speedup
 cd compare-python/analyze
 python run_analysis.py ../../<dataset>_<computer>_<timestamp>.csv [...] --results-dir ../../results --output analysis_output
 ```
-Each CSV file is one task (one benchmark on one computer). The comparisons are averaged over all given CSV files,
-so the selection of CSV files determines the aggregation. `--results-dir` is only needed to check the warm-up with
+Each CSV file is one task (one benchmark on one computer). The comparisons are computed separately for primitive
+benchmarks (UR10 use cases) and mesh benchmarks (dual-arm scene, icospheres) and for each computer, and averaged over
+the tasks of each group. `--results-dir` is only needed to check the warm-up with
 the individual measured runs. See `python run_analysis.py --help` for the output files.
 The old analysis scripts and notebooks are in `compare-python/analyze_backup`.
 

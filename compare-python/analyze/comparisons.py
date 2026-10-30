@@ -2,7 +2,7 @@
 
 For each pair (X, Y), we report the probability of improvement P(T_X < T_Y) and the speedup of X over Y (geometric
 mean of T_Y / T_X), both computed per task (benchmark and computer) and averaged over tasks with equal weight. All
-tasks in the given table are used, so the selection of CSV files determines the aggregation.
+tasks in the given table are used: run_analysis.py passes one group of tasks (one geometry on one computer) at a time.
 """
 import warnings
 
