@@ -77,6 +77,11 @@ namespace compare::Bullet {
         if (collider.type == ColliderType::Cylinder){
             transform = transform * btTransform(btQuaternion(btVector3(1, 0, 0), SIMD_HALF_PI));
         }
+        // the capsule is a btCapsuleShapeX (aligned with the x axis), because the btCapsuleShapeZ cannot be
+        // default-constructed in BulletCollider: rotate by -90 degrees about y, which maps x to z
+        if (collider.type == ColliderType::Capsule){
+            transform = transform * btTransform(btQuaternion(btVector3(0, 1, 0), -SIMD_HALF_PI));
+        }
         return transform;
     }
 
