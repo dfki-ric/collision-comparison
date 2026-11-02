@@ -22,7 +22,7 @@ We are interested in the question of how programming language, algorithm enginee
 We develop a benchmark that resembles how GJK is used in a highly optimized collision detection pipeline for an arm with an anthropomorphic hand and compare the performance of commonly used implementations of GJK.
 We analyze not just the moments of the distribution of runtimes, but the whole distribution, which is relevant for real-time applications.
 
-<img src="./doc/usecases.svg" width="800" />
+<img src="./doc/usecases.png" width="800" />
 
 ## Folder-Structure
 - [compare-cpp/README](./compare-cpp/README.md)
