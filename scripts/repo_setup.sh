@@ -30,6 +30,7 @@ unzip_dataset complex_env_dual_arm_collision
 unzip_dataset complex_env_dual_arm_collision_max256verts
 unzip_dataset icospheres_of_different_vertex_counts
 unzip_dataset icospheres_fixed_size_distance_sweep
+unzip_dataset icospheres_threshold_sweep
 
 # too large for GitHub, it has to be generated (see README.md)
 if [ ! -d "data/icospheres_of_different_high_vertex_counts" ]; then

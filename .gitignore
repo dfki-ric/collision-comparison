@@ -17,6 +17,7 @@ data/*
 !data/complex_env_dual_arm_collision_max256verts.zip
 !data/icospheres_of_different_vertex_counts.zip
 !data/icospheres_fixed_size_distance_sweep.zip
+!data/icospheres_threshold_sweep.zip
 
 venv/*
 results/*
