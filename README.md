@@ -58,9 +58,10 @@ bash scripts/repo_setup.sh
 This unpacks the benchmark data, downloads and builds the libraries, and compiles the C++ benchmark.
 The script can be run again: existing data, repositories and builds are kept.
 
-### 4. Generate additional benchmark case files
+### 4. Generate additional benchmark case files (optional)
 The case files of the benchmark "icospheres_of_different_high_vertex_counts" are too large for GitHub
-(about 500 MiB), so they have to be generated:
+(about 500 MiB), so they have to be generated. This benchmark is not part of the paper and is only needed if you
+enable it in `scripts/setup_repo_and_start_all_benchmarks.sh`:
 ```bash
 cd compare-python
 PYTHONPATH=. python test_file/from_icospheres_of_different_high_vertex_counts.py
@@ -68,8 +69,9 @@ cd ..
 ```
 
 ### 5. Run the benchmarks
-Run all benchmarks (this takes several days). The script runs the setup, all benchmarks, and compiles the results
-into CSV files:
+Run all benchmarks of the paper (about 6 hours on an Intel i7-10700KF). The script runs the setup, all benchmarks,
+and compiles the results into CSV files. The benchmarks that are not part of the paper (dual-arm scene with at most
+256 vertices and the icosphere benchmarks) are commented out in the script:
 ```bash
 bash scripts/setup_repo_and_start_all_benchmarks.sh
 ```
@@ -91,6 +93,36 @@ BENCHMARK_LANGUAGES=cpp BENCHMARK_FILTER="^FCL original" RESULTS_DIR=results_fcl
 The analysis merges the CSV files of the same benchmark and computer (see below).
 
 ## Results
+Results on PC1 (2026-11-01), as in the paper. libccd and OpenGJK use an adaptive support function for meshes (see
+the support function study), HPP-FCL is also shown with cached extremes in the dual-arm scene
+([cached extremes]). The figures are written by `compare-python/analyze/run_analysis.py`,
+`support_study.py`, and `case_statistics.py`.
+
+**Benchmark data:** pairs per case file, share of intersecting pairs, and distance of separated pairs.
+
+<img src="./doc/results/case_statistics.png" width="800" />
+
+**Runtime distributions** per GJK implementation (time per case file, log scale): (A) primitives (use cases 1, 2,
+5, and 6 with UR10 collision environment), (B) meshes (dual-arm scene).
+
+<img src="./doc/results/violin_PC1.png" width="800" />
+
+**Slowdown relative to the fastest implementation** of the same query type (geometric mean of the paired ratios
+with 95 % bootstrap confidence intervals): (A) primitives, (B) meshes.
+
+<img src="./doc/results/speedup_vs_fastest_PC1.png" width="800" />
+
+**Probability of improvement** $P(T_{\text{row}} < T_{\text{column}})$ for pairs of implementations of the same
+language and query type: primitives and meshes.
+
+<img src="./doc/results/effect_sizes_primitives_PC1.png" width="800" />
+<img src="./doc/results/effect_sizes_meshes_PC1.png" width="800" />
+
+**Support function for meshes** on the icosphere benchmark: linear search, hill climbing, and hill climbing from
+cached extreme vertices (as in MuJoCo).
+
+<img src="./doc/results/support_study.png" width="800" />
+
 ### How many case files are done?
 Number of finished case files per dataset:
 ```bash
@@ -109,7 +141,8 @@ compares implementations pairwise (paired probability of improvement and speedup
 cd compare-python/analyze
 python run_analysis.py ../../<dataset>_<computer>_<timestamp>.csv [...] --results-dir ../../results --output analysis_output
 ```
-Each CSV file is one task (one benchmark on one computer). The comparisons are computed separately for primitive
+Each CSV file is one task (one benchmark on one computer). CSV files of the same task from separate runs with
+different implementations are merged by case file. The comparisons are computed separately for primitive
 benchmarks (UR10 use cases) and mesh benchmarks (dual-arm scene, icospheres) and for each computer, and averaged over
 the tasks of each group. `--results-dir` is only needed to check the warm-up with
 the individual measured runs. See `python run_analysis.py --help` for the output files.
