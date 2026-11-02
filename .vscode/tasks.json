@@ -21,29 +21,10 @@
         },
 
         {
-            "label": "compile-fcl",
-            "command": "sh scripts/compile/compile_hpp-fcl.sh",
-            "type": "shell",
-        },
-
-        {
-            "label": "run-fcl",
-            "command": "sh scripts/run/run_hpp-fcl_iteration_test.sh",
-            "type": "shell",
-        },
-
-        {
             "label": "compile-compare",
             "command": "sh scripts/compile/compile_compare_release.sh",
             "type": "shell",
         },
-
-        {
-            "label": "run-compare",
-            "command": "sh scripts/run/run_compare.sh",
-            "type": "shell",
-        },
     ]
 }
-
 

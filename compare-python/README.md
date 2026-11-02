@@ -4,7 +4,6 @@ This Project contains all the python code. For test case creation, python benchm
 
 ## Structure 
 - analyze -> compile the results into CSV files and analyze them (run_analysis.py, see README.md in the repository root)
-- analyze_backup -> old analysis scripts and notebooks
 - compare -> benchmarking code executed when running benchmark
 - debug -> show the models, strip the results-archive
 - test_file -> create test data

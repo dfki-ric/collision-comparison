@@ -146,7 +146,6 @@ different implementations are merged by case file. The comparisons are computed 
 benchmarks (UR10 use cases) and mesh benchmarks (dual-arm scene, icospheres) and for each computer, and averaged over
 the tasks of each group. `--results-dir` is only needed to check the warm-up with
 the individual measured runs. See `python run_analysis.py --help` for the output files.
-The old analysis scripts and notebooks are in `compare-python/analyze_backup`.
 
 ## Funding
 
