@@ -53,14 +53,14 @@ algo_metadata = {
     "openGJK distance adaptive support":            AlgoData("OpenGJK", AlgoData.Language.CPP, AlgoData.Category.DISTANCE),
 
     "ncollide_distance":            AlgoData("ncollide", AlgoData.Language.RUST, AlgoData.Category.DISTANCE),
-    "collision-rs_nasterov_gjk":    AlgoData("collision-rs Nesterov", AlgoData.Language.RUST, AlgoData.Category.DISTANCE),
+    "collision-rs_nasterov_gjk":    AlgoData("collision-rs Nest.", AlgoData.Language.RUST, AlgoData.Category.DISTANCE),
     "collision-rs_distance_gjk":    AlgoData("collision-rs", AlgoData.Language.RUST, AlgoData.Category.DISTANCE),
     "collision-rs_intersect_gjk":   AlgoData("collision-rs", AlgoData.Language.RUST, AlgoData.Category.INTERSECTION),
     "gjk-rs_nasterov_gjk":          AlgoData("gjk-rs", AlgoData.Language.RUST, AlgoData.Category.DISTANCE),
 
     "Pybullet":                                 AlgoData("PyBullet", AlgoData.Language.PYTHON, AlgoData.Category.DISTANCE),
-    "distance3d Nesterov (with acceleration)":  AlgoData("distance3d Nest. Acc.", AlgoData.Language.PYTHON, AlgoData.Category.DISTANCE),
-    "distance3d Nesterov":                      AlgoData("distance3d Nest.", AlgoData.Language.PYTHON, AlgoData.Category.DISTANCE),
+    "distance3d Nesterov (with acceleration)":  AlgoData("distance3d HPP-FCL Nest.", AlgoData.Language.PYTHON, AlgoData.Category.DISTANCE),
+    "distance3d Nesterov":                      AlgoData("distance3d HPP-FCL", AlgoData.Language.PYTHON, AlgoData.Category.DISTANCE),
     "distance3d Jolt (intersection)":           AlgoData("distance3d Jolt", AlgoData.Language.PYTHON, AlgoData.Category.INTERSECTION),
     "distance3d Jolt (distance)":               AlgoData("distance3d Jolt", AlgoData.Language.PYTHON, AlgoData.Category.DISTANCE),
     "distance3d Original":                      AlgoData("distance3d Orig.", AlgoData.Language.PYTHON, AlgoData.Category.DISTANCE),
