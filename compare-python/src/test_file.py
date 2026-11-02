@@ -103,16 +103,29 @@ def convert_to_convex_hull_collider(collider: MeshGraph) -> MeshGraph:
 
 def clean_collider_name(raw_name: str) -> str:
     # raw_name is assumed to have following form: "[collision|visual]:actual_name/suffix"
+    # The suffix (name or index of the visual/collision element in the URDF link) is kept: links can have several
+    # meshes, which need different file names.
     parts = raw_name.split(':')
     if len(parts) != 2 or parts[0] not in ["collision", "visual"]:
         raise Exception(f"Collider name did not have expected form: {raw_name}")
 
-    return parts[1][:parts[1].rfind("/")]
+    return parts[1].replace("/", "_")
+
+
+# meshes written by this process: file path -> (vertices, triangles)
+_written_meshes = {}
 
 
 def write_mesh_file(collider: MeshGraph, file_name: str, save_path: str):
     path = Path(save_path, file_name+".obj")
-    if os.path.exists(path): return
+    # Every mesh is written once per run. A file from an earlier run is overwritten (the meshes may have changed),
+    # and a different mesh with the same name is an error (the case files would point to the wrong mesh).
+    if path in _written_meshes:
+        vertices, triangles = _written_meshes[path]
+        if not (np.array_equal(vertices, collider.vertices) and np.array_equal(triangles, collider.triangles)):
+            raise Exception(f"Different meshes with the same file name: {path}")
+        return
+    _written_meshes[path] = (np.copy(collider.vertices), np.copy(collider.triangles))
     with open(path, "w") as f:
         for vertex in collider.vertices:
             f.write("v {} {} {}\n".format(vertex[0], vertex[1], vertex[2]))
