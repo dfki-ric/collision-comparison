@@ -14,6 +14,7 @@ add_executable(compare
         jolt.cpp
         fcl.cpp
         fcl_original.cpp
+        mujoco.cpp
         bullet.cpp
         utility.cpp
         collider.cpp
@@ -79,6 +80,12 @@ target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../libccd/build/src/libccd.a)
 include_directories(${CMAKE_SOURCE_DIR}/../fcl/include)
 include_directories(${CMAKE_SOURCE_DIR}/../fcl/build/include)
 target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../fcl/build/lib/libfcl.a)
+
+# MuJoCo (built by scripts/repo_setup.sh as shared library: it contains its own libccd). Its GJK is not part of the
+# public API, so the internal headers in src/ are needed as well.
+include_directories(${CMAKE_SOURCE_DIR}/../mujoco/include)
+include_directories(${CMAKE_SOURCE_DIR}/../mujoco/src)
+target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../mujoco/build/lib/libmujoco.so)
 
 
 install(TARGETS compare DESTINATION bin)

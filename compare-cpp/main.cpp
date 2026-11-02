@@ -3,6 +3,7 @@
 #include "jolt.h"
 #include "fcl.h"
 #include "fcl_original.h"
+#include "mujoco.h"
 #include "bullet.h"
 #include "libccd.h"
 #include "openGJK.h"
@@ -20,6 +21,7 @@ using compare::Base::SupportMode;
 
 using compare::FCL::FCLCase;
 using compare::FCLOriginal::FCLOriginalCase;
+using compare::MuJoCo::MuJoCoCase;
 using compare::Jolt::JoltCase;
 using compare::Bullet::BulletCase;
 using compare::libccd::LibccdCase;
@@ -88,6 +90,15 @@ int main(){
 
     std::vector<FCLOriginalCase> fcl_original_cases(cases_length);
     compare::FCLOriginal::get_cases(&base_cases[0], &fcl_original_cases[0], cases_length);
+
+    std::vector<MuJoCoCase> mujoco_cases(cases_length);
+    compare::MuJoCo::get_cases(&base_cases[0], &mujoco_cases[0], cases_length);
+
+    std::vector<MuJoCoCase> mujoco_cases_lin_support(cases_length);
+    compare::MuJoCo::get_cases(&base_cases[0], &mujoco_cases_lin_support[0], cases_length, SupportMode::Linear);
+
+    std::vector<MuJoCoCase> mujoco_cases_hill_climbing(cases_length);
+    compare::MuJoCo::get_cases(&base_cases[0], &mujoco_cases_hill_climbing[0], cases_length, SupportMode::HillClimbing);
 
     std::vector<JoltCase> jolt_cases(cases_length);
     compare::Jolt::get_cases(&base_cases[0], &jolt_cases[0], cases_length);
@@ -251,6 +262,42 @@ int main(){
         }
     });
 
+    run("MuJoCo intersection", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::MuJoCo::get_intersection(mujoco_cases[i]));
+        }
+    });
+
+    if (has_mesh) run("MuJoCo intersection linear support", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::MuJoCo::get_intersection(mujoco_cases_lin_support[i]));
+        }
+    });
+
+    if (has_mesh) run("MuJoCo intersection hill climbing", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::MuJoCo::get_intersection(mujoco_cases_hill_climbing[i]));
+        }
+    });
+
+    run("MuJoCo distance", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::MuJoCo::get_distance(mujoco_cases[i]));
+        }
+    });
+
+    if (has_mesh) run("MuJoCo distance linear support", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::MuJoCo::get_distance(mujoco_cases_lin_support[i]));
+        }
+    });
+
+    if (has_mesh) run("MuJoCo distance hill climbing", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::MuJoCo::get_distance(mujoco_cases_hill_climbing[i]));
+        }
+    });
+
     run("Bullet distance", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::Bullet::get_distance(bullet_cases[i]));
@@ -299,11 +346,17 @@ int main(){
         << "\tHPP-FCL (lin supp.)   Intersect: " << compare::FCL::get_intersection_nesterov(fcl_cases_nesterov_intersection_lin_support[i]) << "\n"
         << "\tHPP-FCL (extremes)    Intersect: " << compare::FCL::get_intersection_nesterov(fcl_cases_nesterov_intersection_extremes[i]) << "\n"
         << "\tJolt                  Intersect: " << compare::Jolt::get_intersection(jolt_cases[i]) << "\n"
+        << "\tMuJoCo                Intersect: " << compare::MuJoCo::get_intersection(mujoco_cases[i]) << "\n"
+        << "\tMuJoCo (lin supp.)    Intersect: " << compare::MuJoCo::get_intersection(mujoco_cases_lin_support[i]) << "\n"
+        << "\tMuJoCo (hill climb.)  Intersect: " << compare::MuJoCo::get_intersection(mujoco_cases_hill_climbing[i]) << "\n"
         << "Distance Algorithms:" << "\n"
         << "\tHPP-FCL               Distance: " << compare::FCL::get_distance_nesterov(fcl_cases_nesterov[i]) << "\n"
         << "\tHPP-FCL (lin supp.)   Distance: " << compare::FCL::get_distance_nesterov(fcl_cases_nesterov_lin_support[i]) << "\n"
         << "\tHPP-FCL (extremes)    Distance: " << compare::FCL::get_distance_nesterov(fcl_cases_nesterov_extremes[i]) << "\n"
         << "\tFCL (original)        Distance: " << compare::FCLOriginal::get_distance(fcl_original_cases[i]) << "\n"
+        << "\tMuJoCo                Distance: " << compare::MuJoCo::get_distance(mujoco_cases[i]) << "\n"
+        << "\tMuJoCo (lin supp.)    Distance: " << compare::MuJoCo::get_distance(mujoco_cases_lin_support[i]) << "\n"
+        << "\tMuJoCo (hill climb.)  Distance: " << compare::MuJoCo::get_distance(mujoco_cases_hill_climbing[i]) << "\n"
         << "\tBullet                Distance: " << compare::Bullet::get_distance(bullet_cases[i]) << "\n"
         << "\tJolt Distance         Distance: " << compare::Jolt::get_distance(jolt_cases_dist[i]) << "\n"
         << "\tOpenGJK               Distance: " << compare::OpenGJK::get_distance(openGJK_cases[i], SupportMode::HillClimbing) << "\n"

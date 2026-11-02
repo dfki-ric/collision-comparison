@@ -69,6 +69,10 @@ clone https://github.com/AlexanderFabisch/distance3d.git
 # the original FCL with its own GJK, at the latest release
 clone https://github.com/flexible-collision-library/fcl.git
 git -C fcl checkout -q 0.7.0
+# MuJoCo with its native GJK, at the latest release
+if [ ! -d mujoco ]; then
+  git clone --depth 1 --branch 3.17.0 https://github.com/google-deepmind/mujoco.git
+fi
 
 # dependencies of the C++ benchmark
 clone https://github.com/nlohmann/json.git
@@ -101,6 +105,17 @@ OPT_FLAGS="-march=native -ffast-math -flto=auto"
     -DFCL_STATIC_LIBRARY=ON -DFCL_WITH_OCTOMAP=OFF -DBUILD_TESTING=OFF \
     -DCCD_INCLUDE_DIR="$PWD/../../libccd/src" -DCCD_LIBRARY="$PWD/../../libccd/build/src/libccd.a" .. \
  && cmake --build . --target fcl -j "$(nproc)")
+
+# MuJoCo is built as shared library without examples, simulate and tests. It enables link-time optimization and
+# AVX itself; -fno-semantic-interposition allows direct calls within the shared library (as for HPP-FCL). Fast math
+# without -ffinite-math-only: the model compiler of MuJoCo refuses to run if NaN cannot be detected.
+MUJOCO_FLAGS="$OPT_FLAGS -fno-finite-math-only -fno-semantic-interposition"
+(mkdir -p mujoco/build \
+ && cd mujoco/build \
+ && cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="$MUJOCO_FLAGS" \
+    -DCMAKE_CXX_FLAGS="$MUJOCO_FLAGS" -DMUJOCO_BUILD_EXAMPLES=OFF \
+    -DMUJOCO_BUILD_SIMULATE=OFF -DMUJOCO_BUILD_TESTS=OFF -DMUJOCO_TEST_PYTHON_UTIL=OFF .. \
+ && cmake --build . --target mujoco -j "$(nproc)")
 
 # HPP-FCL and Bullet are built together with the C++ benchmark (see compare-cpp/CMakeLists.txt)
 (cd hpp-fcl && git submodule update --init)
