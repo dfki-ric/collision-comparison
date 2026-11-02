@@ -1,0 +1,351 @@
+"""Figures for the paper: runtime distributions, slowdown charts and heatmaps of the probability of improvement.
+
+All figures share one print style: no titles (captions belong to the paper), no frames, recessive axes, and direct
+labels instead of legends where possible.
+
+Every figure is written twice: as PDF (vector graphics for LaTeX) and as TIFF for the submission to Frontiers, which
+accepts TIFF, JPEG and EPS (RGB, 300 dpi at final size), but not PDF. Figures are made at their final size (at most
+180 mm wide, the width of two columns) with text of at least 8 pt, so they must be included without scaling. Figures
+with two panels (e.g., primitives and meshes) are one file with the panels A and B, as required for the submission.
+"""
+import io
+from pathlib import Path
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from PIL import Image
+from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.font_manager import FontProperties
+from matplotlib.lines import Line2D
+from matplotlib.textpath import TextPath
+from matplotlib.ticker import FixedFormatter, FixedLocator, LogLocator, NullFormatter
+
+from algo_metadata import algo_metadata
+from load_results import benchmark_label
+
+# Languages: first three slots of a colorblind-safe categorical palette, plus a marker per language so that the
+# language is not encoded by color alone.
+LANGUAGE_COLORS = {"C++": "#2a78d6", "Rust": "#eb6834", "Python": "#1baf7a"}
+LANGUAGE_MARKERS = {"C++": "o", "Rust": "s", "Python": "^"}
+TEXT = "#0b0b0b"
+TEXT_SECONDARY = "#52514e"
+AXIS = "#898781"
+GRID = "#e6e5e1"
+# Diverging red (row tends to be slower) - neutral gray (equally fast) - blue (row tends to be faster)
+PROBABILITY_CMAP = LinearSegmentedColormap.from_list("poi", ["#e34948", "#f0efec", "#2a78d6"])
+CATEGORIES = ["Intersection", "Distance"]
+
+STYLE = {
+    "font.size": 8,
+    "font.family": "sans-serif",
+    "axes.edgecolor": AXIS,
+    "axes.linewidth": 0.6,
+    "axes.labelcolor": TEXT_SECONDARY,
+    "axes.labelsize": 8,
+    "axes.titlesize": 8,
+    "axes.titleweight": "bold",
+    "axes.titlelocation": "left",
+    "axes.titlecolor": TEXT,
+    "axes.spines.top": False,
+    "axes.spines.right": False,
+    "axes.spines.left": False,
+    "xtick.color": AXIS,
+    "xtick.labelcolor": TEXT_SECONDARY,
+    "xtick.major.width": 0.6,
+    "xtick.minor.width": 0.4,
+    "xtick.major.size": 3,
+    "xtick.minor.size": 1.5,
+    "ytick.left": False,
+    "ytick.labelcolor": TEXT,
+    "legend.frameon": False,
+    "legend.fontsize": 8,
+    "pdf.fonttype": 42,  # embed TrueType fonts (editable text in the PDF)
+}
+SUBMISSION_DPI = 300
+PNG_DPI = 150
+FULL_WIDTH = 177 / 25.4  # inch: two columns in Frontiers journals are 180 mm, labels may extend the figure slightly
+PANEL_LABEL_SIZE = 10
+
+
+def _save(fig, path):
+    """Save the figure as PDF at path, as RGB TIFF (LZW-compressed, 300 dpi) and as PNG (150 dpi, for READMEs) next to
+    it, and close it."""
+    path = Path(path)
+    options = {"bbox_inches": "tight", "pad_inches": 0.02, "facecolor": "white"}
+    fig.savefig(path, **options)
+    fig.savefig(path.with_suffix(".png"), dpi=PNG_DPI, **options)
+    buffer = io.BytesIO()
+    fig.savefig(buffer, format="png", dpi=SUBMISSION_DPI, **options)
+    plt.close(fig)
+    buffer.seek(0)
+    with Image.open(buffer) as image:
+        image.convert("RGB").save(path.with_suffix(".tif"), compression="tiff_lzw",
+                                  dpi=(SUBMISSION_DPI, SUBMISSION_DPI))
+
+
+def _language_legend(fig, languages):
+    """Legend of the languages above the panels of a figure, right-aligned (none for a single language)."""
+    languages = [l for l in LANGUAGE_COLORS if l in set(languages)]
+    if len(languages) < 2:
+        return
+    handles = [Line2D([], [], color=LANGUAGE_COLORS[l], marker=LANGUAGE_MARKERS[l], linestyle="", markersize=5)
+               for l in languages]
+    fig.legend(handles, languages, loc="outside upper right", ncol=len(languages), handletextpad=0.1,
+               columnspacing=1.2, borderaxespad=0.0, labelcolor=TEXT_SECONDARY)
+
+
+def _text_width(text, size=8, weight="normal"):
+    """Width of a text in inches (for layouts in inches)."""
+    prop = FontProperties(family=STYLE["font.family"], size=size, weight=weight)
+    return TextPath((0, 0), text, prop=prop).get_extents().width / 72.0
+
+
+def _panel_figure(n_panels, height):
+    """Figure of full width (two columns) with n_panels side-by-side subfigures, labeled A, B, ... if n_panels > 1."""
+    fig = plt.figure(figsize=(FULL_WIDTH, height), layout="constrained")
+    if n_panels == 1:
+        return fig, [fig]
+    panels = list(np.atleast_1d(fig.subfigures(1, n_panels, wspace=0.03)))
+    for letter, panel in zip("ABCDEFGH", panels):
+        panel.suptitle(letter, x=0.0, ha="left", fontsize=PANEL_LABEL_SIZE, fontweight="bold", color=TEXT)
+    return fig, panels
+
+
+def _category_axes(container, table):
+    """One panel per category (intersection above distance) in a figure or subfigure, with heights proportional to
+    the number of rows."""
+    categories = [c for c in CATEGORIES if c in set(table["category"])]
+    heights = [len(table[table["category"] == c]) for c in categories]
+    axes = container.subplots(len(categories), 1, sharex=True, squeeze=False,
+                              gridspec_kw={"height_ratios": heights})
+    return categories, axes[:, 0]
+
+
+def _category_height(tables, row_height):
+    """Figure height for the largest of the tables (rows of all categories plus titles and the x axis)."""
+    rows = max(len(t) for t in tables)
+    n_categories = max(len(set(t["category"])) for t in tables)
+    return row_height * rows + 0.35 * n_categories + 0.5
+
+
+def _decade_ticks(low, high):
+    """Labeled ticks of a log axis from 10^low to 10^high: every decade, every second decade for more than six
+    decades, and 1, 2, 5 times a decade for less than one and a half decades."""
+    decades = np.arange(np.ceil(low), np.floor(high) + 1)
+    if high - low < 1.5:
+        ticks = np.log10(np.outer(10.0 ** np.arange(np.floor(low), np.ceil(high) + 1), [1, 2, 5]).ravel())
+        return [t for t in ticks if low <= t <= high]
+    step = 2 if len(decades) > 7 else 1
+    return list(decades[decades % step == 0])
+
+
+def _tick_label(exponent):
+    if float(exponent).is_integer():
+        return f"$10^{{{int(exponent)}}}$"
+    return f"{10.0 ** exponent:.2g}"
+
+
+def _decade_axis(ax, low, high, label):
+    """Log x axis (data in linear units) with labeled ticks (see _decade_ticks()) and unlabeled minor ticks."""
+    ax.set_xscale("log")
+    ticks = _decade_ticks(np.log10(low), np.log10(high))
+    ax.xaxis.set_major_locator(FixedLocator(10.0 ** np.array(ticks)))
+    ax.xaxis.set_major_formatter(FixedFormatter([_tick_label(t) for t in ticks]))
+    ax.xaxis.set_minor_locator(LogLocator(base=10, subs=np.arange(2, 10)))
+    ax.xaxis.set_minor_formatter(NullFormatter())
+    ax.set_xlim(low, high)
+    ax.set_xlabel(label, loc="right")
+
+
+def _format_factor(value):
+    return f"{value:.0f}×" if value >= 100 else f"{value:.3g}×"
+
+
+def slowdown_chart(tables, path, xlabel, titles=None):
+    """Dot chart of slowdown factors with confidence intervals (log scale), one panel per category.
+
+    tables : DataFrame or list of DataFrames (one panel A, B, ... per table) with the columns category, label,
+    language, slowdown, ci_low, ci_high (see comparisons.speedup_vs_fastest() and
+    comparisons.linear_support_slowdown()).
+    titles : list of str, optional
+        Title of each panel, e.g., the geometry.
+    """
+    tables = [tables] if isinstance(tables, pd.DataFrame) else list(tables)
+    with plt.rc_context(STYLE):
+        fig, panels = _panel_figure(len(tables), _category_height(tables, row_height=0.17))
+        for k, (panel, table) in enumerate(zip(panels, tables)):
+            categories, axes = _category_axes(panel, table)
+            for ax, category in zip(axes, categories):
+                rows = table[table["category"] == category].sort_values("slowdown", ascending=False)
+                y = np.arange(len(rows))
+                for yi, row in zip(y, rows.itertuples()):
+                    color = LANGUAGE_COLORS[row.language]
+                    if row.ci_high > row.ci_low:
+                        ax.plot([row.ci_low, row.ci_high], [yi, yi], color=color, linewidth=1.5,
+                                solid_capstyle="round", alpha=0.5)
+                    ax.plot(row.slowdown, yi, marker=LANGUAGE_MARKERS[row.language], color=color, markersize=4,
+                            linestyle="")
+                    ax.annotate(_format_factor(row.slowdown), (max(row.ci_high, row.slowdown), yi), xytext=(4, 0),
+                                textcoords="offset points", va="center", color=TEXT_SECONDARY)
+                ax.axvline(1.0, color=AXIS, linewidth=0.6, zorder=0)
+                ax.set_yticks(y, rows["label"])
+                ax.set_ylim(-0.7, len(rows) - 0.3)
+                ax.set_title(category if titles is None or ax is not axes[0] else f"{titles[k]}: {category}")
+                ax.tick_params(axis="x", which="both", bottom=ax is axes[-1])
+                ax.spines["bottom"].set_visible(ax is axes[-1])
+            _decade_axis(axes[-1], 0.8, table["ci_high"].max() * 4.0, xlabel)
+        _language_legend(fig, set().union(*(set(t["language"]) for t in tables)))
+        _save(fig, path)
+
+
+def _task_medians(long, benchmarks, computer):
+    """Runtimes and medians of one benchmark or of several benchmarks together (list)."""
+    benchmarks = [benchmarks] if isinstance(benchmarks, str) else benchmarks
+    task = long[long["benchmark"].isin(benchmarks) & (long["computer"] == computer)].dropna(subset=["time_us"])
+    medians = task.groupby(["category", "algorithm", "language"])["time_us"].median().reset_index()
+    medians["label"] = medians["algorithm"].map(lambda a: algo_metadata[a].pretty_name)
+    return task, medians
+
+
+def violin_plot(long, tasks, path, titles=None):
+    """Runtime distributions of all implementations in a task (log scale), one panel per category, sorted by median
+    and colored by language.
+
+    tasks : (benchmark, computer) or list of (benchmark, computer), one panel A, B, ... per task. The benchmark can
+        also be a list of benchmarks: the case files of all of them are shown together.
+    titles : list of str, optional
+        Title of each panel, e.g., the benchmark.
+    """
+    tasks = [tasks] if isinstance(tasks, tuple) else list(tasks)
+    data = [_task_medians(long, benchmark, computer) for benchmark, computer in tasks]
+    with plt.rc_context(STYLE):
+        fig, panels = _panel_figure(len(tasks), _category_height([m for _, m in data], row_height=0.2))
+        for k, (panel, (task, medians)) in enumerate(zip(panels, data)):
+            categories, axes = _category_axes(panel, medians)
+            for ax, category in zip(axes, categories):
+                rows = medians[medians["category"] == category].sort_values("time_us", ascending=False)
+                y = np.arange(len(rows))
+                times = [np.log10(task.loc[task["algorithm"] == a, "time_us"].to_numpy())
+                         for a in rows["algorithm"]]
+                parts = ax.violinplot(times, positions=y, vert=False, widths=0.85, showextrema=False)
+                for body, language in zip(parts["bodies"], rows["language"]):
+                    body.set_facecolor(LANGUAGE_COLORS[language])
+                    body.set_edgecolor("none")
+                    body.set_alpha(0.75)
+                ax.plot(np.log10(rows["time_us"]), y, linestyle="", marker="|", markersize=6, markeredgewidth=1.2,
+                        color="white")
+                ax.set_yticks(y, rows["label"])
+                ax.set_ylim(-0.7, len(rows) - 0.3)
+                ax.set_title(category if titles is None or ax is not axes[0] else f"{titles[k]}: {category}")
+                ax.tick_params(axis="x", which="both", bottom=ax is axes[-1])
+                ax.spines["bottom"].set_visible(ax is axes[-1])
+            all_times = np.log10(task["time_us"].to_numpy())
+            low, high = np.floor(all_times.min()), np.ceil(all_times.max())
+            ticks = _decade_ticks(low, high)
+            axes[-1].xaxis.set_major_locator(FixedLocator(ticks))
+            axes[-1].xaxis.set_minor_locator(
+                FixedLocator(np.log10(np.outer(10.0 ** np.arange(low, high), np.arange(1, 10)).ravel())))
+            axes[-1].set_xticklabels([_tick_label(t) for t in ticks])
+            axes[-1].set_xlim(low, high)
+            axes[-1].set_xlabel("Time per case file [µs] (white: median)", loc="right")
+        _language_legend(fig, set().union(*(set(m["language"]) for _, m in data)))
+        _save(fig, path)
+
+
+def _format_probability(value):
+    """Probability in percent without decimals (fits into a heatmap cell at 8 pt); 100 and 0 only for exact values."""
+    text = f"{100.0 * value:.0f}"
+    if text == "100" and value < 1.0:
+        return ">99"
+    if text == "0" and value > 0.0:
+        return "<1"
+    return text
+
+
+def probability_heatmaps(matrices, path):
+    """Heatmaps of P(T_row < T_column), one panel per category and language (see
+    comparisons.probability_of_improvement_matrices()).
+
+    Implementations are sorted from fast to slow, and only the upper triangle is shown: the lower triangle is
+    redundant, P(T_column < T_row) = 1 - P(T_row < T_column). The panel title is placed in the empty lower triangle.
+    Panels are placed in inches, so that all cells have the same size, with margins for the row labels (left) and the
+    vertical column labels (top) of each panel."""
+    if not matrices:
+        return
+    cell, gap = 0.28, 0.14  # inch
+    panels = list(matrices.items())
+    n_cols = min(2, len(panels))
+    n_rows = int(np.ceil(len(panels) / n_cols))
+    sizes, lefts, tops = np.zeros((n_rows, n_cols)), np.zeros((n_rows, n_cols)), np.zeros((n_rows, n_cols))
+    for k, (_, matrix) in enumerate(panels):
+        r, c = divmod(k, n_cols)
+        sizes[r, c] = len(matrix) - 1
+        lefts[r, c] = max(_text_width(label) for label in matrix.index[:-1]) + 0.08
+        tops[r, c] = max(_text_width(label) for label in matrix.columns[1:]) + 0.08
+    left, top = lefts.max(axis=0), tops.max(axis=1)
+    widths, heights = left + cell * sizes.max(axis=0) + gap, top + cell * sizes.max(axis=1) + gap
+    note_height = 0.2
+    fig_width, fig_height = widths.sum() - gap, heights.sum() - gap + note_height
+    with plt.rc_context(STYLE):
+        fig = plt.figure(figsize=(fig_width, fig_height))
+        for k, ((category, language), matrix) in enumerate(panels):
+            r, c = divmod(k, n_cols)
+            n = len(matrix) - 1
+            x0 = widths[:c].sum() + left[c]
+            y0 = fig_height - heights[:r].sum() - top[r] - cell * n
+            ax = fig.add_axes((x0 / fig_width, y0 / fig_height, cell * n / fig_width, cell * n / fig_height))
+            upper = matrix.iloc[:-1, 1:].to_numpy(dtype=float)
+            upper[np.tril_indices(n, -1)] = np.nan
+            ax.pcolormesh(np.ma.masked_invalid(upper), cmap=PROBABILITY_CMAP, vmin=0, vmax=1,
+                          edgecolors="white", linewidth=1.2)
+            for i in range(n):
+                for j in range(i, n):
+                    value = upper[i, j]
+                    ax.text(j + 0.5, i + 0.5, _format_probability(value), ha="center", va="center",
+                            color="white" if abs(value - 0.5) > 0.3 else TEXT)
+            ax.set_xlim(0, n)
+            ax.set_ylim(n, 0)
+            ax.xaxis.tick_top()
+            ax.set_xticks(np.arange(n) + 0.5, matrix.columns[1:], rotation=90)
+            ax.set_yticks(np.arange(n) + 0.5, matrix.index[:-1])
+            ax.tick_params(axis="both", length=0, labelcolor=TEXT, pad=2)
+            ax.spines["bottom"].set_visible(False)
+            if n >= 4:
+                ax.text(0.1, n - 0.1, f"{category},\n{language}", ha="left", va="bottom", fontweight="bold",
+                        color=TEXT)
+            else:
+                ax.set_title(f"{category}, {language}", y=-0.1, va="top")
+        fig.text(0.0, 0.0, "Cell: probability (%) that the row implementation is faster than the column implementation.",
+                 color=TEXT_SECONDARY, va="bottom")
+        _save(fig, path)
+
+
+def first_run_plot(first_run, path):
+    """Time of the k-th measured run relative to the median of the runs of a case file (mean over case files), one
+    panel per benchmark and one line per implementation (see data_quality.first_run_effect())."""
+    if len(first_run) == 0:
+        return
+    run_columns = [c for c in first_run.columns if c.startswith("run_")]
+    runs = np.arange(1, len(run_columns) + 1)
+    benchmarks = list(dict.fromkeys(first_run["benchmark"]))
+    with plt.rc_context(STYLE):
+        fig, axes = plt.subplots(1, len(benchmarks), sharey=True, squeeze=False, figsize=(FULL_WIDTH, 2.0),
+                                 layout="constrained")
+        for ax, benchmark in zip(axes[0], benchmarks):
+            rows = first_run[first_run["benchmark"] == benchmark]
+            for row in rows.itertuples(index=False):
+                meta = algo_metadata.get(row.algorithm)
+                color = LANGUAGE_COLORS[meta.language.value] if meta else AXIS
+                ax.plot(runs, [getattr(row, c) for c in run_columns], color=color, linewidth=0.8, alpha=0.6)
+            ax.axhline(1.0, color=AXIS, linewidth=0.6, zorder=0)
+            ax.set_title(benchmark_label(benchmark))
+            ax.set_xticks([1, runs[-1]])
+            ax.set_xlabel("Measured run")
+        axes[0, 0].spines["left"].set_visible(True)
+        axes[0, 0].tick_params(axis="y", left=True, labelcolor=TEXT_SECONDARY)
+        axes[0, 0].set_ylabel("Time / median")
+        _language_legend(fig, [algo_metadata[a].language.value for a in first_run["algorithm"] if a in algo_metadata])
+        _save(fig, path)

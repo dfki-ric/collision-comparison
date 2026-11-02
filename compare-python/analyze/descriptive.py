@@ -1,11 +1,8 @@
-"""Descriptive statistics of the runtime distributions: summary table and violin plots."""
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-import numpy as np
+"""Descriptive statistics of the runtime distributions (the violin plots are in figures.py)."""
 import pandas as pd
 
-LANGUAGE_COLORS = {"C++": "#1b9e77", "Rust": "#d95f02", "Python": "#7570b3"}
+from load_results import benchmark_label, format_significant, latex_escape
+
 
 
 def summary(long):
@@ -22,34 +19,25 @@ def summary(long):
     return long.groupby(keys)["time_us"].apply(statistics).unstack().reset_index()
 
 
-def violin_plot(long, benchmark, computer, path):
-    """Violin plot of the runtime distributions of all implementations in one task (log scale), grouped by category
-    and sorted by median, colored by language."""
-    task = long[(long["benchmark"] == benchmark) & (long["computer"] == computer)].dropna(subset=["time_us"])
-    medians = task.groupby(["category", "label"])["time_us"].median().reset_index()
-    medians = medians.sort_values(["category", "time_us"])
-    labels = list(medians["label"])
-    data = [np.log10(task.loc[task["label"] == label, "time_us"].to_numpy()) for label in labels]
-    languages = [task.loc[task["label"] == label, "language"].iloc[0] for label in labels]
+def summary_to_latex(summary_table, benchmark, computer, label):
+    """LaTeX table of the summary statistics of one task: implementations grouped by category, sorted by median."""
+    task = summary_table[(summary_table["benchmark"] == benchmark) & (summary_table["computer"] == computer)]
+    lines = ["\\begin{table}[htbp]", "\\centering", "\\small", "\\begin{tabular}{lrrrrr}", "\\toprule",
+             "Implementation & Median & IQR & 95\\,\\% & 99\\,\\% & Max. \\\\"]
+    for category in ["Intersection", "Distance"]:
+        rows = task[task["category"] == category].sort_values("median")
+        if len(rows) == 0:
+            continue
+        lines += ["\\midrule", f"\\multicolumn{{6}}{{l}}{{\\textit{{{category}}}}} \\\\"]
+        for row in rows.itertuples():
+            name = latex_escape(row.label.rsplit(" [", 1)[0] if row.label.endswith(("[dist]", "[bool]")) else row.label)
+            lines.append(f"{name} & {format_significant(row.median)} & "
+                         f"{format_significant(row.q25)}--{format_significant(row.q75)} & "
+                         f"{format_significant(row.q95)} & {format_significant(row.q99)} & "
+                         f"{format_significant(row.max)} \\\\")
+    caption = (f"Time per case file in \\textmu s ({latex_escape(benchmark_label(benchmark))} on "
+               f"{latex_escape(computer)}): median, interquartile range (IQR), 95th and 99th percentile, and maximum "
+               "over all case files.")
+    lines += ["\\bottomrule", "\\end{tabular}", f"\\caption{{{caption}}}", f"\\label{{{label}}}", "\\end{table}"]
+    return "\n".join(lines)
 
-    fig, ax = plt.subplots(figsize=(8, 0.35 * len(labels) + 1.5))
-    positions = np.arange(len(labels))[::-1]
-    parts = ax.violinplot(data, positions=positions, vert=False, widths=0.8, showmedians=True, showextrema=False)
-    for body, language in zip(parts["bodies"], languages):
-        body.set_facecolor(LANGUAGE_COLORS.get(language, "grey"))
-        body.set_edgecolor("black")
-        body.set_alpha(0.7)
-    parts["cmedians"].set_color("black")
-    ax.set_yticks(positions)
-    ax.set_yticklabels(labels)
-    ticks = np.arange(np.floor(min(d.min() for d in data)), np.ceil(max(d.max() for d in data)) + 1)
-    ax.set_xticks(ticks)
-    ax.set_xticklabels([f"$10^{{{int(t)}}}$" for t in ticks])
-    ax.set_xlabel("Time per case file [µs]")
-    ax.set_title(f"{benchmark} ({computer})")
-    ax.grid(axis="x", alpha=0.3)
-    handles = [plt.Rectangle((0, 0), 1, 1, color=c, alpha=0.7) for c in LANGUAGE_COLORS.values()]
-    ax.legend(handles, LANGUAGE_COLORS.keys(), loc="lower right")
-    fig.tight_layout()
-    fig.savefig(path)
-    plt.close(fig)

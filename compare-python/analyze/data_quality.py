@@ -14,7 +14,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from load_results import algorithm_columns, tasks
+from algo_metadata import AlgoData, algo_metadata
+from load_results import (BENCHMARK_GEOMETRY, BENCHMARK_LABELS, algorithm_columns, benchmark_label, is_excluded,
+                          latex_escape, tasks)
 
 LEVEL_COLUMNS = ["n_faces", "target_distance"]
 
@@ -23,7 +25,7 @@ def missing_results(df):
     """Number of case files without a result per task and implementation."""
     rows = []
     for (benchmark, computer), task in tasks(df).items():
-        for algorithm in algorithm_columns(df):
+        for algorithm in algorithm_columns(task):
             rows.append({"benchmark": benchmark, "computer": computer, "algorithm": algorithm,
                          "case_files": len(task), "missing": int(task[algorithm].isna().sum())})
     return pd.DataFrame(rows)
@@ -55,7 +57,7 @@ def constant_overhead(df, n_resamples=5000, confidence_level=0.95, random_state=
     for (benchmark, computer), task in tasks(df).items():
         if task["n_checks"].nunique() < 2:
             continue
-        for algorithm in algorithm_columns(df):
+        for algorithm in algorithm_columns(task):
             valid = task[algorithm].notna()
             n = task.loc[valid, "n_checks"].to_numpy(dtype=float)
             t = task.loc[valid, algorithm].to_numpy(dtype=float)
@@ -81,7 +83,7 @@ def lag_correlation(df):
     for (benchmark, computer), task in tasks(df).items():
         levels = [c for c in LEVEL_COLUMNS if c in task.columns and task[c].notna().all()]
         groups = [g for _, g in task.groupby(levels)] if levels else [task]
-        for algorithm in algorithm_columns(df):
+        for algorithm in algorithm_columns(task):
             correlations, weights = [], []
             for group in groups:
                 times = group.sort_values("file")[algorithm]
@@ -132,7 +134,7 @@ def first_run_effect(results_dir):
             if not case_file.isdigit():
                 continue
             for algorithm, times in _read_runs(Path(benchmark_dir, case_file)).items():
-                if len(times) == 0:
+                if len(times) == 0 or is_excluded(benchmark, algorithm):
                     continue
                 times = np.asarray(times, dtype=float)
                 ratios.setdefault((benchmark, algorithm), []).append(times / np.median(times))
@@ -143,3 +145,60 @@ def first_run_effect(results_dir):
         rows.append({"benchmark": benchmark, "algorithm": algorithm, "case_files": len(case_file_ratios),
                      **{f"run_{k + 1}": mean_ratio[k] for k in range(n_runs)}})
     return pd.DataFrame(rows)
+
+
+def _pivot_latex(table, value, formatter, caption, label):
+    """LaTeX table with one row per implementation (grouped by category) and one column per benchmark."""
+    benchmarks = sorted(table["benchmark"].unique(), key=lambda b: list(BENCHMARK_LABELS).index(b)
+                        if b in BENCHMARK_LABELS else len(BENCHMARK_LABELS))
+    pivot = table.pivot(index="algorithm", columns="benchmark", values=value)
+    lines = ["\\begin{table}[htbp]", "\\centering", "\\small", "\\begin{tabular}{l" + "r" * len(benchmarks) + "}",
+             "\\toprule", "Implementation & " + " & ".join(latex_escape(benchmark_label(b)) for b in benchmarks)
+             + " \\\\"]
+    for category in AlgoData.Category:
+        algorithms = [a for a in algo_metadata if algo_metadata[a].category is category and a in pivot.index]
+        if not algorithms:
+            continue
+        lines += ["\\midrule", f"\\multicolumn{{{len(benchmarks) + 1}}}{{l}}{{\\textit{{{category.value}}}}} \\\\"]
+        for a in algorithms:
+            cells = [formatter(pivot.loc[a, b]) if b in pivot.columns else "--" for b in benchmarks]
+            lines.append(f"{latex_escape(algo_metadata[a].pretty_name)} & " + " & ".join(cells) + " \\\\")
+    lines += ["\\bottomrule", "\\end{tabular}", f"\\caption{{{caption}}}", f"\\label{{{label}}}", "\\end{table}"]
+    return "\n".join(lines)
+
+
+def appendix_latex(missing, overhead, lag):
+    """LaTeX tables of the data-quality checks for the appendix, one per check and computer (the overhead only for
+    primitive benchmarks, see constant_overhead()).
+
+    missing, overhead and lag are the tables of missing_results(), constant_overhead() and lag_correlation()."""
+    def number(x, digits=2):
+        return "--" if x != x else f"{x:.{digits}f}".replace("-", "$-$")
+
+    parts = []
+    for computer in sorted(set(missing["computer"])):
+        c = latex_escape(computer)
+        incomplete = missing[(missing["computer"] == computer) & (missing["missing"] > 0)]
+        if len(incomplete) > 0:
+            parts.append(_pivot_latex(
+                incomplete, "missing", lambda x: "--" if x != x else str(int(x)),
+                f"Number of case files without a result (on {c}); implementations with results for all case files "
+                "are not listed.", f"tab:data-quality-missing-{computer}"))
+        else:
+            parts.append(f"% {computer}: all implementations have results for all case files")
+        # the overhead model assumes that all checks cost about the same, which only holds for primitive shapes
+        table = overhead[(overhead["computer"] == computer)
+                         & (overhead["benchmark"].map(BENCHMARK_GEOMETRY) == "primitives")] if len(overhead) else overhead
+        if len(table) > 0:
+            parts.append(_pivot_latex(
+                table, "relative_overhead", lambda x: number(100 * x, 1),
+                f"Constant overhead per case file relative to the median time per case file in \\% (on {c}), from "
+                "the fit $t = o + t_\\text{pair} \\cdot n_\\text{checks}$. Values near 0 indicate no first-run "
+                "effects.", f"tab:data-quality-overhead-{computer}"))
+        table = lag[lag["computer"] == computer]
+        if len(table) > 0:
+            parts.append(_pivot_latex(
+                table, "lag1_spearman", number,
+                f"Spearman correlation between the times of consecutive case files (on {c}). Values near 0 "
+                "indicate independent measurements.", f"tab:data-quality-lag-{computer}"))
+    return "\n\n".join(parts) + "\n"
