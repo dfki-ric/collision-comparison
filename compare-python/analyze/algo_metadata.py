@@ -33,6 +33,7 @@ algo_metadata = {
     "Jolt distance":                                AlgoData("Jolt", AlgoData.Language.CPP, AlgoData.Category.DISTANCE),
     "libccd intersection":                          AlgoData("libccd", AlgoData.Language.CPP, AlgoData.Category.INTERSECTION),
     "libccd intersection linear support":           AlgoData("libccd [lin. support]", AlgoData.Language.CPP, AlgoData.Category.INTERSECTION),
+    "FCL original distance":                        AlgoData("FCL", AlgoData.Language.CPP, AlgoData.Category.DISTANCE),
     "Bullet distance":                              AlgoData("Bullet", AlgoData.Language.CPP, AlgoData.Category.DISTANCE),
     "openGJK distance":                             AlgoData("OpenGJK", AlgoData.Language.CPP, AlgoData.Category.DISTANCE),
     "openGJK distance linear support":              AlgoData("OpenGJK [lin. support]", AlgoData.Language.CPP, AlgoData.Category.DISTANCE),

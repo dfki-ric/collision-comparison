@@ -54,6 +54,9 @@ clone https://github.com/danfis/libccd.git
 clone https://github.com/MaartenBehn/bullet3.git
 clone https://github.com/MaartenBehn/hpp-fcl.git
 clone https://github.com/AlexanderFabisch/distance3d.git
+# the original FCL with its own GJK, at the latest release
+clone https://github.com/flexible-collision-library/fcl.git
+git -C fcl checkout -q 0.7.0
 
 # dependencies of the C++ benchmark
 clone https://github.com/nlohmann/json.git
@@ -78,6 +81,14 @@ OPT_FLAGS="-march=native -ffast-math -flto=auto"
  && cmake -G "Unix Makefiles" -DENABLE_DOUBLE_PRECISION=ON -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="$OPT_FLAGS" .. \
  && make -j "$(nproc)")
+
+# FCL is linked statically, with libccd from above and without tests and OctoMap
+(mkdir -p fcl/build \
+ && cd fcl/build \
+ && cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="$OPT_FLAGS -I$PWD/../../libccd/build/src" \
+    -DFCL_STATIC_LIBRARY=ON -DFCL_WITH_OCTOMAP=OFF -DBUILD_TESTING=OFF \
+    -DCCD_INCLUDE_DIR="$PWD/../../libccd/src" -DCCD_LIBRARY="$PWD/../../libccd/build/src/libccd.a" .. \
+ && cmake --build . --target fcl -j "$(nproc)")
 
 # HPP-FCL and Bullet are built together with the C++ benchmark (see compare-cpp/CMakeLists.txt)
 (cd hpp-fcl && git submodule update --init)

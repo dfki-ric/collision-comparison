@@ -13,6 +13,7 @@ add_executable(compare
         main.cpp
         jolt.cpp
         fcl.cpp
+        fcl_original.cpp
         bullet.cpp
         utility.cpp
         collider.cpp
@@ -72,6 +73,12 @@ target_link_libraries(compare libbulletlinearmath)
 include_directories(${CMAKE_SOURCE_DIR}/../libccd/build/src/)
 include_directories(${CMAKE_SOURCE_DIR}/../libccd/src)
 target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../libccd/build/src/libccd.a)
+
+# FCL (the original, with its own GJK), static library built by scripts/repo_setup.sh (it cannot be built together
+# with HPP-FCL: both define the target "uninstall")
+include_directories(${CMAKE_SOURCE_DIR}/../fcl/include)
+include_directories(${CMAKE_SOURCE_DIR}/../fcl/build/include)
+target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../fcl/build/lib/libfcl.a)
 
 
 install(TARGETS compare DESTINATION bin)

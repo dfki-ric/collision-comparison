@@ -2,6 +2,7 @@
 #include "collider.h"
 #include "jolt.h"
 #include "fcl.h"
+#include "fcl_original.h"
 #include "bullet.h"
 #include "libccd.h"
 #include "openGJK.h"
@@ -17,6 +18,7 @@ using compare::Base::load_cases;
 using compare::Base::Case;
 
 using compare::FCL::FCLCase;
+using compare::FCLOriginal::FCLOriginalCase;
 using compare::Jolt::JoltCase;
 using compare::Bullet::BulletCase;
 using compare::libccd::LibccdCase;
@@ -62,6 +64,9 @@ int main(){
 
     std::vector<FCLCase> fcl_cases_default_intersection_lin_support(cases_length);
     compare::FCL::get_cases(&base_cases[0], &fcl_cases_default_intersection_lin_support[0], cases_length, true);
+
+    std::vector<FCLOriginalCase> fcl_original_cases(cases_length);
+    compare::FCLOriginal::get_cases(&base_cases[0], &fcl_original_cases[0], cases_length);
 
     std::vector<JoltCase> jolt_cases(cases_length);
     compare::Jolt::get_cases(&base_cases[0], &jolt_cases[0], cases_length);
@@ -177,6 +182,12 @@ int main(){
         }
     });
 
+    run("FCL original distance", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::FCLOriginal::get_distance(fcl_original_cases[i]));
+        }
+    });
+
     run("Bullet distance", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::Bullet::get_distance(bullet_cases[i]));
@@ -213,6 +224,7 @@ int main(){
         << "Distance Algorithms:" << "\n"
         << "\tHPP-FCL               Distance: " << compare::FCL::get_distance_nesterov(fcl_cases_nesterov[i]) << "\n"
         << "\tHPP-FCL (lin supp.)   Distance: " << compare::FCL::get_distance_nesterov(fcl_cases_nesterov_lin_support[i]) << "\n"
+        << "\tFCL (original)        Distance: " << compare::FCLOriginal::get_distance(fcl_original_cases[i]) << "\n"
         << "\tBullet                Distance: " << compare::Bullet::get_distance(bullet_cases[i]) << "\n"
         << "\tJolt Distance         Distance: " << compare::Jolt::get_distance(jolt_cases_dist[i]) << "\n"
         << "\tOpenGJK               Distance: " << compare::OpenGJK::get_distance(openGJK_cases[i], false) << "\n"
