@@ -327,7 +327,7 @@ def probability_heatmaps(matrices, path):
     comparisons.probability_of_improvement_matrices()).
 
     Implementations are sorted from fast to slow, and only the upper triangle is shown: the lower triangle is
-    redundant, P(T_column < T_row) = 1 - P(T_row < T_column). The panel title is placed in the empty lower triangle.
+    redundant, P(T_column < T_row) = 1 - P(T_row < T_column). The panel title is placed above the row labels.
     Panels are placed in inches, so that all cells have the same size, with margins for the row labels (left) and the
     vertical column labels (top) of each panel."""
     if not matrices:
@@ -337,10 +337,12 @@ def probability_heatmaps(matrices, path):
     n_cols = min(2, len(panels))
     n_rows = int(np.ceil(len(panels) / n_cols))
     sizes, lefts, tops = np.zeros((n_rows, n_cols)), np.zeros((n_rows, n_cols)), np.zeros((n_rows, n_cols))
-    for k, (_, matrix) in enumerate(panels):
+    for k, ((category, language), matrix) in enumerate(panels):
         r, c = divmod(k, n_cols)
         sizes[r, c] = len(matrix) - 1
-        lefts[r, c] = max(_text_width(label) for label in matrix.index[:-1]) + 0.08
+        # the left margin holds the row labels and the title (top left corner)
+        lefts[r, c] = max([_text_width(label) for label in matrix.index[:-1]]
+                          + [_text_width(f"{category}, {language}", weight="bold")]) + 0.08
         tops[r, c] = max(_text_width(label) for label in matrix.columns[1:]) + 0.08
     left, top = lefts.max(axis=0), tops.max(axis=1)
     widths, heights = left + cell * sizes.max(axis=0) + gap, top + cell * sizes.max(axis=1) + gap
@@ -370,11 +372,9 @@ def probability_heatmaps(matrices, path):
             ax.set_yticks(np.arange(n) + 0.5, matrix.index[:-1])
             ax.tick_params(axis="both", length=0, labelcolor=TEXT, pad=2)
             ax.spines["bottom"].set_visible(False)
-            if n >= 4:
-                ax.text(0.1, n - 0.1, f"{category},\n{language}", ha="left", va="bottom", fontweight="bold",
-                        color=TEXT)
-            else:
-                ax.set_title(f"{category}, {language}", y=-0.1, va="top")
+            # title in the top left corner of the heatmap: above the row labels, left of the column labels
+            fig.text((x0 - 0.04) / fig_width, (y0 + cell * n + 0.06) / fig_height,
+                     f"{category}, {language}", ha="right", va="bottom", fontweight="bold", color=TEXT)
         fig.text(0.0, 0.0, "Cell: probability (%) that the row implementation is faster than the column implementation.",
                  color=TEXT_SECONDARY, va="bottom")
         _save(fig, path)
