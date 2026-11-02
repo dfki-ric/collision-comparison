@@ -128,15 +128,17 @@ namespace compare::libccd {
         ccdVec3Copy(&dir, _dir);
         const glm::vec3 local_dir = glm::mat3x3(collider.colliderToOrigen) * glm::vec3(dir.v[0], dir.v[1], dir.v[2]);
 
-        ccd_real_t score = 0;
-        ccd_real_t max_score = 0;
-        int best_idx = 0;
-
         // if for some reason the body does not have any vertices,
         // trying to look up the vertex at index 0 would lead to undefined behavior
         assert(Base::get_vertex_count(collider) >= 1);
 
-        for (int i = 0; i < Base::get_vertex_count(collider); i++){
+        // start with the first vertex, not with 0: the origin of the mesh is not always inside the mesh, so all
+        // scores can be negative
+        ccd_real_t score = 0;
+        ccd_real_t max_score = glm::dot(collider.vertecies[0], local_dir);
+        int best_idx = 0;
+
+        for (int i = 1; i < Base::get_vertex_count(collider); i++){
             score = glm::dot(collider.vertecies[i], local_dir);
             if (score > max_score){
                 max_score = score;
