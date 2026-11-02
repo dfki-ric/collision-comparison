@@ -62,15 +62,21 @@ clone https://github.com/g-truc/glm.git
 
 # Build
 
+# All C/C++ libraries are built with the same optimizations: instructions of the host CPU, fast math and link-time
+# optimization. Jolt is built with g++ like the other libraries: under clang, Jolt enforces -ffp-model=precise.
+OPT_FLAGS="-march=native -ffast-math -flto=auto"
+
 (cd JoltPhysics/Build \
- && sh ./cmake_linux_clang_gcc.sh Distribution \
+ && sh ./cmake_linux_clang_gcc.sh Distribution g++ -DCMAKE_CXX_FLAGS="$OPT_FLAGS" \
  && cd Linux_Distribution \
  && make -j "$(nproc)")
 
-# libccd must be built in double precision: in single precision, its GJK misses most intersections of small meshes
+# libccd must be built in double precision: in single precision, its GJK misses most intersections of small meshes.
+# It is linked statically.
 (mkdir -p libccd/build \
  && cd libccd/build \
- && cmake -G "Unix Makefiles" -DENABLE_DOUBLE_PRECISION=ON .. \
+ && cmake -G "Unix Makefiles" -DENABLE_DOUBLE_PRECISION=ON -DBUILD_SHARED_LIBS=OFF \
+    -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="$OPT_FLAGS" .. \
  && make -j "$(nproc)")
 
 # HPP-FCL and Bullet are built together with the C++ benchmark (see compare-cpp/CMakeLists.txt)

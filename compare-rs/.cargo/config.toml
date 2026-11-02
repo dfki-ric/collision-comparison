@@ -1,0 +1,3 @@
+# Compile for the instructions of the host CPU, like the C/C++ libraries (see compare-cpp/CMakeLists.txt)
+[build]
+rustflags = ["-C", "target-cpu=native"]

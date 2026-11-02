@@ -29,3 +29,9 @@ harness = false
 [[bench]]
 name = "collision-rs"
 harness = false
+
+# Optimizations for the benchmark: link-time optimization across all crates and one codegen unit
+# (instructions of the host CPU: see .cargo/config.toml)
+[profile.bench]
+lto = "fat"
+codegen-units = 1

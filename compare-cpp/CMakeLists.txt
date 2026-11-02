@@ -5,6 +5,10 @@ set_property(GLOBAL PROPERTY CXX_STANDARD 20)
 
 SET(BUILD_PYTHON_INTERFACE OFF)
 
+# Optimizations for all C++ code built here (benchmark, HPP-FCL, Bullet): instructions of the host CPU, fast math,
+# link-time optimization, and direct calls within the shared library of HPP-FCL
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -ffast-math -flto=auto -fno-semantic-interposition")
+
 add_executable(compare
         main.cpp
         jolt.cpp
@@ -67,7 +71,7 @@ target_link_libraries(compare libbulletlinearmath)
 # libccd
 include_directories(${CMAKE_SOURCE_DIR}/../libccd/build/src/)
 include_directories(${CMAKE_SOURCE_DIR}/../libccd/src)
-target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../libccd/build/src/libccd.so)
+target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../libccd/build/src/libccd.a)
 
 
 install(TARGETS compare DESTINATION bin)
