@@ -20,6 +20,21 @@ namespace compare::Base {
         unsigned int* indicies;
     };
 
+    // Support function for meshes (primitive shapes always use their own support functions):
+    // - Linear: searches all vertices
+    // - HillClimbing: hill climbing over the vertex graph of the mesh
+    // - CachedExtremes: hill climbing that starts at the vertex that is extreme in the direction of a 3x3x3 grid cell
+    //   (computed once per mesh), as in MuJoCo
+    // - Adaptive: HillClimbing for meshes with at most a library-specific number of vertices, CachedExtremes for
+    //   larger meshes (threshold from the support function study, see compare-python/analyze/support_study.py; the
+    //   linear search is never faster than HillClimbing there)
+    enum class SupportMode {
+        Linear,
+        HillClimbing,
+        CachedExtremes,
+        Adaptive
+    };
+
     struct Case {
         int case_index;
         Collider collider0;

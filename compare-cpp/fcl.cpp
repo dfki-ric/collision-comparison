@@ -10,6 +10,9 @@
 
 #include "utility.h"
 
+#include <algorithm>
+#include <limits>
+
 using hpp::fcl::Box;
 using hpp::fcl::Capsule;
 using hpp::fcl::Sphere;
@@ -43,6 +46,7 @@ using compare::Base::get_size_z;
 using compare::Base::get_vertex_count;
 using compare::Base::get_index_count;
 using compare::Base::Case;
+using compare::Base::SupportMode;
 
 namespace compare::FCL {
     Transform3f get_transform(Collider collider){
@@ -56,7 +60,7 @@ namespace compare::FCL {
         return transform;
     }
 
-    void get_collider(Collider collider, FCLCollider& fcl_collider){
+    void get_collider(Collider collider, FCLCollider& fcl_collider, SupportMode support_mode){
         if (collider.type == ColliderType::Sphere){
             fcl_collider.shape = new Sphere(get_radius(collider));
         }
@@ -92,32 +96,55 @@ namespace compare::FCL {
                 triangles[i][2] = collider.indicies[i * 3 + 2];
             }
 
-            fcl_collider.shape = new Convex<Triangle>(
+            auto convex = new Convex<Triangle>(
                 true,
                 vertices, vertex_count,
                 triangles, triangle_count
                 );
+            if (support_mode == SupportMode::CachedExtremes) {
+                // extreme vertices of the 27 grid directions (as in MuJoCo, see
+                // compare-cpp/patches/hpp-fcl-cached-extremes.patch)
+                FCL_REAL max_dot[27];
+                std::fill(max_dot, max_dot + 27, std::numeric_limits<FCL_REAL>::lowest());
+                for (int i = 0; i < vertex_count; i++) {
+                    int k = 0;
+                    for (int cx = -1; cx <= 1; cx++) {
+                        for (int cy = -1; cy <= 1; cy++) {
+                            for (int cz = -1; cz <= 1; cz++, k++) {
+                                FCL_REAL dot = vertices[i].dot(Vec3f(cx, cy, cz));
+                                if (dot > max_dot[k]) {
+                                    max_dot[k] = dot;
+                                    convex->extrema[k] = i;
+                                }
+                            }
+                        }
+                    }
+                }
+                convex->use_extrema = true;
+            }
+            fcl_collider.shape = convex;
         }
     }
 
-    void get_case(Collider collider0, Collider collider1, FCLCase& fcl_case, bool force_linear_support_func){
+    void get_case(Collider collider0, Collider collider1, FCLCase& fcl_case, SupportMode support_mode){
 
         Transform3f transform0 = get_transform(collider0);
         Transform3f transform1 = get_transform(collider1);
 
-        get_collider(collider0, fcl_case.collider0);
-        get_collider(collider1, fcl_case.collider1);
+        get_collider(collider0, fcl_case.collider0, support_mode);
+        get_collider(collider1, fcl_case.collider1, support_mode);
 
-        if (force_linear_support_func) {
+        // HPP-FCL uses hill climbing for meshes with more than linear_log_convex_threshold vertices
+        if (support_mode == SupportMode::Linear) {
             fcl_case.mink_diff.linear_log_convex_threshold = INT32_MAX;
         }
         fcl_case.mink_diff.set(fcl_case.collider0.shape, fcl_case.collider1.shape, transform0, transform1);
     }
 
-    void get_cases(Case* base_cases, FCLCase* fcl_cases, int length, bool force_linear_support_func){
+    void get_cases(Case* base_cases, FCLCase* fcl_cases, int length, SupportMode support_mode){
 
         for (int i = 0; i < length; i++) {
-            get_case(base_cases[i].collider0, base_cases[i].collider1, fcl_cases[i], force_linear_support_func);
+            get_case(base_cases[i].collider0, base_cases[i].collider1, fcl_cases[i], support_mode);
         }
     }
 

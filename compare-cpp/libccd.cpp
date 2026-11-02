@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <limits>
 #include <ccd/quat.h> // for work with quaternions
 
 #include <glm/vec3.hpp> // glm::vec3
@@ -151,25 +152,23 @@ namespace compare::libccd {
     }
 
 
-    // support function which implements hill climbing for convex meshes, works in roughly logarithmic time
-    void mesh_support(const void *_collider, const ccd_vec3_t *_dir, ccd_vec3_t *_vec){
-        auto *wrapper = (LibccdCollider *)_collider;
-        const Collider &collider = wrapper->collider;
-        ccd_vec3_t dir;
-        ccdVec3Copy(&dir, _dir);
-        const glm::vec3 local_dir = glm::mat3x3(collider.colliderToOrigen) * glm::vec3(dir.v[0], dir.v[1], dir.v[2]);
+    // cell of a direction in the 3x3x3 grid of MeshAdjacency::extrema (as in MuJoCo): each component of the normalized
+    // direction is mapped to -1, 0, or 1 with the threshold 0.4
+    int grid_cell(const glm::vec3 &dir){
+        const float threshold = 0.4f * glm::length(dir);
+        int cell = 0;
+        for (int k = 0; k < 3; k++) {
+            cell = 3 * cell + (dir[k] > threshold) - (dir[k] < -threshold) + 1;
+        }
+        return cell;
+    }
 
-        // if for some reason the body does not have any vertices,
-        // trying to look up the vertex at index 0 would lead to undefined behavior
-        assert(Base::get_vertex_count(collider) >= 1);
-
-        unsigned int vertex_count = (unsigned int) Base::get_vertex_count(collider);
-        // initialize the "current" vertex using the result of the previous invocation, or 0 if the last result is invalid
-        unsigned int current = wrapper->last_support_vertex < vertex_count ? wrapper->last_support_vertex : 0;
+    // hill climbing over the vertex graph from the vertex "current", returns the support vertex
+    unsigned int hill_climb(const LibccdCollider &wrapper, const glm::vec3 &local_dir, unsigned int current){
+        const Collider &collider = wrapper.collider;
+        const std::vector<unsigned int> &neighbor_offsets = wrapper.adjacency.neighbor_offsets;
+        const std::vector<unsigned int> &neighbors = wrapper.adjacency.neighbors;
         float current_score = glm::dot(collider.vertecies[current], local_dir);
-
-        const std::vector<unsigned int> &neighbor_offsets = wrapper->adjacency.neighbor_offsets;
-        const std::vector<unsigned int> &neighbors = wrapper->adjacency.neighbors;
 
         bool improved = true;
         while (improved) {
@@ -189,14 +188,63 @@ namespace compare::libccd {
                 }
             }
         }
+        return current;
+    }
 
+    // support function which implements hill climbing for convex meshes, works in roughly logarithmic time
+    void mesh_support(const void *_collider, const ccd_vec3_t *_dir, ccd_vec3_t *_vec){
+        auto *wrapper = (LibccdCollider *)_collider;
+        const Collider &collider = wrapper->collider;
+        ccd_vec3_t dir;
+        ccdVec3Copy(&dir, _dir);
+        const glm::vec3 local_dir = glm::mat3x3(collider.colliderToOrigen) * glm::vec3(dir.v[0], dir.v[1], dir.v[2]);
+
+        // if for some reason the body does not have any vertices,
+        // trying to look up the vertex at index 0 would lead to undefined behavior
+        assert(Base::get_vertex_count(collider) >= 1);
+
+        unsigned int vertex_count = (unsigned int) Base::get_vertex_count(collider);
+        // initialize the "current" vertex using the result of the previous invocation, or 0 if the last result is invalid
+        unsigned int current = wrapper->last_support_vertex < vertex_count ? wrapper->last_support_vertex : 0;
+        current = hill_climb(*wrapper, local_dir, current);
         wrapper->last_support_vertex = current;
 
         glm::vec3 result = transform_point(collider.colliderToOrigen, collider.vertecies[current]);
         ccdVec3Set(_vec, result[0], result[1], result[2]);
     }
 
-    ccd_support_fn get_support_function(Collider collider, bool force_linear_support_func){
+    // hill climbing that starts at the cached extreme vertex of the grid cell of the direction (as in MuJoCo)
+    void mesh_support_extremes(const void *_collider, const ccd_vec3_t *_dir, ccd_vec3_t *_vec){
+        auto *wrapper = (LibccdCollider *)_collider;
+        const Collider &collider = wrapper->collider;
+        ccd_vec3_t dir;
+        ccdVec3Copy(&dir, _dir);
+        const glm::vec3 local_dir = glm::mat3x3(collider.colliderToOrigen) * glm::vec3(dir.v[0], dir.v[1], dir.v[2]);
+
+        assert(Base::get_vertex_count(collider) >= 1);
+
+        unsigned int vertex_count = (unsigned int) Base::get_vertex_count(collider);
+        // start at the extreme vertex of the grid cell, or at the result of the previous invocation in this query if
+        // that one is better
+        unsigned int current = wrapper->adjacency.extrema[grid_cell(local_dir)];
+        if (wrapper->last_support_vertex < vertex_count
+            && glm::dot(collider.vertecies[wrapper->last_support_vertex], local_dir)
+               >= glm::dot(collider.vertecies[current], local_dir)) {
+            current = wrapper->last_support_vertex;
+        }
+        current = hill_climb(*wrapper, local_dir, current);
+        wrapper->last_support_vertex = current;
+
+        glm::vec3 result = transform_point(collider.colliderToOrigen, collider.vertecies[current]);
+        ccdVec3Set(_vec, result[0], result[1], result[2]);
+    }
+
+    // largest mesh (number of vertices) that uses plain hill climbing in SupportMode::Adaptive: up to this size, it is
+    // faster than hill climbing with cached extremes in the support function study on the icosphere benchmarks
+    // (compare-python/analyze/support_study.py: crossover between 174 and 202 vertices)
+    const int hill_climbing_max_vertices = 183;
+
+    ccd_support_fn get_support_function(Collider collider, SupportMode support_mode){
         if (collider.type == ColliderType::Sphere){
             return sphere_support;
         }
@@ -214,10 +262,13 @@ namespace compare::libccd {
         }
 
         if (collider.type == ColliderType::Mesh){
-            if (force_linear_support_func){
-                return mesh_support_linear;
-            } else {
-                return mesh_support;
+            switch (support_mode) {
+                case SupportMode::Linear: return mesh_support_linear;
+                case SupportMode::HillClimbing: return mesh_support;
+                case SupportMode::CachedExtremes: return mesh_support_extremes;
+                case SupportMode::Adaptive:
+                    return Base::get_vertex_count(collider) <= hill_climbing_max_vertices
+                        ? mesh_support : mesh_support_extremes;
             }
         }
         std::cerr << "libccd::get_support_function: unknown collider type" << std::endl;
@@ -267,6 +318,25 @@ namespace compare::libccd {
                 adjacency.neighbors[cursor++] = neighbor;
             }
         }
+
+        // extreme vertices of the 27 grid directions
+        float max_dot[27];
+        std::fill(max_dot, max_dot + 27, std::numeric_limits<float>::lowest());
+        for (int i = 0; i < vertex_count; i++) {
+            const glm::vec3 &vertex = collider.vertecies[i];
+            int k = 0;
+            for (int cx = -1; cx <= 1; cx++) {
+                for (int cy = -1; cy <= 1; cy++) {
+                    for (int cz = -1; cz <= 1; cz++, k++) {
+                        float dot = vertex.x * cx + vertex.y * cy + vertex.z * cz;
+                        if (dot > max_dot[k]) {
+                            max_dot[k] = dot;
+                            adjacency.extrema[k] = i;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     void first_dir(const void *_collider0, const void *_collider1, ccd_vec3_t *dir){
@@ -288,32 +358,32 @@ namespace compare::libccd {
     }
 
 
-    void get_case(Collider collider0, Collider collider1, LibccdCase& libccd_case, bool force_linear_support_func){
+    void get_case(Collider collider0, Collider collider1, LibccdCase& libccd_case, SupportMode support_mode){
         CCD_INIT(&libccd_case.ccd);
 
         libccd_case.collider0.collider = collider0;
         libccd_case.collider1.collider = collider1;
-        libccd_case.collider0.last_support_vertex = 0;
-        libccd_case.collider1.last_support_vertex = 0;
+        libccd_case.collider0.last_support_vertex = UINT_MAX;
+        libccd_case.collider1.last_support_vertex = UINT_MAX;
         build_adjacency(collider0, libccd_case.collider0.adjacency);
         build_adjacency(collider1, libccd_case.collider1.adjacency);
 
-        libccd_case.ccd.support1       = get_support_function(collider0, force_linear_support_func);
-        libccd_case.ccd.support2       = get_support_function(collider1, force_linear_support_func);
+        libccd_case.ccd.support1       = get_support_function(collider0, support_mode);
+        libccd_case.ccd.support2       = get_support_function(collider1, support_mode);
         libccd_case.ccd.max_iterations = 100;
         libccd_case.ccd.first_dir = first_dir;
     }
 
-    void get_cases(Case *base_cases, LibccdCase *libccd_cases, int length, bool force_linear_support_func){
+    void get_cases(Case *base_cases, LibccdCase *libccd_cases, int length, SupportMode support_mode){
         for (int i = 0; i < length; i++) {
-            get_case(base_cases[i].collider0, base_cases[i].collider1, libccd_cases[i], force_linear_support_func);
+            get_case(base_cases[i].collider0, base_cases[i].collider1, libccd_cases[i], support_mode);
         }
     }
 
     bool get_intersection(LibccdCase& libccd_case) {
-        // start hill climbing at vertex 0 in every query (like HPP-FCL), so repeated runs do not reuse the result
-        libccd_case.collider0.last_support_vertex = 0;
-        libccd_case.collider1.last_support_vertex = 0;
+        // no support vertex of a previous query, so repeated runs do not reuse the result
+        libccd_case.collider0.last_support_vertex = UINT_MAX;
+        libccd_case.collider1.last_support_vertex = UINT_MAX;
         int intersect = ccdGJKIntersect(&libccd_case.collider0, &libccd_case.collider1, &libccd_case.ccd);
         return intersect == 1;
     }

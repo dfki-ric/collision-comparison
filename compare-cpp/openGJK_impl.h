@@ -57,10 +57,16 @@
 #endif
 
 #include "vector"
+#include <climits>
+
+#include "collider.h"
 
 struct MeshAdjacency {
     std::vector<unsigned int> neighbor_offsets;
     std::vector<unsigned int> neighbors;
+    // vertex with the largest dot product with each direction (cx, cy, cz) in {-1, 0, 1}^3 (index 9 cx + 3 cy + cz
+    // after adding 1 to each component): start of the hill climbing, as in MuJoCo
+    unsigned int extrema[27] = {};
 };
 
 typedef enum {
@@ -106,7 +112,8 @@ typedef struct gkBody_ {
 struct OpenGJKCollider {
     gkBody collider;
     MeshAdjacency adjacency;
-    mutable unsigned int last_support_vertex = 0;
+    // support vertex of the previous invocation in the current query, invalid (e.g., UINT_MAX) if there is none
+    mutable unsigned int last_support_vertex = UINT_MAX;
 };
 
 /*! @brief Data structure for simplex.
@@ -129,21 +136,21 @@ typedef struct gkSimplex_ {
 /*! @brief Invoke the GJK algorithm to compute the minimum distance between two
  * polytopes.
  *
- * @param[in]     bd1  First polytope (passed by value, modified internally).
- * @param[in]     bd2  Second polytope (passed by value, modified internally).
+ * @param[in]     bd1  First polytope (support point and cached support vertex are modified).
+ * @param[in]     bd2  Second polytope (support point and cached support vertex are modified).
  * @param[in,out] s    Simplex structure. Must be initialized (set nvrtx = 0)
  *                     before first call. After return, contains the final
  *                     simplex and witness points in s->witnesses.
- * @param[in]     force_linear_support_func Forces the algorithm to use the
- *                     slower, linear, support function for meshes instead of the logarithmic one.
- *                     Is used for benchmark purposes.
+ * @param[in]     support_mode Support function for meshes (linear, hill climbing, or hill climbing with cached
+ *                     extremes), used for benchmark purposes.
  * @return The minimum Euclidean distance between the two polytopes.
  *         Returns 0 if the polytopes are intersecting or touching.
  *
  * @note The simplex has to be initialised prior the call to this function.
  *       Witness points are automatically computed and stored in s->witnesses.
  */
-OPENGJK_EXPORT gkFloat compute_minimum_distance(OpenGJKCollider bd1, OpenGJKCollider bd2, gkSimplex* s, bool force_linear_support_func);
+OPENGJK_EXPORT gkFloat compute_minimum_distance(OpenGJKCollider& bd1, OpenGJKCollider& bd2, gkSimplex* s,
+                                                compare::Base::SupportMode support_mode);
 
 /*! @brief Testing wrappers - expose internal functions for cross-validation.
  *

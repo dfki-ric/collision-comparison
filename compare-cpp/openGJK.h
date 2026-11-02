@@ -8,6 +8,7 @@
 using compare::Base::Collider;
 using compare::Base::ColliderType;
 using compare::Base::Case;
+using compare::Base::SupportMode;
 
 namespace compare::OpenGJK {
     struct OpenGJKCase {
@@ -16,7 +17,7 @@ namespace compare::OpenGJK {
     };
 
     void get_cases(const Case* base_cases, OpenGJKCase* openGJK_cases, int length);
-    float get_distance(const OpenGJKCase& openGJK_case, bool force_linear_support_func);
+    float get_distance(OpenGJKCase& openGJK_case, SupportMode support_mode);
 }
 
 

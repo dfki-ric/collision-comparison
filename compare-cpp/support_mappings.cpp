@@ -141,20 +141,22 @@ void support_mesh_linear(OpenGJKCollider& body, const gkFloat *v) {
     collider.s[2] += collider.translation[2];
 }
 
-// support function which implements hill climbing for convex meshes, works in roughly logarithmic time
-void support_mesh(OpenGJKCollider& body, const gkFloat *v) {
-    gkBody& collider = body.collider;
-    gkFloat rotation_T[3][3];
-    transpose3x3(collider.rotation_mat, rotation_T);
-    gkFloat direction_local[3];
-    rotateVector3D(rotation_T, v, direction_local);
+// cell of a direction in the 3x3x3 grid of MeshAdjacency::extrema (as in MuJoCo): each component of the normalized
+// direction is mapped to -1, 0, or 1 with the threshold 0.4
+static int grid_cell(const gkFloat *dir) {
+    const gkFloat threshold = 0.4 * std::sqrt(dotProduct(dir, dir));
+    int cell = 0;
+    for (int k = 0; k < 3; k++) {
+        cell = 3 * cell + (dir[k] > threshold) - (dir[k] < -threshold) + 1;
+    }
+    return cell;
+}
 
+// hill climbing over the vertex graph from the vertex "current", stores the support point in the body
+static void hill_climb(OpenGJKCollider& body, const gkFloat *direction_local, unsigned int current) {
+    gkBody& collider = body.collider;
     const std::vector<unsigned int>& neighbor_offsets = body.adjacency.neighbor_offsets;
     const std::vector<unsigned int>& neighbors = body.adjacency.neighbors;
-
-    unsigned int vertex_count = (unsigned int) collider.numpoints;
-    // initialize the "current" vertex using the result of the previous invocation, or 0 if the last result is invalid
-    unsigned int current = body.last_support_vertex < vertex_count ? body.last_support_vertex : 0;
     gkFloat current_score = dotProduct(collider.coord[current], direction_local);
 
     bool improved = true;
@@ -182,4 +184,38 @@ void support_mesh(OpenGJKCollider& body, const gkFloat *v) {
     collider.s[0] += collider.translation[0];
     collider.s[1] += collider.translation[1];
     collider.s[2] += collider.translation[2];
+}
+
+// support function which implements hill climbing for convex meshes, works in roughly logarithmic time
+void support_mesh(OpenGJKCollider& body, const gkFloat *v) {
+    gkBody& collider = body.collider;
+    gkFloat rotation_T[3][3];
+    transpose3x3(collider.rotation_mat, rotation_T);
+    gkFloat direction_local[3];
+    rotateVector3D(rotation_T, v, direction_local);
+
+    unsigned int vertex_count = (unsigned int) collider.numpoints;
+    // initialize the "current" vertex using the result of the previous invocation, or 0 if the last result is invalid
+    unsigned int current = body.last_support_vertex < vertex_count ? body.last_support_vertex : 0;
+    hill_climb(body, direction_local, current);
+}
+
+// hill climbing that starts at the cached extreme vertex of the grid cell of the direction (as in MuJoCo)
+void support_mesh_extremes(OpenGJKCollider& body, const gkFloat *v) {
+    gkBody& collider = body.collider;
+    gkFloat rotation_T[3][3];
+    transpose3x3(collider.rotation_mat, rotation_T);
+    gkFloat direction_local[3];
+    rotateVector3D(rotation_T, v, direction_local);
+
+    unsigned int vertex_count = (unsigned int) collider.numpoints;
+    // start at the extreme vertex of the grid cell, or at the result of the previous invocation in this query if that
+    // one is better
+    unsigned int current = body.adjacency.extrema[grid_cell(direction_local)];
+    if (body.last_support_vertex < vertex_count
+        && dotProduct(collider.coord[body.last_support_vertex], direction_local)
+           >= dotProduct(collider.coord[current], direction_local)) {
+        current = body.last_support_vertex;
+    }
+    hill_climb(body, direction_local, current);
 }

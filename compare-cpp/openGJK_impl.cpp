@@ -611,7 +611,7 @@ inline static void S3D(gkSimplex* s, gkFloat* v) {
 }
 
 inline static void support(OpenGJKCollider& restrict body,
-                           const gkFloat* restrict v, bool force_linear_support_func) {
+                           const gkFloat* restrict v, compare::Base::SupportMode support_mode) {
   switch (body.collider.type) {
     case Sphere:
       support_sphere(body, v);
@@ -626,11 +626,18 @@ inline static void support(OpenGJKCollider& restrict body,
       support_box(body, v);
       break;
     case Mesh:
-    if (force_linear_support_func) {
-      support_mesh_linear(body, v);
-    } else {
-      support_mesh(body, v);
-    }
+      switch (support_mode) {
+        case compare::Base::SupportMode::Linear: support_mesh_linear(body, v); break;
+        case compare::Base::SupportMode::HillClimbing: support_mesh(body, v); break;
+        case compare::Base::SupportMode::CachedExtremes: support_mesh_extremes(body, v); break;
+        case compare::Base::SupportMode::Adaptive:
+          if (body.collider.numpoints <= OPENGJK_HILL_CLIMBING_MAX_VERTICES) {
+            support_mesh(body, v);
+          } else {
+            support_mesh_extremes(body, v);
+          }
+          break;
+      }
       break;
     default:
       printf("Error: OpenGJK tried to get support mapping for unknown body type\n");
@@ -947,8 +954,8 @@ inline static void compute_witnesses(const gkBody* bd1,
   }
 }
 
-gkFloat compute_minimum_distance(OpenGJKCollider bd1, OpenGJKCollider bd2,
-                                 gkSimplex* restrict s, bool force_linear_support_func) {
+gkFloat compute_minimum_distance(OpenGJKCollider& bd1, OpenGJKCollider& bd2,
+                                 gkSimplex* restrict s, compare::Base::SupportMode support_mode) {
   unsigned int k = 0;
   const int mk = GJK_MAX_ITERATIONS;
   const gkFloat eps_rel = GJK_EPSILON_REL;
@@ -973,8 +980,8 @@ gkFloat compute_minimum_distance(OpenGJKCollider bd1, OpenGJKCollider bd2,
     -initial_v[1],
     -initial_v[2]
   };
-  support(bd1, initial_v, force_linear_support_func);
-  support(bd2, initial_v_minus, force_linear_support_func);
+  support(bd1, initial_v, support_mode);
+  support(bd2, initial_v_minus, support_mode);
   v[0] = bd1.collider.s[0] - bd2.collider.s[0];
   v[1] = bd1.collider.s[1] - bd2.collider.s[1];
   v[2] = bd1.collider.s[2] - bd2.collider.s[2];
@@ -998,8 +1005,8 @@ gkFloat compute_minimum_distance(OpenGJKCollider bd1, OpenGJKCollider bd2,
     }
 
     /* Support function */
-    support(bd1, vminus, force_linear_support_func);
-    support(bd2, v, force_linear_support_func);
+    support(bd1, vminus, support_mode);
+    support(bd2, v, support_mode);
     for (int t = 0; t < 3; ++t) {
       w[t] = bd1.collider.s[t] - bd2.collider.s[t];
     }

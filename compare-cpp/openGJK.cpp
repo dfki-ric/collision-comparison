@@ -5,6 +5,7 @@
 
 #include "openGJK_impl.h"
 #include <algorithm>
+#include <limits>
 
 
 #include <math.h>
@@ -105,6 +106,25 @@ namespace compare::OpenGJK {
                 adjacency.neighbors[cursor++] = neighbor;
             }
         }
+
+        // extreme vertices of the 27 grid directions
+        float max_dot[27];
+        std::fill(max_dot, max_dot + 27, std::numeric_limits<float>::lowest());
+        for (int i = 0; i < vertex_count; i++) {
+            const glm::vec3 &vertex = collider.vertecies[i];
+            int k = 0;
+            for (int cx = -1; cx <= 1; cx++) {
+                for (int cy = -1; cy <= 1; cy++) {
+                    for (int cz = -1; cz <= 1; cz++, k++) {
+                        float dot = vertex.x * cx + vertex.y * cy + vertex.z * cz;
+                        if (dot > max_dot[k]) {
+                            max_dot[k] = dot;
+                            adjacency.extrema[k] = i;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     void get_case(const Collider& collider0, const Collider& collider1, OpenGJKCase& openGJK_case){
@@ -114,8 +134,8 @@ namespace compare::OpenGJK {
         get_transform(collider0, openGJK_case.collider0.collider);
         get_transform(collider1, openGJK_case.collider1.collider);
 
-        openGJK_case.collider0.last_support_vertex = 0;
-        openGJK_case.collider1.last_support_vertex = 0;
+        openGJK_case.collider0.last_support_vertex = UINT_MAX;
+        openGJK_case.collider1.last_support_vertex = UINT_MAX;
         build_adjacency(collider0, openGJK_case.collider0.adjacency);
         build_adjacency(collider1, openGJK_case.collider1.adjacency);
     }
@@ -130,17 +150,17 @@ namespace compare::OpenGJK {
         }
     }
 
-    float get_distance(const OpenGJKCase& openGJK_case, bool force_linear_support_func) {
+    float get_distance(OpenGJKCase& openGJK_case, SupportMode support_mode) {
         /* Initialize simplex as empty */
         gkSimplex s;
         s.nvrtx = 0;
 
-        // start hill climbing at vertex 0 in every query (like HPP-FCL), so repeated runs do not reuse the result
-        openGJK_case.collider0.last_support_vertex = 0;
-        openGJK_case.collider1.last_support_vertex = 0;
+        // no support vertex of a previous query, so repeated runs do not reuse the result
+        openGJK_case.collider0.last_support_vertex = UINT_MAX;
+        openGJK_case.collider1.last_support_vertex = UINT_MAX;
 
         /* Compute distance */
-        const gkFloat dd = compute_minimum_distance(openGJK_case.collider0, openGJK_case.collider1, &s, force_linear_support_func);
+        const gkFloat dd = compute_minimum_distance(openGJK_case.collider0, openGJK_case.collider1, &s, support_mode);
 
         return static_cast<float>(dd);
     }

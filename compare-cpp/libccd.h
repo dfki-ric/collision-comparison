@@ -5,8 +5,10 @@
 using compare::Base::Collider;
 using compare::Base::ColliderType;
 using compare::Base::Case;
+using compare::Base::SupportMode;
 
 #include <ccd/ccd.h>
+#include <climits>
 #include <vector>
 
 namespace compare::libccd {
@@ -19,12 +21,16 @@ namespace compare::libccd {
     struct MeshAdjacency {
         std::vector<unsigned int> neighbor_offsets;
         std::vector<unsigned int> neighbors;
+        // vertex with the largest dot product with each direction (cx, cy, cz) in {-1, 0, 1}^3 (index 9 cx + 3 cy + cz
+        // after adding 1 to each component): start of the hill climbing, as in MuJoCo
+        unsigned int extrema[27] = {};
     };
 
     struct LibccdCollider {
         Collider collider;
         MeshAdjacency adjacency;
-        mutable unsigned int last_support_vertex = 0;
+        // support vertex of the previous invocation in the current query, invalid (e.g., UINT_MAX) if there is none
+        mutable unsigned int last_support_vertex = UINT_MAX;
     };
 
     struct LibccdCase {
@@ -34,6 +40,6 @@ namespace compare::libccd {
     };
 
     void init();
-    void get_cases(Case* base_cases, LibccdCase* libccd_cases, int length, bool force_linear_support_func);
+    void get_cases(Case* base_cases, LibccdCase* libccd_cases, int length, SupportMode support_mode);
     bool get_intersection(LibccdCase& libccd_case);
 }

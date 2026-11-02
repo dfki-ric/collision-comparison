@@ -9,6 +9,7 @@
 
 using compare::Base::Collider;
 using compare::Base::Case;
+using compare::Base::SupportMode;
 
 using hpp::fcl::Box;
 using hpp::fcl::Capsule;
@@ -40,7 +41,7 @@ namespace compare::FCL {
     };
 
 
-    void get_cases(Case* base_cases, FCLCase* fcl_cases, int length, bool force_linear_support_func);
+    void get_cases(Case* base_cases, FCLCase* fcl_cases, int length, SupportMode support_mode);
     float get_distance_nesterov(FCLCase& fcl_case);
     bool get_intersection_nesterov(FCLCase& fcl_case);
 

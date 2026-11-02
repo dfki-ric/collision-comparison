@@ -48,11 +48,23 @@ clone() {
   fi
 }
 
+# applies a patch (path relative to the repository root) to a cloned repository, unless it is already applied
+apply_patch() {
+  local dir=$1
+  local patch=$PWD/$2
+  if ! git -C "$dir" apply --reverse --check "$patch" 2> /dev/null; then
+    git -C "$dir" apply "$patch"
+  fi
+}
+
 # collision detection libraries (forks contain changes for the benchmark)
 clone https://github.com/MaartenBehn/JoltPhysics.git
 clone https://github.com/danfis/libccd.git
 clone https://github.com/MaartenBehn/bullet3.git
 clone https://github.com/MaartenBehn/hpp-fcl.git
+# pinned: the patch adds cached extremes to its hill climbing (support function variant of the benchmark)
+git -C hpp-fcl checkout -q 23a71b9
+apply_patch hpp-fcl compare-cpp/patches/hpp-fcl-cached-extremes.patch
 clone https://github.com/AlexanderFabisch/distance3d.git
 # the original FCL with its own GJK, at the latest release
 clone https://github.com/flexible-collision-library/fcl.git
