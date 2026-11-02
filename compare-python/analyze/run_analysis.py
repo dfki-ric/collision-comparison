@@ -34,12 +34,13 @@ import comparisons
 import figures
 from load_results import load_results, tasks, comparison_groups, to_long
 
-# panels of the violin plot in the paper: title and benchmarks, primitives (A) and meshes (B)
-PAPER_VIOLIN_PANELS = [
-    ("UC1, 2, 5, 6", ["uc1_ur10_collision", "uc2_ur10_collision", "uc5_ur10_collision", "uc6_ur10_collision"]),
-    ("Dual arm", ["complex_env_dual_arm_collision"]),
-]
 GEOMETRY_TITLES = {"primitives": "Primitives", "meshes": "Meshes"}
+# panels of the violin plot in the paper: title and benchmarks, primitives (A: UC1, 2, 5, 6) and meshes (B: dual arm)
+PAPER_VIOLIN_PANELS = [
+    (GEOMETRY_TITLES["primitives"],
+     ["uc1_ur10_collision", "uc2_ur10_collision", "uc5_ur10_collision", "uc6_ur10_collision"]),
+    (GEOMETRY_TITLES["meshes"], ["complex_env_dual_arm_collision"]),
+]
 
 
 def main():
