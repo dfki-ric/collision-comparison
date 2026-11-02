@@ -95,7 +95,7 @@ The analysis merges the CSV files of the same benchmark and computer (see below)
 ## Results
 Results on PC1 (2026-11-01), as in the paper. libccd and OpenGJK use an adaptive support function for meshes (see
 the support function study), HPP-FCL is also shown with cached extremes in the dual-arm scene
-([cached extremes]). The figures are written by `compare-python/analyze/run_analysis.py`,
+([extremes]). The figures are written by `compare-python/analyze/run_analysis.py`,
 `support_study.py`, and `case_statistics.py`.
 
 **Benchmark data:** pairs per case file, share of intersecting pairs, and distance of separated pairs.

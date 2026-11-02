@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 
 from algo_metadata import AlgoData, algo_metadata
-from load_results import LINEAR_SUPPORT_SUFFIX, algorithm_columns, latex_escape, tasks
+from load_results import LINEAR_SUPPORT_SUFFIX, algorithm_columns, format_significant, latex_escape, tasks
 from probability_of_improvement import probability_of_improvement, probability_of_improvement_ci
 from speedup import speedup_ci
 
@@ -111,7 +111,11 @@ def speedup_vs_fastest(df, n_resamples=5000, confidence_level=0.95, random_state
     """Slowdown of every implementation relative to the fastest implementation (lowest typical time) of its category.
 
     The slowdown of X is the speedup of the fastest implementation over X (geometric mean of T_X / T_fastest, paired,
-    averaged over tasks), e.g., 2 means that X needs twice as long. The fastest implementation has a slowdown of 1."""
+    averaged over tasks), e.g., 2 means that X needs twice as long. The fastest implementation has a slowdown of 1.
+
+    Implementations that are next to each other in the order of slowdown are also compared directly (paired):
+    tie_with_next is true if the confidence interval of the speedup of an implementation over the next slower one
+    includes 1, i.e., their typical runtimes cannot be distinguished."""
     algorithms = complete_algorithms(df)
     task_tables = list(tasks(df).values())
     rows = []
@@ -129,8 +133,32 @@ def speedup_vs_fastest(df, n_resamples=5000, confidence_level=0.95, random_state
                 slowdown, low, high = speedup_ci(times_fastest, times_a, n_resamples, confidence_level, random_state)
             rows.append({"category": category.value, "algorithm": a, "label": algo_metadata[a].pretty_name,
                          "language": algo_metadata[a].language.value, "fastest": algo_metadata[fastest].pretty_name,
-                         "slowdown": slowdown, "ci_low": low, "ci_high": high})
+                         "slowdown": slowdown, "ci_low": low, "ci_high": high, "tie_with_next": False})
+        category_rows = sorted(rows[len(rows) - len(group):], key=lambda r: r["slowdown"])
+        for row, slower in zip(category_rows[:-1], category_rows[1:]):
+            _, low, high = speedup_ci([t[slower["algorithm"]].to_numpy(dtype=float) for t in task_tables],
+                                      [t[row["algorithm"]].to_numpy(dtype=float) for t in task_tables],
+                                      n_resamples, confidence_level, random_state)
+            row["tie_with_next"] = bool(low <= 1.0 <= high)
     return pd.DataFrame(rows)
+
+
+def slowdown_to_latex(table, caption, label):
+    """LaTeX table of speedup_vs_fastest(): slowdown with confidence interval per query type, ties marked."""
+    lines = ["\\begin{table}[htbp]", "\\centering", "\\begin{tabular}{llr@{\\,}l}", "\\toprule",
+             "Implementation & Language & \\multicolumn{2}{c}{Slowdown [95\\,\\% CI]} \\\\"]
+    for category, rows in table.groupby("category", sort=False):
+        rows = rows.sort_values("slowdown").reset_index(drop=True)
+        lines += ["\\midrule", f"\\multicolumn{{4}}{{l}}{{\\textit{{{category}}}}} \\\\"]
+        for i, row in rows.iterrows():
+            tie = row["tie_with_next"] or (i > 0 and rows.loc[i - 1, "tie_with_next"])
+            interval = "" if row["ci_high"] == row["ci_low"] else \
+                f"[{format_significant(row['ci_low'])}, {format_significant(row['ci_high'])}]"
+            lines.append(f"{latex_escape(row['label'])}{'$^{\\approx}$' if tie else ''} & {row['language']} & "
+                         f"{format_significant(row['slowdown'])} & {interval} \\\\")
+    lines += ["\\bottomrule", "\\end{tabular}", f"\\caption{{{caption}}}", f"\\label{{{label}}}",
+              "\\end{table}"]
+    return "\n".join(lines) + "\n"
 
 
 def linear_support_slowdown(variants_table):

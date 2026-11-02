@@ -148,27 +148,41 @@ def _tick_label(exponent):
     return f"{10.0 ** exponent:.2g}"
 
 
-def _decade_axis(ax, low, high, label):
-    """Log x axis (data in linear units) with labeled ticks (see _decade_ticks()) and unlabeled minor ticks."""
+def _decade_axis(ax, low, high, label, axis_high=None):
+    """Log x axis (data in linear units) with labeled ticks (see _decade_ticks()) and unlabeled minor ticks.
+
+    axis_high : float, optional
+        End of the axis line and the ticks if the axis extends beyond the data (space for labels), default: high
+    """
     ax.set_xscale("log")
-    ticks = _decade_ticks(np.log10(low), np.log10(high))
+    axis_high = high if axis_high is None else axis_high
+    ticks = _decade_ticks(np.log10(low), np.log10(axis_high))
     ax.xaxis.set_major_locator(FixedLocator(10.0 ** np.array(ticks)))
     ax.xaxis.set_major_formatter(FixedFormatter([_tick_label(t) for t in ticks]))
     ax.xaxis.set_minor_locator(LogLocator(base=10, subs=np.arange(2, 10)))
     ax.xaxis.set_minor_formatter(NullFormatter())
     ax.set_xlim(low, high)
+    if axis_high < high:
+        ax.xaxis.set_minor_locator(FixedLocator([t for t in ax.xaxis.get_minor_locator().tick_values(low, axis_high)
+                                                 if t <= axis_high]))
+        ax.spines["bottom"].set_bounds(low, axis_high)
     ax.set_xlabel(label, loc="right")
 
 
-def _format_factor(value):
-    return f"{value:.0f}×" if value >= 100 else f"{value:.3g}×"
+def _format_factor(value, unit="×"):
+    """Three significant digits (with trailing zeros, except for exactly 1), no decimals from 100."""
+    if value >= 100:
+        return f"{value:.0f}{unit}"
+    return f"{value:#.3g}{unit}" if value != 1 else f"1{unit}"
 
 
 def slowdown_chart(tables, path, xlabel, titles=None):
-    """Dot chart of slowdown factors with confidence intervals (log scale), one panel per category.
+    """Dot chart of slowdown factors (log scale), one panel per category. The confidence intervals are not shown
+    (they are mostly narrower than the markers, see comparisons.slowdown_to_latex()); a bracket joins implementations
+    whose typical runtimes cannot be distinguished (column tie_with_next, optional).
 
     tables : DataFrame or list of DataFrames (one panel A, B, ... per table) with the columns category, label,
-    language, slowdown, ci_low, ci_high (see comparisons.speedup_vs_fastest() and
+    language, slowdown, and optionally tie_with_next (see comparisons.speedup_vs_fastest() and
     comparisons.linear_support_slowdown()).
     titles : list of str, optional
         Title of each panel, e.g., the geometry.
@@ -176,29 +190,72 @@ def slowdown_chart(tables, path, xlabel, titles=None):
     tables = [tables] if isinstance(tables, pd.DataFrame) else list(tables)
     with plt.rc_context(STYLE):
         fig, panels = _panel_figure(len(tables), _category_height(tables, row_height=0.17))
+        panel_labels = []
         for k, (panel, table) in enumerate(zip(panels, tables)):
             categories, axes = _category_axes(panel, table)
+            labels = []
             for ax, category in zip(axes, categories):
                 rows = table[table["category"] == category].sort_values("slowdown", ascending=False)
                 y = np.arange(len(rows))
+                row_labels = []
                 for yi, row in zip(y, rows.itertuples()):
                     color = LANGUAGE_COLORS[row.language]
-                    if row.ci_high > row.ci_low:
-                        ax.plot([row.ci_low, row.ci_high], [yi, yi], color=color, linewidth=1.5,
-                                solid_capstyle="round", alpha=0.5)
                     ax.plot(row.slowdown, yi, marker=LANGUAGE_MARKERS[row.language], color=color, markersize=4,
                             linestyle="")
-                    ax.annotate(_format_factor(row.slowdown), (max(row.ci_high, row.slowdown), yi), xytext=(4, 0),
-                                textcoords="offset points", va="center", color=TEXT_SECONDARY)
+                    label = ax.annotate(_format_factor(row.slowdown), (row.slowdown, yi), xytext=(4, 0),
+                                        textcoords="offset points", va="center", color=TEXT_SECONDARY)
+                    # the labels are fitted into the axes below instead of shrinking the axes
+                    label.set_in_layout(False)
+                    row_labels.append(label)
+                    labels.append((ax, label, row.slowdown))
+                # rows are sorted from slow (bottom) to fast (top): a tie of a row with the next slower one is a
+                # bracket to the label of the row below
+                ties = rows["tie_with_next"].to_numpy() if "tie_with_next" in rows else np.zeros(len(rows), bool)
+                for i in range(1, len(rows)):
+                    if ties[i]:
+                        bracket = ax.annotate("", xy=(1.0, 0.5), xycoords=row_labels[i], xytext=(1.0, 0.5),
+                                              textcoords=row_labels[i - 1],
+                                              arrowprops={"arrowstyle": "-", "color": TEXT_SECONDARY,
+                                                          "linewidth": 0.9, "shrinkA": 2, "shrinkB": 2,
+                                                          "connectionstyle": "bar,fraction=0.3"})
+                        bracket.set_in_layout(False)
                 ax.axvline(1.0, color=AXIS, linewidth=0.6, zorder=0)
                 ax.set_yticks(y, rows["label"])
                 ax.set_ylim(-0.7, len(rows) - 0.3)
                 ax.set_title(category if titles is None or ax is not axes[0] else f"{titles[k]}: {category}")
                 ax.tick_params(axis="x", which="both", bottom=ax is axes[-1])
                 ax.spines["bottom"].set_visible(ax is axes[-1])
-            _decade_axis(axes[-1], 0.8, table["ci_high"].max() * 4.0, xlabel)
+            _decade_axis(axes[-1], 0.8, table["slowdown"].max() * 4.0, xlabel)
+            panel_labels.append((axes[-1], labels))
         _language_legend(fig, set().union(*(set(t["language"]) for t in tables)))
+        _fit_labels(fig, panel_labels, 0.8, xlabel)
         _save(fig, path)
+
+
+def _fit_labels(fig, panel_labels, low, xlabel):
+    """Extend the log x axis of each panel so that the value labels next to the points end inside the axes.
+
+    panel_labels : list of (axis with the x label, list of (axis, label, x of the point))"""
+    fig.draw_without_rendering()
+    for x_axis, labels in panel_labels:
+        # the axis line ends at the first decade above the data, the labels extend further
+        axis_high = 10.0 ** np.ceil(np.log10(max(x for _, _, x in labels)))
+        decades = np.log10(x_axis.get_xlim()[1] / low)
+        for ax, label, x in labels:
+            width = ax.get_window_extent().width
+            # label and space for a bracket of a tie
+            label_width = label.get_window_extent().x1 - ax.transData.transform((x, 0))[0] + 10 * fig.dpi / 72.0
+            # position of the point (fraction of the axis) at which the label ends at 98 % of the axis
+            fraction = (0.98 * width - label_width) / width
+            if fraction > 0:
+                decades = max(decades, np.log10(x / low) / fraction)
+        axis_high = max(axis_high, low * 10.0)
+        _decade_axis(x_axis, low, low * 10.0 ** decades, xlabel, axis_high=axis_high)
+        # label only the first and the last decade if the decades are too narrow for their labels (points)
+        if x_axis.get_window_extent().width / decades * 72.0 / fig.dpi < 20:
+            ticks = [0.0, np.log10(axis_high)]
+            x_axis.xaxis.set_major_locator(FixedLocator(10.0 ** np.array(ticks)))
+            x_axis.xaxis.set_major_formatter(FixedFormatter([_tick_label(t) for t in ticks]))
 
 
 def _task_medians(long, benchmarks, computer):

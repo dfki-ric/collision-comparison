@@ -16,8 +16,8 @@ Output files:
 - violin_<computer>.pdf: runtime distributions of the primitive (A) and the mesh benchmarks (B), see PAPER_VIOLIN_PANELS
 - comparisons_within_language_<geometry>_<computer>.csv/.tex, comparisons_best_per_language_<geometry>_<computer>.csv/.tex,
   comparisons_variants_<geometry>_<computer>.csv/.tex (linear support), comparisons_nesterov_<geometry>_<computer>.csv/.tex
-- speedup_vs_fastest_<geometry>_<computer>.csv, speedup_vs_fastest_<computer>.pdf: slowdown of every implementation
-  relative to the fastest one (panels: primitives, meshes)
+- speedup_vs_fastest_<geometry>_<computer>.csv/.tex, speedup_vs_fastest_<computer>.pdf: slowdown of every
+  implementation relative to the fastest one (table with confidence intervals; figure panels: primitives, meshes)
 - linear_support_<geometry>_<computer>.csv, linear_support_<computer>.pdf: slowdown of the linear support function
   relative to the logarithmic one (panels: primitives, meshes)
 - effect_sizes_<geometry>_<computer>.pdf: heatmaps of the probability of improvement within each language
@@ -121,6 +121,13 @@ def main():
         suffix = f"{geometry}_{computer}"
         slowdown = comparisons.speedup_vs_fastest(group, **options)
         slowdown.to_csv(out(f"speedup_vs_fastest_{suffix}.csv"), index=False)
+        with open(out(f"speedup_vs_fastest_{suffix}.tex"), "w") as f:
+            f.write(comparisons.slowdown_to_latex(
+                slowdown, f"Slowdown of each implementation relative to the fastest implementation of the same query "
+                f"type ({geometry} on {computer}): geometric mean of the paired ratios of runtimes, averaged over "
+                "tasks, with 95\\,\\% bootstrap confidence intervals. $^{\\approx}$: the typical runtime cannot "
+                "be distinguished from the next implementation in the order (the confidence interval of their paired "
+                "speedup includes 1).", f"tab:slowdown-{geometry}-{computer}"))
         linear = comparisons.linear_support_slowdown(variants)
         linear.to_csv(out(f"linear_support_{suffix}.csv"), index=False)
         panels.setdefault(computer, []).append((geometry, slowdown, linear))
@@ -132,11 +139,11 @@ def main():
         computer_panels.sort(key=lambda p: list(GEOMETRY_TITLES).index(p[0]))
         titles = [GEOMETRY_TITLES[geometry] for geometry, _, _ in computer_panels]
         figures.slowdown_chart([s for _, s, _ in computer_panels], out(f"speedup_vs_fastest_{computer}.pdf"),
-                               "Slowdown relative to the fastest implementation (95 % CI)", titles)
+                               "Slowdown relative to the fastest implementation", titles)
         linear = [(t, l) for t, (_, _, l) in zip(titles, computer_panels) if len(l) > 0]
         if linear:
             figures.slowdown_chart([l for _, l in linear], out(f"linear_support_{computer}.pdf"),
-                                   "Slowdown of the linear support function (95 % CI)", [t for t, _ in linear])
+                                   "Slowdown of the linear support function", [t for t, _ in linear])
     print(f"Results written to {args.output}")
 
 
