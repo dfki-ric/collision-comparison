@@ -81,6 +81,15 @@ results are skipped, so an interrupted benchmark can simply be restarted and con
 Case files that failed (missing case file, crashed benchmark) are listed in `results/<dataset>/failures.log`, get no
 results folder and are run again after a restart. To repeat a benchmark from scratch, delete its folder in `results/`.
 
+To run only some implementations, e.g., to add an implementation to existing results, select the languages
+(`BENCHMARK_LANGUAGES`, any of `cpp rust python`), the C++ and Rust benchmarks by name (`BENCHMARK_FILTER`, a regular
+expression), and a separate results directory (`RESULTS_DIR`):
+```bash
+BENCHMARK_LANGUAGES=cpp BENCHMARK_FILTER="^FCL original" RESULTS_DIR=results_fcl \
+    bash scripts/benchmarks/benchmark_dataset.sh uc1_ur10_collision 1 1000
+```
+The analysis merges the CSV files of the same benchmark and computer (see below).
+
 ## Results
 ### How many case files are done?
 Number of finished case files per dataset:

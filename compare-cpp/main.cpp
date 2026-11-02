@@ -6,7 +6,9 @@
 #include "libccd.h"
 #include "openGJK.h"
 
+#include <cstdlib>
 #include <iostream>
+#include <regex>
 
 #define ANKERL_NANOBENCH_IMPLEMENT
 #include <nanobench.h>
@@ -93,91 +95,101 @@ int main(){
     // measured runs after it are still considerably slower.
     bench.warmup(10).epochs(10).epochIterations(1);
 
-    bench.run("libccd intersection", [&] {
+    // Only the benchmarks whose name matches the regular expression in the environment variable BENCHMARK_FILTER
+    // are run (default: all), see scripts/benchmarks/benchmark_dataset.sh
+    const char* filter_env = std::getenv("BENCHMARK_FILTER");
+    const std::regex filter(filter_env != nullptr && filter_env[0] != '\0' ? filter_env : ".*");
+    auto run = [&](const char* name, auto&& benchmark) {
+        if (std::regex_search(name, filter)) {
+            bench.run(name, benchmark);
+        }
+    };
+
+    run("libccd intersection", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::libccd::get_intersection(libccd_cases[i]));
         }
     });
 
-    bench.run("libccd intersection linear support", [&] {
+    run("libccd intersection linear support", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::libccd::get_intersection(libccd_cases_lin_support[i]));
         }
     });
 
-    bench.run("Jolt intersection", [&] {
+    run("Jolt intersection", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::Jolt::get_intersection(jolt_cases[i]));
         }
     });
 
-    bench.run("Jolt distance", [&] {
+    run("Jolt distance", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::Jolt::get_distance(jolt_cases_dist[i]));
         }
     });
 
-    bench.run("FCL distance", [&] {
+    run("FCL distance", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_distance_nesterov(fcl_cases_nesterov[i]));
         }
     });
 
-    bench.run("FCL distance linear support", [&] {
+    run("FCL distance linear support", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_distance_nesterov(fcl_cases_nesterov_lin_support[i]));
         }
     });
 
-    bench.run("FCL intersection", [&] {
+    run("FCL intersection", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_intersection_nesterov(fcl_cases_nesterov_intersection[i]));
         }
     });
 
-    bench.run("FCL intersection linear support", [&] {
+    run("FCL intersection linear support", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_intersection_nesterov(fcl_cases_nesterov_intersection_lin_support[i]));
         }
     });
 
-    bench.run("FCL distance defaultGJK", [&] {
+    run("FCL distance defaultGJK", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_distance_default(fcl_cases_default[i]));
         }
     });
 
-    bench.run("FCL distance defaultGJK linear support", [&] {
+    run("FCL distance defaultGJK linear support", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_distance_default(fcl_cases_default_lin_support[i]));
         }
     });
 
-    bench.run("FCL intersection defaultGJK", [&] {
+    run("FCL intersection defaultGJK", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_intersection_default(fcl_cases_default_intersection[i]));
         }
     });
 
-    bench.run("FCL intersection defaultGJK linear support", [&] {
+    run("FCL intersection defaultGJK linear support", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_intersection_default(fcl_cases_default_intersection_lin_support[i]));
         }
     });
 
-    bench.run("Bullet distance", [&] {
+    run("Bullet distance", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::Bullet::get_distance(bullet_cases[i]));
         }
     });
 
-    bench.run("openGJK distance", [&] {
+    run("openGJK distance", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::OpenGJK::get_distance(openGJK_cases[i], false));
         }
     });
 
-    bench.run("openGJK distance linear support", [&] {
+    run("openGJK distance linear support", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::OpenGJK::get_distance(openGJK_cases_lin_support[i], true));
         }
