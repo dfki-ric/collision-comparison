@@ -43,10 +43,10 @@ include_directories(${CMAKE_SOURCE_DIR}/../hpp-fcl/include)
 include_directories(${CMAKE_BINARY_DIR}/hpp-fcl/include)
 target_link_libraries(compare ${CMAKE_BINARY_DIR}/hpp-fcl/src/libhpp-fcl.so)
 
-# Bullet3
+# Bullet3 in double precision, like the other libraries (the benchmark must use the same precision as the library)
+set(USE_DOUBLE_PRECISION ON CACHE BOOL "Use double precision" FORCE)
 add_subdirectory(${CMAKE_SOURCE_DIR}/../bullet3 ${CMAKE_BINARY_DIR}/bullet)
-set_property(DIRECTORY "${CMAKE_SOURCE_DIR}/../bullet3" APPEND
-        PROPERTY COMPILE_DEFINITIONS "-DUSE_DOUBLE_PRECISION=ON -DBT_USE_EGL=ON -DCMAKE_BUILD_TYPE=Release")
+target_compile_definitions(compare PRIVATE BT_USE_DOUBLE_PRECISION)
 include_directories(${CMAKE_SOURCE_DIR}/../bullet3/src)
 
 add_library(libbullet3collsion STATIC IMPORTED)
