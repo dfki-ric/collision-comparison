@@ -4,7 +4,7 @@ import timeit
 import numpy as np
 import pybullet as pb
 import pytransform3d.rotations as pr
-from src import get_nao_bvh, load_test_file
+from src import load_test_file
 
 COLLISION_SHAPES = [
     "cylinder", "box", "capsule", "sphere"

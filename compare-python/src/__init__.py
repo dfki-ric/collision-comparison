@@ -4,7 +4,6 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 from .load_atlas import get_atlas_tm, get_atlas_bvh_from_tm, get_atlas_bvh
-from .load_nao import get_nao_bvh, get_nao_bvh_complex
 from .load_uc1 import get_uc1_bvh
 from .load_uc2 import get_uc2_bvh
 from .load_uc5 import get_uc5_bvh
