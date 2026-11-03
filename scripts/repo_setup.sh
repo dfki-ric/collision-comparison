@@ -58,15 +58,20 @@ apply_patch() {
   fi
 }
 
-# collision detection libraries (forks contain changes for the benchmark)
+# collision detection libraries (forks contain changes for the benchmark), pinned to the commits of the results in
+# the paper
 clone https://github.com/MaartenBehn/JoltPhysics.git
+git -C JoltPhysics checkout -q f2978e1711315395cd82e6f7a087f3f8be538988
 clone https://github.com/danfis/libccd.git
+git -C libccd checkout -q 7931e764a19ef6b21b443376c699bbc9c6d4fba8
 clone https://github.com/MaartenBehn/bullet3.git
+git -C bullet3 checkout -q 1e0626039d090ab78c4ac91645fb89f9510b01db
 clone https://github.com/MaartenBehn/hpp-fcl.git
 # pinned: the patch adds cached extremes to its hill climbing (support function variant of the benchmark)
 git -C hpp-fcl checkout -q 23a71b9
 apply_patch hpp-fcl compare-cpp/patches/hpp-fcl-cached-extremes.patch
 clone https://github.com/AlexanderFabisch/distance3d.git
+git -C distance3d checkout -q 49d0905d3286b649ed525227b2d4aeb9eaf38384
 # the original FCL with its own GJK, at the latest release
 clone https://github.com/flexible-collision-library/fcl.git
 git -C fcl checkout -q 0.7.0
@@ -77,8 +82,11 @@ fi
 
 # dependencies of the C++ benchmark
 clone https://github.com/nlohmann/json.git
+git -C json checkout -q 755bb16d7a80436646380b5f871b93c6a443a3b7
 clone https://github.com/martinus/nanobench.git
+git -C nanobench checkout -q 7252da9d96bd0d71f508e9b2813ab1f57fdfaec1
 clone https://github.com/g-truc/glm.git
+git -C glm checkout -q 6f14f4792a0cde5d0cf2c910506724d61cb95834
 
 # Build
 
