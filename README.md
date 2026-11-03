@@ -141,6 +141,12 @@ benchmarks (UR10 use cases) and mesh benchmarks (dual-arm scene, icospheres) and
 the tasks of each group. `--results-dir` is only needed to check the warm-up with
 the individual measured runs. See `python run_analysis.py --help` for the output files.
 
+## License
+
+The code is licensed under the 3-clause BSD license, except for third-party code under its own license (see
+[LICENSE](LICENSE)). In particular, the OpenGJK files in `compare-cpp/` are licensed under the GPL-3.0, so the
+compiled C++ benchmark is distributed under the GPL-3.0.
+
 ## Funding
 
 This project has been developed initially at the Robotics Innovation Center
