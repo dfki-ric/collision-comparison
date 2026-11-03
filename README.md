@@ -5,15 +5,9 @@ Thilo Umland $^1$,
 Maarten Behn $^2$,
 Alexander Fabisch $^2$
 
-$^1$ University of Bremen,
-Bibliothekstraße 1,
-D-28359 Bremen,
-Germany
+$^1$ Robotics Research Group, University of Bremen, Bremen, Germany
 
-$^2$ Robotics Innovation Center, DFKI GmbH,
-Robert-Hooke-Straße 1,
-D-28359 Bremen,
-Germany
+$^2$ Robotics Innovation Center, German Research Center for Artificial Intelligence (DFKI GmbH), Bremen, Germany
 
 ## Abstract
 Collision detection and distance calculation is needed in simulation, planning, and control.
