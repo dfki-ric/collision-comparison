@@ -258,6 +258,63 @@ def _fit_labels(fig, panel_labels, low, xlabel):
             x_axis.xaxis.set_major_formatter(FixedFormatter([_tick_label(t) for t in ticks]))
 
 
+def slowdown_by_query_chart(tables, path, xlabel):
+    """Dot chart of slowdown factors (log scale) with one panel per category (A: intersection, B: distance) and one
+    column per geometry. The columns share the implementation axis, ordered by the first table, so that the rows can
+    be compared across geometries. Brackets at the right edge of a column join implementations whose typical runtimes
+    cannot be distinguished (tie_with_next with the next slower implementation of that geometry, which is not
+    necessarily the next row).
+
+    tables : list of (title, DataFrame) with the columns category, label, language, slowdown, tie_with_next (see
+        comparisons.speedup_vs_fastest()), one column per table
+    """
+    panels = []
+    for category in CATEGORIES:
+        rows = [table[table["category"] == category] for _, table in tables]
+        order = rows[0].sort_values("slowdown")["label"].tolist()
+        order += sorted(set().union(*(set(r["label"]) for r in rows)) - set(order))
+        panels.append((category, rows, order))
+    row_height = 0.165
+    heights = [len(order) * row_height + 0.45 for _, _, order in panels]
+    with plt.rc_context(STYLE):
+        fig = plt.figure(figsize=(FULL_WIDTH, sum(heights) + 0.5), layout="constrained")
+        subfigs = fig.subfigures(len(panels), 1, height_ratios=heights, hspace=0.04)
+        for letter, subfig, (category, rows, order) in zip("ABCDEFGH", subfigs, panels):
+            subfig.suptitle(f"{letter}  {category}", x=0.0, ha="left", fontsize=PANEL_LABEL_SIZE, fontweight="bold",
+                            color=TEXT)
+            axes = subfig.subplots(1, len(tables), sharey=True, squeeze=False)[0]
+            y = {label: i for i, label in enumerate(order)}
+            for k, (ax, (title, _), table) in enumerate(zip(axes, tables, rows)):
+                for i in range(0, len(order), 2):
+                    ax.axhspan(i - 0.5, i + 0.5, color=GRID, alpha=0.45, linewidth=0, zorder=-1)
+                for row in table.itertuples():
+                    ax.plot(row.slowdown, y[row.label], marker=LANGUAGE_MARKERS[row.language],
+                            color=LANGUAGE_COLORS[row.language], markersize=4, linestyle="")
+                    ax.annotate(_format_factor(row.slowdown), (row.slowdown, y[row.label]), xytext=(4, 0),
+                                textcoords="offset points", va="center", color=TEXT_SECONDARY)
+                for label in sorted(set(order) - set(table["label"])):  # not benchmarked with this geometry
+                    ax.annotate("n/a", (0.02, y[label]), xycoords=("axes fraction", "data"), va="center", color=AXIS)
+                # brackets of ties, moved to the left if they overlap
+                ordered = table.sort_values("slowdown")
+                brackets = []
+                for faster, slower in zip(ordered.itertuples(), ordered.iloc[1:].itertuples()):
+                    if not faster.tie_with_next:
+                        continue
+                    low, high = sorted((y[faster.label], y[slower.label]))
+                    x = 0.98 - 0.04 * sum(1 for l, h in brackets if l <= high and low <= h)
+                    brackets.append((low, high))
+                    ax.plot([x - 0.025, x, x, x - 0.025], [low, low, high, high], transform=ax.get_yaxis_transform(),
+                            color=TEXT_SECONDARY, linewidth=0.9, clip_on=False)
+                ax.axvline(1.0, color=AXIS, linewidth=0.6, zorder=0)
+                ax.set_title(title, loc="left")
+                # the same axis in all columns: 1 to 10^4, with space for the labels of the points
+                _decade_axis(ax, 0.8, 2.5e4, xlabel if k == len(tables) - 1 else "", axis_high=1e4)
+                ax.set_ylim(len(order) - 0.5, -0.5)
+            axes[0].set_yticks(range(len(order)), order)
+        _language_legend(fig, set().union(*(set(t["language"]) for _, t in tables)))
+        _save(fig, path)
+
+
 def _task_medians(long, benchmarks, computer):
     """Runtimes and medians of one benchmark or of several benchmarks together (list)."""
     benchmarks = [benchmarks] if isinstance(benchmarks, str) else benchmarks

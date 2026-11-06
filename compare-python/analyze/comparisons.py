@@ -12,7 +12,7 @@ import pandas as pd
 from algo_metadata import AlgoData, algo_metadata
 from load_results import LINEAR_SUPPORT_SUFFIX, algorithm_columns, format_significant, latex_escape, tasks
 from probability_of_improvement import probability_of_improvement, probability_of_improvement_ci
-from speedup import speedup_ci
+from speedup import speedup, speedup_ci
 
 # (Nesterov-accelerated GJK, vanilla GJK) of the same library
 NESTEROV_PAIRS = [
@@ -108,10 +108,11 @@ def nesterov(df, **kwargs):
 
 
 def speedup_vs_fastest(df, n_resamples=5000, confidence_level=0.95, random_state=None):
-    """Slowdown of every implementation relative to the fastest implementation (lowest typical time) of its category.
+    """Slowdown of every implementation relative to the fastest implementation of its category.
 
     The slowdown of X is the speedup of the fastest implementation over X (geometric mean of T_X / T_fastest, paired,
-    averaged over tasks), e.g., 2 means that X needs twice as long. The fastest implementation has a slowdown of 1.
+    averaged over tasks), e.g., 2 means that X needs twice as long. The fastest implementation is the one with the
+    lowest times in this statistic, so it has a slowdown of 1 and all others have a slowdown of at least 1.
 
     Implementations that are next to each other in the order of slowdown are also compared directly (paired):
     tie_with_next is true if the confidence interval of the speedup of an implementation over the next slower one
@@ -123,14 +124,22 @@ def speedup_vs_fastest(df, n_resamples=5000, confidence_level=0.95, random_state
         group = [a for a in algorithms if algo_metadata[a].category is category]
         if not group:
             continue
+        # The typical time (median) can rank implementations differently than the geometric mean of paired ratios:
+        # start with the lowest typical time and switch to any implementation that is faster in the paired statistic.
+        times = {a: [t[a].to_numpy(dtype=float) for t in task_tables] for a in group}
         fastest = min(group, key=lambda a: typical_time(df, a))
-        times_fastest = [t[fastest].to_numpy(dtype=float) for t in task_tables]
+        for _ in group:
+            faster = {a: speedup(times[a], times[fastest]) for a in group if a != fastest}
+            faster = {a: s for a, s in faster.items() if s > 1.0}
+            if not faster:
+                break
+            fastest = max(faster, key=faster.get)
+        times_fastest = times[fastest]
         for a in group:
             if a == fastest:
                 slowdown = low = high = 1.0
             else:
-                times_a = [t[a].to_numpy(dtype=float) for t in task_tables]
-                slowdown, low, high = speedup_ci(times_fastest, times_a, n_resamples, confidence_level, random_state)
+                slowdown, low, high = speedup_ci(times_fastest, times[a], n_resamples, confidence_level, random_state)
             rows.append({"category": category.value, "algorithm": a, "label": algo_metadata[a].pretty_name,
                          "language": algo_metadata[a].language.value, "fastest": algo_metadata[fastest].pretty_name,
                          "slowdown": slowdown, "ci_low": low, "ci_high": high, "tie_with_next": False})

@@ -17,9 +17,9 @@ Output files:
   violin_mixed_<computer>.pdf: of the mixed benchmarks, see FIGURES and PAPER_VIOLIN_BENCHMARKS
 - comparisons_within_language_<geometry>_<computer>.csv/.tex, comparisons_best_per_language_<geometry>_<computer>.csv/.tex,
   comparisons_variants_<geometry>_<computer>.csv/.tex (linear support), comparisons_nesterov_<geometry>_<computer>.csv/.tex
-- speedup_vs_fastest_<geometry>_<computer>.csv/.tex, speedup_vs_fastest_<computer>.pdf,
-  speedup_vs_fastest_mixed_<computer>.pdf: slowdown of every implementation relative to the fastest one (table with
-  confidence intervals; figure panels: primitives and meshes, mixed in a separate figure)
+- speedup_vs_fastest_<geometry>_<computer>.csv/.tex, speedup_vs_fastest_<computer>.pdf: slowdown of every
+  implementation relative to the fastest one (table with confidence intervals; figure panels: intersection and
+  distance, one column per geometry, see SLOWDOWN_COLUMNS)
 - linear_support_<geometry>_<computer>.csv, linear_support_<computer>.pdf, linear_support_mixed_<computer>.pdf:
   slowdown of the linear support function relative to the logarithmic one
 - effect_sizes_<geometry>_<computer>.pdf: heatmaps of the probability of improvement within each language
@@ -40,6 +40,8 @@ GEOMETRY_TITLES = {"primitives": "Primitives", "mixed": "Mixed", "meshes": "Mesh
 # Figures with one panel per geometry: {file name suffix: geometries}. The panels of a full-width figure are too narrow
 # for three geometries, so the mixed geometry has its own figures.
 FIGURES = {"": ["primitives", "meshes"], "_mixed": ["mixed"]}
+# columns of the slowdown figure (rows are ordered by the first geometry, mixed contains all implementations)
+SLOWDOWN_COLUMNS = ["mixed", "primitives", "meshes"]
 # benchmarks in the violin plots of the paper: primitives (UC1, 2, 5, 6), mixed (TIAGo) and meshes (dual arm)
 PAPER_VIOLIN_BENCHMARKS = {
     "primitives": ["uc1_ur10_collision", "uc2_ur10_collision", "uc5_ur10_collision", "uc6_ur10_collision"],
@@ -142,15 +144,17 @@ def main():
         figures.probability_heatmaps(comparisons.probability_of_improvement_matrices(group),
                                      out(f"effect_sizes_{suffix}.pdf"))
 
-    # slowdown figures with one panel per geometry (see FIGURES)
     for computer, computer_panels in panels.items():
+        # slowdown figure: one panel per query type, one column per geometry
+        slowdown = {geometry: s for geometry, s, _ in computer_panels}
+        figures.slowdown_by_query_chart([(GEOMETRY_TITLES[g], slowdown[g]) for g in SLOWDOWN_COLUMNS if g in slowdown],
+                                        out(f"speedup_vs_fastest_{computer}.pdf"), "Slowdown")
+        # linear support figures with one panel per geometry (see FIGURES)
         for figure, geometries in FIGURES.items():
             figure_panels = [p for geometry in geometries for p in computer_panels if p[0] == geometry]
             if not figure_panels:
                 continue
             titles = [GEOMETRY_TITLES[geometry] for geometry, _, _ in figure_panels]
-            figures.slowdown_chart([s for _, s, _ in figure_panels], out(f"speedup_vs_fastest{figure}_{computer}.pdf"),
-                                   "Slowdown relative to the fastest implementation", titles)
             linear = [(t, l) for t, (_, _, l) in zip(titles, figure_panels) if len(l) > 0]
             if linear:
                 figures.slowdown_chart([l for _, l in linear], out(f"linear_support{figure}_{computer}.pdf"),
