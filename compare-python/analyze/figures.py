@@ -470,7 +470,7 @@ def probability_heatmaps(matrices, path):
             x0 = widths[:c].sum() + left[c]
             y0 = fig_height - heights[:r].sum() - top[r] - cell * n
             ax = fig.add_axes((x0 / fig_width, y0 / fig_height, cell * n / fig_width, cell * n / fig_height))
-            upper = matrix.iloc[:-1, 1:].to_numpy(dtype=float)
+            upper = matrix.iloc[:-1, 1:].to_numpy(dtype=float, copy=True)  # a view would change the matrix
             upper[np.tril_indices(n, -1)] = np.nan
             ax.pcolormesh(np.ma.masked_invalid(upper), cmap=PROBABILITY_CMAP, vmin=0, vmax=1,
                           edgecolors="white", linewidth=1.2)
@@ -490,6 +490,91 @@ def probability_heatmaps(matrices, path):
             fig.text((x0 - 0.04) / fig_width, (y0 + cell * n + 0.06) / fig_height,
                      f"{category}, {language}", ha="right", va="bottom", fontweight="bold", color=TEXT)
         fig.text(0.0, 0.0, "Cell: probability (%) that the row implementation is faster than the column implementation.",
+                 color=TEXT_SECONDARY, va="bottom")
+        _save(fig, path)
+
+
+def probability_heatmaps_by_query(columns, path):
+    """Heatmaps of P(T_row < T_column) with one panel per category (A: intersection, B: distance), one row of heatmaps
+    per language and one column per geometry, as in slowdown_by_query_chart().
+
+    All heatmaps of a row show the implementations in the same order (slowdown in the first column) and only the upper
+    triangle, so that red cells show where a geometry reverses this order. The columns of a heatmap are numbered like
+    its rows (the last implementation is listed below the heatmap). Cells of implementations that were not benchmarked
+    with a geometry are gray.
+
+    columns : list of (title, matrices, slowdown), one column per entry; matrices as returned by
+        comparisons.probability_of_improvement_matrices() and slowdown as returned by comparisons.speedup_vs_fastest()
+    """
+    rows = []  # (category, language, order of the implementations)
+    for category in CATEGORIES:
+        for language in LANGUAGE_COLORS:
+            matrices = [m[(category, language)] for _, m, _ in columns if (category, language) in m]
+            if not matrices:
+                continue
+            labels = set().union(*(set(m.index) for m in matrices))
+            slowdown = columns[0][2]
+            first = slowdown[(slowdown["category"] == category) & (slowdown["language"] == language)]
+            order = [label for label in first.sort_values("slowdown")["label"] if label in labels]
+            rows.append((category, language, order + sorted(labels - set(order))))
+    cell, panel_gap, title_height, number_height = 0.21, 0.25, 0.2, 0.16  # inch
+    label_width = max(_text_width(f"{label}  {i}") for _, _, order in rows for i, label in enumerate(order, 1)) + 0.1
+    column_width = max(len(order) - 1 for _, _, order in rows) * cell + 0.15
+    fig_width = label_width + len(columns) * column_width
+    heights = [title_height + number_height + len(order) * cell + 0.1 for _, _, order in rows]
+    fig_height = sum(heights) + 0.3 * len(CATEGORIES) + panel_gap * (len(CATEGORIES) - 1) + 0.35
+    with plt.rc_context(STYLE):
+        fig = plt.figure(figsize=(fig_width, fig_height))
+        top = fig_height - 0.05
+        previous = None
+        for (category, language, order), height in zip(rows, heights):
+            if category != previous:  # panel title
+                if previous is not None:
+                    top -= panel_gap
+                fig.text(0.0, (top - 0.05) / fig_height, f"{'ABCDEFGH'[CATEGORIES.index(category)]}  {category}",
+                         fontsize=PANEL_LABEL_SIZE, fontweight="bold", color=TEXT, va="top")
+                top -= 0.3
+                previous = category
+            n = len(order) - 1
+            y0 = top - title_height - number_height - n * cell
+            for k, (title, matrices, _) in enumerate(columns):
+                x0 = label_width + k * column_width
+                ax = fig.add_axes((x0 / fig_width, y0 / fig_height, n * cell / fig_width, n * cell / fig_height))
+                matrix = matrices.get((category, language))
+                values = np.full((n, n), np.nan)
+                for i, a in enumerate(order[:-1]):
+                    for j, b in enumerate(order[1:]):
+                        if j >= i and matrix is not None and a in matrix.index and b in matrix.index:
+                            values[i, j] = matrix.loc[a, b]
+                ax.pcolormesh(np.ma.masked_invalid(values), cmap=PROBABILITY_CMAP, vmin=0, vmax=1,
+                              edgecolors="white", linewidth=1.0)
+                for i in range(n):
+                    for j in range(i, n):
+                        value = values[i, j]
+                        if value != value:  # not benchmarked with this geometry
+                            ax.add_patch(plt.Rectangle((j + 0.04, i + 0.04), 0.92, 0.92, facecolor=GRID,
+                                                       edgecolor="none"))
+                        elif 0.01 <= value <= 0.99:  # the full colors need no label, and the cells are narrow
+                            ax.text(j + 0.5, i + 0.5, _format_probability(value), ha="center", va="center",
+                                    color="white" if abs(value - 0.5) > 0.3 else TEXT)
+                ax.set_xlim(0, n)
+                ax.set_ylim(n, 0)
+                ax.xaxis.tick_top()
+                ax.set_xticks(np.arange(n) + 0.5, [str(j) for j in range(2, n + 2)])
+                ax.tick_params(axis="x", length=0, labelcolor=TEXT_SECONDARY, pad=1)
+                ax.set_yticks([])
+                ax.spines["bottom"].set_visible(False)
+                if language == rows[0][1]:
+                    ax.set_title(title, loc="left", pad=12)
+                if k == 0:
+                    for i, label in enumerate(order):  # the last implementation is below the heatmap
+                        fig.text((x0 - 0.06) / fig_width, (y0 + (n - i - 0.5) * cell) / fig_height,
+                                 f"{label}  {i + 1}", ha="right", va="center", color=TEXT)
+                    fig.text((x0 - 0.06) / fig_width, (y0 + n * cell + number_height + 0.02) / fig_height, language,
+                             ha="right", va="bottom", fontweight="bold", color=TEXT_SECONDARY)
+            top -= height
+        fig.text(0.0, 0.0, "Cell (row i, column j): probability (%) that implementation i is faster than "
+                 "implementation j.\nUnlabeled: above 99 % (blue) or below 1 % (red). Gray: not benchmarked.",
                  color=TEXT_SECONDARY, va="bottom")
         _save(fig, path)
 

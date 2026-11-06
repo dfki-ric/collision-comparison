@@ -110,10 +110,11 @@ meshes. The rows are ordered by the mixed benchmark; n/a: not benchmarked with t
 <img src="./doc/results/speedup_vs_fastest_PC1.png" width="800" />
 
 **Probability of improvement** $P(T_{\text{row}} < T_{\text{column}})$ for pairs of implementations of the same
-language and query type: primitives and meshes.
+language and query type: (A) intersection, (B) distance, with the columns mixed, primitives, and meshes. All heatmaps
+of a language show the implementations in the order of the slowdown in the mixed benchmark, so red cells show where
+another benchmark reverses this order.
 
-<img src="./doc/results/effect_sizes_primitives_PC1.png" width="800" />
-<img src="./doc/results/effect_sizes_meshes_PC1.png" width="800" />
+<img src="./doc/results/effect_sizes_PC1.png" width="800" />
 
 **Support function for meshes** on the icosphere benchmark: linear search, hill climbing, and hill climbing from
 cached extreme vertices (as in MuJoCo).

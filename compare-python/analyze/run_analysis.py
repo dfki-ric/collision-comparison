@@ -22,7 +22,8 @@ Output files:
   distance, one column per geometry, see FIGURE_COLUMNS)
 - linear_support_<geometry>_<computer>.csv, linear_support_<computer>.pdf, linear_support_mixed_<computer>.pdf:
   slowdown of the linear support function relative to the logarithmic one
-- effect_sizes_<geometry>_<computer>.pdf: heatmaps of the probability of improvement within each language
+- effect_sizes_<geometry>_<computer>.pdf: heatmaps of the probability of improvement within each language,
+  effect_sizes_<computer>.pdf: of all geometries (panels: intersection and distance, one column per geometry)
 Every figure (.pdf, for LaTeX) is also written as .tif (RGB, 300 dpi) for the submission and as .png (150 dpi) for
 READMEs. Figures are made at their final size (at most 180 mm wide): include them in LaTeX without scaling.
 """
@@ -101,6 +102,7 @@ def main():
     # 6. pairwise comparisons, separately per geometry (primitives, mixed or meshes) and computer
     options = {"n_resamples": args.resamples, "random_state": args.seed}
     panels = {}  # computer -> list of (geometry, slowdown vs. fastest, linear support slowdown)
+    probabilities = {}  # computer -> {geometry: probability of improvement matrices}
     for (geometry, computer), group in comparison_groups(df).items():
         benchmarks = sorted(group["benchmark"].unique())
         print(f"Comparisons for {geometry} on {computer}: {benchmarks}")
@@ -139,14 +141,19 @@ def main():
         linear = comparisons.linear_support_slowdown(variants)
         linear.to_csv(out(f"linear_support_{suffix}.csv"), index=False)
         panels.setdefault(computer, []).append((geometry, slowdown, linear))
-        figures.probability_heatmaps(comparisons.probability_of_improvement_matrices(group),
-                                     out(f"effect_sizes_{suffix}.pdf"))
+        matrices = comparisons.probability_of_improvement_matrices(group)
+        probabilities.setdefault(computer, {})[geometry] = matrices
+        figures.probability_heatmaps(matrices, out(f"effect_sizes_{suffix}.pdf"))
 
     for computer, computer_panels in panels.items():
         # slowdown figure: one panel per query type, one column per geometry
         slowdown = {geometry: s for geometry, s, _ in computer_panels}
         figures.slowdown_by_query_chart([(GEOMETRY_TITLES[g], slowdown[g]) for g in FIGURE_COLUMNS if g in slowdown],
                                         out(f"speedup_vs_fastest_{computer}.pdf"), "Slowdown")
+        # heatmaps of the probability of improvement: as the slowdown figure, ordered by its first column
+        figures.probability_heatmaps_by_query(
+            [(GEOMETRY_TITLES[g], probabilities[computer][g], slowdown[g]) for g in FIGURE_COLUMNS if g in slowdown],
+            out(f"effect_sizes_{computer}.pdf"))
         # linear support figures with one panel per geometry (see FIGURES)
         for figure, geometries in FIGURES.items():
             figure_panels = [p for geometry in geometries for p in computer_panels if p[0] == geometry]
