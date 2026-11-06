@@ -96,8 +96,9 @@ the support function study), HPP-FCL is also shown with cached extremes in the d
 
 <img src="./doc/results/case_statistics.png" width="800" />
 
-**Runtime distributions** per GJK implementation (time per case file, log scale): (A) primitives (use cases 1, 2,
-5, and 6 with UR10 collision environment), (B) meshes (dual-arm scene).
+**Runtime distributions** per GJK implementation (time per case file, log scale): (A) intersection, (B) distance,
+with the columns mixed (TIAGo self-collision), primitives (use cases 1, 2, 5, and 6 with UR10 collision environment),
+and meshes (dual-arm scene). The rows are ordered by the median in the mixed benchmark.
 
 <img src="./doc/results/violin_PC1.png" width="800" />
 

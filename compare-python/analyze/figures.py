@@ -369,6 +369,63 @@ def violin_plot(long, tasks, path, titles=None):
         _save(fig, path)
 
 
+def violin_by_query_plot(long, columns, path):
+    """Runtime distributions (log scale) with one panel per category (A: intersection, B: distance) and one column per
+    geometry, as in slowdown_by_query_chart(). The columns share the implementation axis, ordered by the median in the
+    first column, and the time axis of their panel.
+
+    columns : list of (title, benchmarks, computer), one column per entry; the case files of all benchmarks of a
+        column are shown together
+    """
+    data = [_task_medians(long, benchmarks, computer) for _, benchmarks, computer in columns]
+    panels = []
+    for category in CATEGORIES:
+        medians = [m[m["category"] == category] for _, m in data]
+        order = medians[0].sort_values("time_us")["label"].tolist()
+        order += sorted(set().union(*(set(m["label"]) for m in medians)) - set(order))
+        times = np.log10(np.concatenate([t.loc[t["category"] == category, "time_us"].to_numpy() for t, _ in data]))
+        panels.append((category, order, np.floor(times.min()), np.ceil(times.max())))
+    row_height = 0.165
+    heights = [len(order) * row_height + 0.45 for _, order, _, _ in panels]
+    with plt.rc_context(STYLE):
+        fig = plt.figure(figsize=(FULL_WIDTH, sum(heights) + 0.5), layout="constrained")
+        subfigs = fig.subfigures(len(panels), 1, height_ratios=heights, hspace=0.04)
+        for letter, subfig, (category, order, low, high) in zip("ABCDEFGH", subfigs, panels):
+            subfig.suptitle(f"{letter}  {category}", x=0.0, ha="left", fontsize=PANEL_LABEL_SIZE, fontweight="bold",
+                            color=TEXT)
+            axes = subfig.subplots(1, len(columns), sharey=True, squeeze=False)[0]
+            y = {label: i for i, label in enumerate(order)}
+            for k, (ax, (title, _, _), (task, medians)) in enumerate(zip(axes, columns, data)):
+                for i in range(0, len(order), 2):
+                    ax.axhspan(i - 0.5, i + 0.5, color=GRID, alpha=0.45, linewidth=0, zorder=-1)
+                rows = medians[medians["category"] == category]
+                positions = [y[label] for label in rows["label"]]
+                times = [np.log10(task.loc[task["algorithm"] == a, "time_us"].to_numpy()) for a in rows["algorithm"]]
+                parts = ax.violinplot(times, positions=positions, vert=False, widths=0.85, showextrema=False)
+                for body, language in zip(parts["bodies"], rows["language"]):
+                    body.set_facecolor(LANGUAGE_COLORS[language])
+                    body.set_edgecolor("none")
+                    body.set_alpha(0.75)
+                ax.plot(np.log10(rows["time_us"]), positions, linestyle="", marker="|", markersize=6,
+                        markeredgewidth=1.2, color="white")
+                for label in sorted(set(order) - set(rows["label"])):  # not benchmarked with this geometry
+                    ax.annotate("n/a", (0.02, y[label]), xycoords=("axes fraction", "data"), va="center", color=AXIS)
+                ax.set_title(title, loc="left")
+                # every second decade: the columns are too narrow for a label at every decade
+                ticks = [t for t in _decade_ticks(low, high) if t % 2 == 0]
+                ax.xaxis.set_major_locator(FixedLocator(ticks))
+                ax.xaxis.set_minor_locator(
+                    FixedLocator(np.log10(np.outer(10.0 ** np.arange(low, high), np.arange(1, 10)).ravel())))
+                ax.set_xticklabels([_tick_label(t) for t in ticks])
+                ax.set_xlim(low, high)
+                if k == len(columns) - 1:
+                    ax.set_xlabel("Time per case file [µs] (white: median)", loc="right")
+                ax.set_ylim(len(order) - 0.5, -0.5)
+            axes[0].set_yticks(range(len(order)), order)
+        _language_legend(fig, set().union(*(set(m["language"]) for _, m in data)))
+        _save(fig, path)
+
+
 def _format_probability(value):
     """Probability in percent without decimals (fits into a heatmap cell at 8 pt); 100 and 0 only for exact values."""
     text = f"{100.0 * value:.0f}"
