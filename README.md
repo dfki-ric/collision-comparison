@@ -96,6 +96,11 @@ the support function study), HPP-FCL is also shown with cached extremes in the d
 
 <img src="./doc/results/case_statistics.png" width="800" />
 
+**Support function for meshes** on the icosphere benchmark: linear search, hill climbing, and hill climbing from
+cached extreme vertices (as in MuJoCo).
+
+<img src="./doc/results/support_study.png" width="800" />
+
 **Runtime distributions** per GJK implementation (time per case file, log scale): (A) intersection, (B) distance,
 with the columns mixed (TIAGo self-collision), primitives (use cases 1, 2, 5, and 6 with UR10 collision environment),
 and meshes (dual-arm scene). The rows are ordered by the median in the mixed benchmark.
@@ -115,11 +120,6 @@ of a language show the implementations in the order of the slowdown in the mixed
 another benchmark reverses this order.
 
 <img src="./doc/results/effect_sizes_PC1.png" width="800" />
-
-**Support function for meshes** on the icosphere benchmark: linear search, hill climbing, and hill climbing from
-cached extreme vertices (as in MuJoCo).
-
-<img src="./doc/results/support_study.png" width="800" />
 
 ### How many case files are done?
 Number of finished case files per dataset:
