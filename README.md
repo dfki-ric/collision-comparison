@@ -101,8 +101,10 @@ the support function study), HPP-FCL is also shown with cached extremes in the d
 
 <img src="./doc/results/violin_PC1.png" width="800" />
 
-**Slowdown relative to the fastest implementation** of the same query type (geometric mean of the paired ratios
-with 95 % bootstrap confidence intervals): (A) primitives, (B) meshes.
+**Slowdown relative to the fastest implementation** of the same query type (geometric mean of the paired ratios;
+brackets join implementations whose 95 % bootstrap confidence interval of the paired speedup includes 1):
+(A) intersection, (B) distance, with the columns mixed (TIAGo self-collision, PC1, 2026-11-06), primitives, and
+meshes. The rows are ordered by the mixed benchmark; n/a: not benchmarked with this geometry.
 
 <img src="./doc/results/speedup_vs_fastest_PC1.png" width="800" />
 
