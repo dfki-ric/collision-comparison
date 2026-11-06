@@ -4,8 +4,8 @@ Usage (from compare-python/analyze):
     python run_analysis.py CSV [CSV ...] [--results-dir ../../results] [--output analysis_output]
 
 Every CSV file (written by compile_csv_from_results.py) contains the results of one benchmark on one computer, which
-is one task. The comparisons are computed separately for each geometry (primitive or mesh benchmarks, see
-BENCHMARK_GEOMETRY in load_results.py) and computer, and averaged over the tasks of the group with equal weight.
+is one task. The comparisons are computed separately for each geometry (primitive, mixed or mesh benchmarks,
+see BENCHMARK_GEOMETRY in load_results.py) and computer, and averaged over the tasks of the group with equal weight.
 
 Output files:
 - data_quality_missing.csv, data_quality_overhead.csv, data_quality_lag.csv: data-quality checks
@@ -13,13 +13,15 @@ Output files:
 - data_quality_first_run.csv/.pdf: first-run effect (only with --results-dir)
 - summary.csv, summary_<benchmark>_<computer>.tex: median, quartiles, upper percentiles and maximum
 - violin_<benchmark>_<computer>.pdf: runtime distributions
-- violin_<computer>.pdf: runtime distributions of the primitive (A) and the mesh benchmarks (B), see PAPER_VIOLIN_PANELS
+- violin_<computer>.pdf: runtime distributions of the primitive (A) and the mesh benchmarks (B),
+  violin_mixed_<computer>.pdf: of the mixed benchmarks, see FIGURES and PAPER_VIOLIN_BENCHMARKS
 - comparisons_within_language_<geometry>_<computer>.csv/.tex, comparisons_best_per_language_<geometry>_<computer>.csv/.tex,
   comparisons_variants_<geometry>_<computer>.csv/.tex (linear support), comparisons_nesterov_<geometry>_<computer>.csv/.tex
-- speedup_vs_fastest_<geometry>_<computer>.csv/.tex, speedup_vs_fastest_<computer>.pdf: slowdown of every
-  implementation relative to the fastest one (table with confidence intervals; figure panels: primitives, meshes)
-- linear_support_<geometry>_<computer>.csv, linear_support_<computer>.pdf: slowdown of the linear support function
-  relative to the logarithmic one (panels: primitives, meshes)
+- speedup_vs_fastest_<geometry>_<computer>.csv/.tex, speedup_vs_fastest_<computer>.pdf,
+  speedup_vs_fastest_mixed_<computer>.pdf: slowdown of every implementation relative to the fastest one (table with
+  confidence intervals; figure panels: primitives and meshes, mixed in a separate figure)
+- linear_support_<geometry>_<computer>.csv, linear_support_<computer>.pdf, linear_support_mixed_<computer>.pdf:
+  slowdown of the linear support function relative to the logarithmic one
 - effect_sizes_<geometry>_<computer>.pdf: heatmaps of the probability of improvement within each language
 Every figure (.pdf, for LaTeX) is also written as .tif (RGB, 300 dpi) for the submission and as .png (150 dpi) for
 READMEs. Figures are made at their final size (at most 180 mm wide): include them in LaTeX without scaling.
@@ -34,13 +36,16 @@ import comparisons
 import figures
 from load_results import load_results, tasks, comparison_groups, to_long
 
-GEOMETRY_TITLES = {"primitives": "Primitives", "meshes": "Meshes"}
-# panels of the violin plot in the paper: title and benchmarks, primitives (A: UC1, 2, 5, 6) and meshes (B: dual arm)
-PAPER_VIOLIN_PANELS = [
-    (GEOMETRY_TITLES["primitives"],
-     ["uc1_ur10_collision", "uc2_ur10_collision", "uc5_ur10_collision", "uc6_ur10_collision"]),
-    (GEOMETRY_TITLES["meshes"], ["complex_env_dual_arm_collision"]),
-]
+GEOMETRY_TITLES = {"primitives": "Primitives", "mixed": "Mixed", "meshes": "Meshes"}
+# Figures with one panel per geometry: {file name suffix: geometries}. The panels of a full-width figure are too narrow
+# for three geometries, so the mixed geometry has its own figures.
+FIGURES = {"": ["primitives", "meshes"], "_mixed": ["mixed"]}
+# benchmarks in the violin plots of the paper: primitives (UC1, 2, 5, 6), mixed (TIAGo) and meshes (dual arm)
+PAPER_VIOLIN_BENCHMARKS = {
+    "primitives": ["uc1_ur10_collision", "uc2_ur10_collision", "uc5_ur10_collision", "uc6_ur10_collision"],
+    "mixed": ["tiago_self_collision"],
+    "meshes": ["complex_env_dual_arm_collision"],
+}
 
 
 def main():
@@ -83,15 +88,17 @@ def main():
                                                  f"tab:summary-{benchmark.replace('_', '-')}-{computer}"))
 
     for computer in sorted(df["computer"].unique()):
-        # panels with the benchmarks that exist on this computer
-        panels = [(title, [b for b in benchmarks if (b, computer) in tasks(df)])
-                  for title, benchmarks in PAPER_VIOLIN_PANELS]
-        panels = [(title, benchmarks) for title, benchmarks in panels if benchmarks]
-        if panels:
-            figures.violin_plot(long, [(benchmarks, computer) for _, benchmarks in panels],
-                                out(f"violin_{computer}.pdf"), titles=[title for title, _ in panels])
+        for figure, geometries in FIGURES.items():
+            # panels with the benchmarks that exist on this computer
+            panels = [(GEOMETRY_TITLES[geometry],
+                       [b for b in PAPER_VIOLIN_BENCHMARKS[geometry] if (b, computer) in tasks(df)])
+                      for geometry in geometries]
+            panels = [(title, benchmarks) for title, benchmarks in panels if benchmarks]
+            if panels:
+                figures.violin_plot(long, [(benchmarks, computer) for _, benchmarks in panels],
+                                    out(f"violin{figure}_{computer}.pdf"), titles=[title for title, _ in panels])
 
-    # 6. pairwise comparisons, separately per geometry (primitives or meshes) and computer
+    # 6. pairwise comparisons, separately per geometry (primitives, mixed or meshes) and computer
     options = {"n_resamples": args.resamples, "random_state": args.seed}
     panels = {}  # computer -> list of (geometry, slowdown vs. fastest, linear support slowdown)
     for (geometry, computer), group in comparison_groups(df).items():
@@ -135,16 +142,19 @@ def main():
         figures.probability_heatmaps(comparisons.probability_of_improvement_matrices(group),
                                      out(f"effect_sizes_{suffix}.pdf"))
 
-    # slowdown figures with one panel per geometry (primitives first)
+    # slowdown figures with one panel per geometry (see FIGURES)
     for computer, computer_panels in panels.items():
-        computer_panels.sort(key=lambda p: list(GEOMETRY_TITLES).index(p[0]))
-        titles = [GEOMETRY_TITLES[geometry] for geometry, _, _ in computer_panels]
-        figures.slowdown_chart([s for _, s, _ in computer_panels], out(f"speedup_vs_fastest_{computer}.pdf"),
-                               "Slowdown relative to the fastest implementation", titles)
-        linear = [(t, l) for t, (_, _, l) in zip(titles, computer_panels) if len(l) > 0]
-        if linear:
-            figures.slowdown_chart([l for _, l in linear], out(f"linear_support_{computer}.pdf"),
-                                   "Slowdown of the linear support function", [t for t, _ in linear])
+        for figure, geometries in FIGURES.items():
+            figure_panels = [p for geometry in geometries for p in computer_panels if p[0] == geometry]
+            if not figure_panels:
+                continue
+            titles = [GEOMETRY_TITLES[geometry] for geometry, _, _ in figure_panels]
+            figures.slowdown_chart([s for _, s, _ in figure_panels], out(f"speedup_vs_fastest{figure}_{computer}.pdf"),
+                                   "Slowdown relative to the fastest implementation", titles)
+            linear = [(t, l) for t, (_, _, l) in zip(titles, figure_panels) if len(l) > 0]
+            if linear:
+                figures.slowdown_chart([l for _, l in linear], out(f"linear_support{figure}_{computer}.pdf"),
+                                       "Slowdown of the linear support function", [t for t, _ in linear])
     print(f"Results written to {args.output}")
 
 

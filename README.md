@@ -63,7 +63,7 @@ cd ..
 ```
 
 ### 5. Run the benchmarks
-Run all benchmarks of the paper (about 6 hours on an Intel i7-10700KF). The script runs the setup, all benchmarks,
+Run all benchmarks of the paper (about 7.5 hours on an Intel i7-10700KF). The script runs the setup, all benchmarks,
 and compiles the results into CSV files. The benchmarks that are not part of the paper (dual-arm scene with at most
 256 vertices and the icosphere benchmarks) are commented out in the script:
 ```bash
@@ -137,7 +137,8 @@ python run_analysis.py ../../<dataset>_<computer>_<timestamp>.csv [...] --result
 ```
 Each CSV file is one task (one benchmark on one computer). CSV files of the same task from separate runs with
 different implementations are merged by case file. The comparisons are computed separately for primitive
-benchmarks (UR10 use cases) and mesh benchmarks (dual-arm scene, icospheres) and for each computer, and averaged over
+benchmarks (UR10 use cases), mixed benchmarks with primitives and meshes (TIAGo self-collision), and mesh benchmarks
+(dual-arm scene, icospheres) and for each computer, and averaged over
 the tasks of each group. `--results-dir` is only needed to check the warm-up with
 the individual measured runs. See `python run_analysis.py --help` for the output files.
 

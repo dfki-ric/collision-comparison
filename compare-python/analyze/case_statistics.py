@@ -25,11 +25,11 @@ from figures import AXIS, FULL_WIDTH, PANEL_LABEL_SIZE, STYLE, TEXT, TEXT_SECOND
 from load_results import BENCHMARK_GEOMETRY, benchmark_label, format_significant, latex_escape
 
 PAPER_BENCHMARKS = ["uc1_ur10_collision", "uc2_ur10_collision", "uc5_ur10_collision", "uc6_ur10_collision",
-                    "complex_env_dual_arm_collision"]
+                    "tiago_self_collision", "complex_env_dual_arm_collision"]
 # shape pairs in the order of the table columns (abbreviation, sorted shape types)
 SHAPE_PAIRS = {"B–B": ("Box", "Box"), "B–C": ("Box", "Cylinder"), "B–S": ("Box", "Sphere"),
                "C–C": ("Cylinder", "Cylinder"), "C–S": ("Cylinder", "Sphere"), "S–S": ("Sphere", "Sphere"),
-               "M–M": ("Mesh", "Mesh")}
+               "B–M": ("Box", "Mesh"), "C–M": ("Cylinder", "Mesh"), "M–S": ("Mesh", "Sphere"), "M–M": ("Mesh", "Mesh")}
 SHAPE_NAMES = {"B": "box", "C": "cylinder", "S": "sphere", "M": "mesh"}
 VIOLIN_COLOR = "#a9a8a2"
 

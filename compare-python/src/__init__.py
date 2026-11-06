@@ -11,6 +11,7 @@ from .load_uc6 import get_uc6_bvh
 from .load_complex_env import get_complex_env_bvh
 from .load_ur10 import get_ur10_tm, get_u10_bvh_complex, get_ur10_bvh_from_tm
 from .load_dual_arm import get_dual_arm_tm, get_dual_arm_bvh_from_tm
+from .load_tiago import get_tiago_tm, get_tiago_bvh_from_tm, get_tiago_disabled_link_pairs, collider_link
 from .test_file import write_test_file, load_test_file
 
 uc1_ur10_offset = np.eye(4)
@@ -34,5 +35,7 @@ complex_env_dual_arm_offset[:3, 3] = np.array([0, 0, 0])
 def set_random_joints(tm):
     for joint in tm._joints:
         limits = tm.get_joint_limits(joint)
+        if not np.all(np.isfinite(limits)):  # continuous joints, e.g., wheels
+            continue
         joint_pos = round(random.uniform(limits[0], limits[1]), 2)
         tm.set_joint(joint, joint_pos)

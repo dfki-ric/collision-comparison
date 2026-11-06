@@ -15,12 +15,14 @@ import pandas as pd
 from algo_metadata import algo_metadata
 
 METADATA_COLUMNS = ["file", "benchmark", "computer", "n_checks", "reference_distance", "n_faces", "target_distance"]
-# Geometry of each benchmark: primitive and mesh benchmarks are never aggregated in one comparison.
+# Geometry of each benchmark: primitive benchmarks, mixed benchmarks (primitives and meshes) and mesh benchmarks are
+# never aggregated in one comparison.
 BENCHMARK_GEOMETRY = {
     "uc1_ur10_collision": "primitives",
     "uc2_ur10_collision": "primitives",
     "uc5_ur10_collision": "primitives",
     "uc6_ur10_collision": "primitives",
+    "tiago_self_collision": "mixed",
     "complex_env_dual_arm_collision": "meshes",
     "complex_env_dual_arm_collision_max256verts": "meshes",
     "icospheres_of_different_vertex_counts": "meshes",
@@ -39,6 +41,7 @@ BENCHMARK_LABELS = {
     "uc2_ur10_collision": "UC2",
     "uc5_ur10_collision": "UC5",
     "uc6_ur10_collision": "UC6",
+    "tiago_self_collision": "TIAGo",
     "complex_env_dual_arm_collision": "Dual arm",
     "complex_env_dual_arm_collision_max256verts": "Dual arm (256 vert.)",
     "icospheres_of_different_vertex_counts": "Icospheres",
@@ -125,7 +128,7 @@ def tasks(df):
 
 def comparison_groups(df):
     """Groups of tasks that are aggregated in comparisons, i.e., per geometry and computer:
-    {(geometry, computer): table}. Primitive and mesh benchmarks, and different computers, are never aggregated."""
+    {(geometry, computer): table}. Benchmarks of different geometries and different computers are never aggregated."""
     geometry = df["benchmark"].map(BENCHMARK_GEOMETRY)
     return {key: group for key, group in df.groupby([geometry, df["computer"]], sort=True)}
 

@@ -14,6 +14,12 @@ Parts of this repository are third-party code under their own licenses:
 * compare-cpp/cmake/ is a copy of jrl-cmakemodules
   (https://github.com/jrl-umi3218/jrl-cmakemodules), GNU Lesser General Public
   License (compare-cpp/cmake/LICENSE).
+* data/urdfs/tiago/ is derived from the TIAGo model of PAL Robotics
+  (https://github.com/pal-robotics/tiago_robot, via
+  https://github.com/Gepetto/example-robot-data) and from
+  https://github.com/pal-robotics/tiago_moveit_config, Apache License 2.0
+  (data/urdfs/tiago/LICENSE). The generated case files of
+  data/tiago_self_collision.zip contain its collision meshes.
 
 All other code is licensed under the 3-clause BSD license:
 
