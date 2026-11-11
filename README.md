@@ -1,5 +1,5 @@
 
-# Benchmarking Convex-Convex Collision Detection for Robotics
+# Benchmarking Convex-Convex Collision Detection for Robotics: Implementation Matters More Than the Algorithm
 
 Thilo Umland $^1$,
 Maarten Behn $^2$,
@@ -10,11 +10,14 @@ $^1$ Robotics Research Group, University of Bremen, Bremen, Germany
 $^2$ Robotics Innovation Center, German Research Center for Artificial Intelligence (DFKI GmbH), Bremen, Germany
 
 ## Abstract
-Collision detection and distance calculation is needed in simulation, planning, and control.
-In particular, Gilbert-Johnson-Keerthi (GJK) and its variations are widely used.
-We are interested in the question of how programming language, algorithm engineering, and implementation tricks influence its performance.
-We develop a benchmark that resembles how GJK is used in a highly optimized collision detection pipeline for an arm with an anthropomorphic hand and compare the performance of commonly used implementations of GJK.
-We analyze not just the moments of the distribution of runtimes, but the whole distribution, which is relevant for real-time applications.
+Robots need collision detection and distance computation between convex shapes in simulation, motion planning, and control, often thousands of times per control cycle. Most robotics libraries rely on the Gilbert-Johnson-Keerthi algorithm, and new variants such as Nesterov acceleration promise faster queries. However, these variants are evaluated on synthetic shapes, and it remains unclear how much the algorithm actually matters compared to the programming language, the support function of the shapes, and the implementation.
+We benchmark twelve widely used and new implementations in C, C++, Rust, and Python on collision queries from realistic robot applications: four industrial use cases with primitive shapes as colliders, a dual-arm scene with YCB object meshes, and a self-collision test for a robot with primitives and meshes in its collision model.
+We compare the full runtime distributions on identical queries instead of average runtimes, which matters for real-time applications.
+Of these factors, the algorithm matters least. Python implementations are drastically slower than the fastest compiled ones, while C++ and Rust implementations perform similarly.
+On detailed meshes, a support mapping with hill climbing from cached extreme vertices is crucial and shortens particularly the tail of the runtime distribution.
+On primitives, almost all compiled implementations stay within a factor of three of the fastest. Nesterov acceleration is 1.17 times faster for intersection tests on the mixed benchmark.
+Algorithm variants change the runtime by at most about a factor of two.
+Developers of robot software should therefore choose collision libraries by the quality of their implementation and support functions rather than by the algorithm, and our open benchmark lets algorithm designers test new variants under realistic conditions.
 
 <img src="./doc/usecases.png" width="800" />
 
@@ -88,8 +91,8 @@ The analysis merges the CSV files of the same benchmark and computer (see below)
 
 ## Results
 Results on PC1 (2026-11-01), as in the paper. libccd and OpenGJK use an adaptive support function for meshes (see
-the support function study), HPP-FCL is also shown with cached extremes in the dual-arm scene
-([extremes]). The figures are written by `compare-python/analyze/run_analysis.py`,
+the support function study), HPP-FCL is also shown with cached extremes in the dual-arm and TIAGo scenes.
+The figures are written by `compare-python/analyze/run_analysis.py`,
 `support_study.py`, and `case_statistics.py`.
 
 **Benchmark data:** pairs per case file, share of intersecting pairs, and distance of separated pairs.
@@ -145,6 +148,20 @@ benchmarks (UR10 use cases), mixed benchmarks with primitives and meshes (TIAGo 
 (dual-arm scene, icospheres) and for each computer, and averaged over
 the tasks of each group. `--results-dir` is only needed to check the warm-up with
 the individual measured runs. See `python run_analysis.py --help` for the output files.
+
+## Citation
+
+If you use this benchmark, please cite:
+
+```bibtex
+@article{Umland2026,
+  title   = {Benchmarking Convex-Convex Collision Detection for Robotics: Implementation Matters More Than the Algorithm},
+  author  = {Umland, Thilo and Behn, Maarten and Fabisch, Alexander},
+  journal = {TODO},
+  year    = {2026},
+  doi     = {TODO}
+}
+```
 
 ## License
 
