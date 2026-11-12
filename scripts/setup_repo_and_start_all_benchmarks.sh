@@ -1,5 +1,4 @@
 #!/bin/bash
-source ~/.bashrc
 
 source /opt/miniconda/bin/activate collision_env
 

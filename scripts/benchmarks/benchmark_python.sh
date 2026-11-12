@@ -1,7 +1,6 @@
 #!/bin/bash
-export PYTHONPATH="${PYTHONPATH}:collision-comparison/compare-python" 
+export PYTHONPATH="${PYTHONPATH}:$(pwd)/compare-python"
 
-source ~/.bashrc
 
 source /opt/miniconda/bin/activate collision_env
 

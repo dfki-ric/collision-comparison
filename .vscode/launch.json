@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": false,
-      "cwd": "/home/stroby/dev/collision-comparison/compare",
-      "program": "/home/stroby/dev/collision-comparison/compare/build/Debug/outDebug",
+      "cwd": "${workspaceFolder}",
+      "program": "${workspaceFolder}/compare-cpp/build_release/compare",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
