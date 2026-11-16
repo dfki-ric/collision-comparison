@@ -18,7 +18,7 @@
 #   BENCHMARK_FILTER     regular expression: only C++ and Rust benchmarks whose name matches it are run
 #                        (e.g., "^FCL original"; default: all)
 #   RESULTS_DIR          directory of the results (default: results); use a new one for a partial run
-#   BENCHMARK_CORE       CPU core to which the C++ and Rust benchmarks are pinned (default: 2)
+#   BENCHMARK_CORE       CPU core to which the benchmarks are pinned (default: 2)
 # Example: BENCHMARK_LANGUAGES=cpp BENCHMARK_FILTER="^FCL original" RESULTS_DIR=results_fcl \
 #              bash scripts/benchmarks/benchmark_dataset.sh uc1_ur10_collision 1 1000
 

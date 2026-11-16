@@ -27,6 +27,18 @@ Developers of robot software should therefore choose collision libraries by the 
 - [compare-python/README](./compare-python/README.md)
 - [scripts/README](./scripts/README.md)
 
+## Run all benchmarks of the paper
+
+From the root of the repository (Docker may need `sudo`):
+```bash
+bash scripts/run_all_benchmarks_docker.sh PC1
+```
+Replace `PC1` with a name for the computer: it is stored with the results. The script builds the Docker image if
+needed, then sets up the repository and runs all benchmarks of the paper in a container in the background, pinned to
+one CPU core with high priority (see the script for options). This takes about 8 to 10 hours; the computer should be
+idle meanwhile. Progress: `run_all_benchmarks.log` and `load.log`; results: `results/` and one CSV per benchmark in the
+root of the repository. The steps are described in detail below.
+
 ## Setup with Docker
 
 The Docker image contains the system packages, Rust, and the conda environment `collision_env` with the Python

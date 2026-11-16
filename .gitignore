@@ -32,3 +32,6 @@ compare-python/pybullet_result.json
 compare-cpp/cpp_result.json
 
 data/current.json
+# logs of scripts/run_all_benchmarks_docker.sh
+run_all_benchmarks.log
+load.log
