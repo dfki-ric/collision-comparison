@@ -1,0 +1,41 @@
+diff -ru a/include/coal/shape/geometric_shapes.h b/include/coal/shape/geometric_shapes.h
+--- a/include/coal/shape/geometric_shapes.h
++++ b/include/coal/shape/geometric_shapes.h
+@@ -862,6 +862,14 @@
+   /// @brief Support warm start polytopes.
+   SupportWarmStartPolytope support_warm_starts;
+ 
++  /// @brief Cached extremes for the hill climbing (as in MuJoCo): the vertex
++  /// with the largest dot product with each direction (cx, cy, cz) in
++  /// {-1, 0, 1}^3, index 9 (cx + 1) + 3 (cy + 1) + (cz + 1). The hill climbing
++  /// starts at the cached extreme of the grid cell of the search direction if
++  /// use_extrema is set and it is better than the hint (filled by the user).
++  bool use_extrema = false;
++  int extrema[27] = {};
++
+  protected:
+   /// @brief Construct an uninitialized convex object
+   /// Initialization is done with ConvexBase::initialize.
+diff -ru a/src/narrowphase/support_functions.cpp b/src/narrowphase/support_functions.cpp
+--- a/src/narrowphase/support_functions.cpp
++++ b/src/narrowphase/support_functions.cpp
+@@ -336,6 +336,19 @@
+   if (hint < 0 || hint >= (int)convex->num_points) {
+     hint = 0;
+   }
++  if (convex->use_extrema) {
++    // as in MuJoCo: start at the cached extreme vertex of the grid cell of the
++    // direction (each component of the normalized direction is mapped to -1, 0,
++    // or 1 with the threshold 0.4) if it is better than the hint
++    const Scalar threshold = Scalar(0.4) * dir.norm();
++    int cell = 0;
++    for (int k = 0; k < 3; ++k)
++      cell = 3 * cell + (dir[k] > threshold) - (dir[k] < -threshold) + 1;
++    const int extreme = convex->extrema[cell];
++    if (pts[static_cast<size_t>(extreme)].dot(dir) >
++        pts[static_cast<size_t>(hint)].dot(dir))
++      hint = extreme;
++  }
+   Scalar maxdot = pts[static_cast<size_t>(hint)].dot(dir);
+   std::vector<int8_t>& visited = support_data.visited;
+   if (support_data.visited.size() == convex->num_points) {

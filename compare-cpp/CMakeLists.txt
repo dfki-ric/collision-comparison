@@ -5,8 +5,8 @@ set_property(GLOBAL PROPERTY CXX_STANDARD 20)
 
 SET(BUILD_PYTHON_INTERFACE OFF)
 
-# Optimizations for all C++ code built here (benchmark, HPP-FCL, Bullet): instructions of the host CPU, fast math,
-# link-time optimization, and direct calls within the shared library of HPP-FCL
+# Optimizations for all C++ code built here (benchmark, Coal, Bullet): instructions of the host CPU, fast math,
+# link-time optimization, and direct calls within the shared library of Coal
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native -ffast-math -flto=auto -fno-semantic-interposition")
 
 add_executable(compare
@@ -16,7 +16,6 @@ add_executable(compare
         fcl_original.cpp
         mujoco.cpp
         bullet.cpp
-        utility.cpp
         collider.cpp
         libccd.cpp
         openGJK.cpp
@@ -42,14 +41,22 @@ include_directories(${CMAKE_SOURCE_DIR}/../JoltPhysics)
 target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../JoltPhysics/Build/Linux_Distribution/libJolt.so)
 target_compile_definitions(compare PRIVATE JPH_SHARED_LIBRARY)
 
-# FCL
+# Coal (formerly HPP-FCL)
 find_package (Eigen3 REQUIRED NO_MODULE)
 target_link_libraries (compare Eigen3::Eigen)
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/../hpp-fcl ${CMAKE_BINARY_DIR}/hpp-fcl)
-include_directories(${CMAKE_SOURCE_DIR}/../hpp-fcl/include)
-include_directories(${CMAKE_BINARY_DIR}/hpp-fcl/include)
-target_link_libraries(compare ${CMAKE_BINARY_DIR}/hpp-fcl/src/libhpp-fcl.so)
+add_subdirectory(${CMAKE_SOURCE_DIR}/../coal ${CMAKE_BINARY_DIR}/coal)
+target_link_libraries(compare coal::coal)
+
+# the HPP-FCL fork of the earlier runs (for the comparison with Coal), built separately by scripts/repo_setup.sh (it
+# cannot be built together with Coal: both define the same targets). Its wrapper is a separate library, so that it
+# does not see the HPP-FCL compatibility headers of Coal.
+add_library(hppfcl_wrapper STATIC hppfcl.cpp)
+target_include_directories(hppfcl_wrapper PRIVATE ${CMAKE_SOURCE_DIR}/../hpp-fcl/include
+                                                  ${CMAKE_SOURCE_DIR}/../hpp-fcl/build/include)
+target_link_libraries(hppfcl_wrapper PUBLIC Eigen3::Eigen ${CMAKE_SOURCE_DIR}/../hpp-fcl/build/src/libhpp-fcl.so)
+target_include_directories(compare PRIVATE ${CMAKE_SOURCE_DIR}/../hpp-fcl/include ${CMAKE_SOURCE_DIR}/../hpp-fcl/build/include)
+target_link_libraries(compare hppfcl_wrapper)
 
 # Bullet3 in double precision, like the other libraries (the benchmark must use the same precision as the library)
 set(USE_DOUBLE_PRECISION ON CACHE BOOL "Use double precision" FORCE)
@@ -79,7 +86,7 @@ include_directories(${CMAKE_SOURCE_DIR}/../libccd/src)
 target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../libccd/build/src/libccd.so)
 
 # FCL (the original, with its own GJK), static library built by scripts/repo_setup.sh (it cannot be built together
-# with HPP-FCL: both define the target "uninstall")
+# with Coal: both define the target "uninstall")
 include_directories(${CMAKE_SOURCE_DIR}/../fcl/include)
 include_directories(${CMAKE_SOURCE_DIR}/../fcl/build/include)
 target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../fcl/build/lib/libfcl.a)

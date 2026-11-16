@@ -1,52 +1,47 @@
-
 #pragma once
 
-#include "collider.h"
-#include "hpp/fcl/serialization/convex.h"
+// Coal (formerly HPP-FCL, https://github.com/coal-library/coal, devel branch pinned in scripts/repo_setup.sh): GJK with the
+// variants of Montaut et al.: vanilla GJK, Nesterov acceleration (RSS 2022) with and without normalized support
+// directions, and Polyak acceleration (GJK++, T-RO 2024).
 
-#include <hpp/fcl/shape/geometric_shapes.h>
-#include <hpp/fcl/narrowphase/narrowphase.h>
+#include "collider.h"
+
+#include <coal/narrowphase/gjk.h>
+#include <coal/narrowphase/minkowski_difference.h>
+#include <coal/shape/convex.h>
+#include <coal/shape/geometric_shapes.h>
 
 using compare::Base::Collider;
 using compare::Base::Case;
 using compare::Base::SupportMode;
 
-using hpp::fcl::Box;
-using hpp::fcl::Capsule;
-using hpp::fcl::Sphere;
-using hpp::fcl::Cylinder;
-using hpp::fcl::Transform3f;
-using hpp::fcl::Triangle;
-using hpp::fcl::Convex;
-using hpp::fcl::ShapeBase;
-
-using hpp::fcl::Vec3f;
-using hpp::fcl::Triangle;
-
-using hpp::fcl::details::MinkowskiDiff;
-
 namespace compare::FCL {
     struct FCLCollider {
-        Vec3f* vertices;
-        Triangle* triangles;
-
-        ShapeBase* shape;
+        coal::ShapeBase* shape;
     };
 
     struct FCLCase{
         FCLCollider collider0;
         FCLCollider collider1;
 
-        MinkowskiDiff mink_diff;
+        coal::details::MinkowskiDiff mink_diff;
     };
 
-
     void get_cases(Case* base_cases, FCLCase* fcl_cases, int length, SupportMode support_mode);
+
+    // vanilla GJK
+    float get_distance_default(FCLCase& fcl_case);
+    bool get_intersection_default(FCLCase& fcl_case);
+
+    // Nesterov acceleration without normalized support directions (Montaut et al., RSS 2022)
     float get_distance_nesterov(FCLCase& fcl_case);
     bool get_intersection_nesterov(FCLCase& fcl_case);
 
-    float get_distance_default(FCLCase& fcl_case);
-    bool get_intersection_default(FCLCase& fcl_case);
+    // Nesterov acceleration with normalized support directions (Montaut et al., T-RO 2024, Alg. 7)
+    float get_distance_nesterov_normalized(FCLCase& fcl_case);
+    bool get_intersection_nesterov_normalized(FCLCase& fcl_case);
+
+    // Polyak acceleration (Montaut et al., T-RO 2024)
+    float get_distance_polyak(FCLCase& fcl_case);
+    bool get_intersection_polyak(FCLCase& fcl_case);
 }
-
-

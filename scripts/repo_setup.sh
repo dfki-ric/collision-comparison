@@ -67,8 +67,19 @@ clone https://github.com/danfis/libccd.git
 git -C libccd checkout -q 7931e764a19ef6b21b443376c699bbc9c6d4fba8
 clone https://github.com/MaartenBehn/bullet3.git
 git -C bullet3 checkout -q 1e0626039d090ab78c4ac91645fb89f9510b01db
+# Coal (formerly HPP-FCL): vanilla, Nesterov- and Polyak-accelerated GJK. Pinned to the devel branch: in the latest
+# release (v3.0.4), every construction of a GJK solver constructs an exception object in COAL_ASSERT (about 45 ns
+# per query); devel no longer does (commit 6e32fa77)
+COAL_COMMIT=83cdaa6addd580c11dadd2299476e6f08aece2f4
+clone https://github.com/coal-library/coal.git
+git -C coal cat-file -e "$COAL_COMMIT^{commit}" 2> /dev/null || git -C coal fetch -q origin
+# -f discards the patch below, which is applied again
+[ "$(git -C coal rev-parse HEAD)" = "$COAL_COMMIT" ] || git -C coal checkout -q -f "$COAL_COMMIT"
+# the patch adds cached extremes (3x3x3 grid, as in MuJoCo) to its hill climbing (support function variant of the
+# benchmark)
+apply_patch coal compare-cpp/patches/coal-cached-extremes.patch
+# the HPP-FCL fork of the earlier runs, for the comparison with Coal; the patch adds cached extremes (as for Coal)
 clone https://github.com/MaartenBehn/hpp-fcl.git
-# pinned: the patch adds cached extremes to its hill climbing (support function variant of the benchmark)
 git -C hpp-fcl checkout -q 23a71b9
 apply_patch hpp-fcl compare-cpp/patches/hpp-fcl-cached-extremes.patch
 clone https://github.com/AlexanderFabisch/distance3d.git
@@ -95,7 +106,7 @@ git -C glm checkout -q 6f14f4792a0cde5d0cf2c910506724d61cb95834
 # optimization. Jolt is built with g++ like the other libraries: under clang, Jolt enforces -ffp-model=precise.
 OPT_FLAGS="-march=native -ffast-math -flto=auto"
 
-# Jolt and libccd are built as shared libraries (as HPP-FCL and MuJoCo): statically linked with link-time
+# Jolt and libccd are built as shared libraries (as HPP-FCL, Coal and MuJoCo): statically linked with link-time
 # optimization, their speed changed by up to 1.5 times between builds of the benchmark binary that only differed in
 # other code; -fno-semantic-interposition allows direct calls within each shared library
 (cd JoltPhysics/Build \
@@ -119,8 +130,15 @@ OPT_FLAGS="-march=native -ffast-math -flto=auto"
     -DCCD_INCLUDE_DIR="$PWD/../../libccd/src" -DCCD_LIBRARY="$PWD/../../libccd/build/src/libccd.so" .. \
  && cmake --build . --target fcl -j "$(nproc)")
 
+# The HPP-FCL fork is built as shared library with the flags of the benchmark (compare-cpp/CMakeLists.txt); it cannot be
+# built together with Coal, which defines the same targets
+(cd hpp-fcl && git submodule update --init)
+cmake -S hpp-fcl -B hpp-fcl/build -G Ninja -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CXX_FLAGS="$OPT_FLAGS -fno-semantic-interposition" -DBUILD_PYTHON_INTERFACE=OFF -DBUILD_TESTING=OFF
+cmake --build hpp-fcl/build --target hpp-fcl -j "$(nproc)"
+
 # MuJoCo is built as shared library without examples, simulate and tests. It enables link-time optimization and
-# AVX itself; -fno-semantic-interposition allows direct calls within the shared library (as for HPP-FCL). Fast math
+# AVX itself; -fno-semantic-interposition allows direct calls within the shared library (as for Coal). Fast math
 # without -ffinite-math-only: the model compiler of MuJoCo refuses to run if NaN cannot be detected.
 MUJOCO_FLAGS="$OPT_FLAGS -fno-finite-math-only -fno-semantic-interposition"
 (mkdir -p mujoco/build \
@@ -130,8 +148,8 @@ MUJOCO_FLAGS="$OPT_FLAGS -fno-finite-math-only -fno-semantic-interposition"
     -DMUJOCO_BUILD_SIMULATE=OFF -DMUJOCO_BUILD_TESTS=OFF -DMUJOCO_TEST_PYTHON_UTIL=OFF .. \
  && cmake --build . --target mujoco -j "$(nproc)")
 
-# HPP-FCL and Bullet are built together with the C++ benchmark (see compare-cpp/CMakeLists.txt)
-(cd hpp-fcl && git submodule update --init)
+# Coal and Bullet are built together with the C++ benchmark (see compare-cpp/CMakeLists.txt)
+(cd coal && git submodule update --init)
 
 # distance3d still uses np.row_stack, which was removed in numpy 2.5, so numpy is pinned to 2.4
 pip install -e ./distance3d "numpy==2.4"

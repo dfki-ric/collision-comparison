@@ -3,38 +3,24 @@
 #include "collider.h"
 
 #include <Eigen/Geometry>
-#include <hpp/fcl/shape/geometric_shapes.h>
-#include <hpp/fcl/narrowphase/narrowphase.h>
-
-#include <hpp/fcl/internal/tools.h>
-
-#include "utility.h"
 
 #include <algorithm>
+#include <iostream>
 #include <limits>
+#include <memory>
+#include <vector>
 
-using hpp::fcl::Box;
-using hpp::fcl::Capsule;
-using hpp::fcl::Sphere;
-using hpp::fcl::Cylinder;
-using hpp::fcl::Transform3f;
-using hpp::fcl::ShapeBase;
-using hpp::fcl::details::MinkowskiDiff;
-
-using hpp::fcl::constructPolytopeFromEllipsoid;
-using hpp::fcl::Convex;
-using hpp::fcl::Ellipsoid;
-using hpp::fcl::FCL_REAL;
-using hpp::fcl::GJKSolver;
-using hpp::fcl::GJKVariant;
-using hpp::fcl::ShapeBase;
-using hpp::fcl::support_func_guess_t;
-using hpp::fcl::Transform3f;
-using hpp::fcl::Triangle;
-using hpp::fcl::Vec3f;
-using hpp::fcl::details::GJK;
-
-using std::size_t;
+using coal::Box;
+using coal::Capsule;
+using coal::Scalar;
+using coal::Convex;
+using coal::Cylinder;
+using coal::GJKVariant;
+using coal::Sphere;
+using coal::Transform3s;
+using coal::Triangle;
+using coal::Vec3s;
+using coal::details::GJK;
 
 using compare::Base::Collider;
 using compare::Base::ColliderType;
@@ -49,13 +35,13 @@ using compare::Base::Case;
 using compare::Base::SupportMode;
 
 namespace compare::FCL {
-    Transform3f get_transform(Collider collider){
-        Transform3f transform;
+    Transform3s get_transform(Collider collider){
+        Transform3s transform;
         Eigen::Matrix3d m;
         m << collider.colliderToOrigen[0][0],  collider.colliderToOrigen[0][1], collider.colliderToOrigen[0][2],
                 collider.colliderToOrigen[1][0],  collider.colliderToOrigen[1][1],  collider.colliderToOrigen[1][2],
                 collider.colliderToOrigen[2][0], collider.colliderToOrigen[2][1],  collider.colliderToOrigen[2][2];
-        transform.setTransform(m, Vec3f(collider.colliderToOrigen[0][3], collider.colliderToOrigen[1][3], collider.colliderToOrigen[2][3]));
+        transform.setTransform(m, Vec3s(collider.colliderToOrigen[0][3], collider.colliderToOrigen[1][3], collider.colliderToOrigen[2][3]));
 
         return transform;
     }
@@ -78,43 +64,44 @@ namespace compare::FCL {
         }
 
         if (collider.type == ColliderType::Mesh){
-
             const unsigned int vertex_count = get_vertex_count(collider);
-            const auto vertices = new Vec3f[vertex_count];
-            for (int i = 0; i < vertex_count; i++){
-                vertices[i][0] = collider.vertecies[i].x;
-                vertices[i][1] = collider.vertecies[i].y;
-                vertices[i][2] = collider.vertecies[i].z;
+            auto vertices = std::make_shared<std::vector<Vec3s>>(vertex_count);
+            for (unsigned int i = 0; i < vertex_count; i++){
+                (*vertices)[i] = Vec3s(collider.vertecies[i].x, collider.vertecies[i].y, collider.vertecies[i].z);
             }
 
             const unsigned int index_count = get_index_count(collider);
             const unsigned int triangle_count = index_count / 3;
-            const auto triangles = new Triangle[triangle_count];
-            for (int i = 0; i < triangle_count; i++){
-                triangles[i][0] = collider.indicies[i * 3];
-                triangles[i][1] = collider.indicies[i * 3 + 1];
-                triangles[i][2] = collider.indicies[i * 3 + 2];
+            auto triangles = std::make_shared<std::vector<Triangle>>(triangle_count);
+            for (unsigned int i = 0; i < triangle_count; i++){
+                (*triangles)[i] = Triangle(collider.indicies[i * 3], collider.indicies[i * 3 + 1],
+                                           collider.indicies[i * 3 + 2]);
             }
 
-            auto convex = new Convex<Triangle>(
-                true,
-                vertices, vertex_count,
-                triangles, triangle_count
-                );
-            if (support_mode == SupportMode::CachedExtremes) {
-                // extreme vertices of the 27 grid directions (as in MuJoCo, see
-                // compare-cpp/patches/hpp-fcl-cached-extremes.patch)
-                FCL_REAL max_dot[27];
-                std::fill(max_dot, max_dot + 27, std::numeric_limits<FCL_REAL>::lowest());
-                for (int i = 0; i < vertex_count; i++) {
+            // the constructor computes the vertex graph (neighbors) and Coal's support warm starts: the support
+            // vertices of 14 directions, from which the hill climbing starts when the search direction turned by
+            // more than about 25 degrees since the last support call
+            auto convex = new Convex<Triangle>(vertices, vertex_count, triangles, triangle_count);
+            if (support_mode == SupportMode::Linear) {
+                // without a vertex graph, Coal's support function of a convex searches all vertices (but the
+                // MinkowskiDiff selects hill climbing for more than 32 vertices anyway, see linear_support)
+                convex->neighbors.reset();
+            } else if (support_mode == SupportMode::CachedExtremes) {
+                // hill climbing from the extreme vertex of the grid cell of the direction (3x3x3 grid, as in MuJoCo,
+                // compare-cpp/patches/coal-cached-extremes.patch) instead of Coal's support warm starts
+                convex->support_warm_starts.points.clear();
+                convex->support_warm_starts.indices.clear();
+                Scalar max_dot[27];
+                std::fill(max_dot, max_dot + 27, std::numeric_limits<Scalar>::lowest());
+                for (unsigned int i = 0; i < vertex_count; i++) {
                     int k = 0;
                     for (int cx = -1; cx <= 1; cx++) {
                         for (int cy = -1; cy <= 1; cy++) {
                             for (int cz = -1; cz <= 1; cz++, k++) {
-                                FCL_REAL dot = vertices[i].dot(Vec3f(cx, cy, cz));
+                                const Scalar dot = (*vertices)[i].dot(Vec3s(cx, cy, cz));
                                 if (dot > max_dot[k]) {
                                     max_dot[k] = dot;
-                                    convex->extrema[k] = i;
+                                    convex->extrema[k] = (int) i;
                                 }
                             }
                         }
@@ -122,23 +109,33 @@ namespace compare::FCL {
                 }
                 convex->use_extrema = true;
             }
+            // SupportMode::HillClimbing: Coal's default (hill climbing with its support warm starts)
             fcl_collider.shape = convex;
         }
     }
 
+    // Support function of the Minkowski difference with Coal's generic support function of each shape, which
+    // searches all vertices of a convex without vertex graph. Coal itself selects hill climbing for convexes with more
+    // than 32 vertices (and has no option to change that), so the linear search needs this replacement.
+    void linear_support(const coal::details::MinkowskiDiff& md, const Vec3s& dir, Vec3s& support0, Vec3s& support1,
+                        coal::support_func_guess_t& hint, coal::details::ShapeSupportData /*data*/[2]) {
+        support0 = coal::details::getSupport<coal::details::SupportOptions::NoSweptSphere>(md.shapes[0], dir, hint[0]);
+        support1 = md.oR1 * coal::details::getSupport<coal::details::SupportOptions::NoSweptSphere>(
+                md.shapes[1], -md.oR1.transpose() * dir, hint[1]) + md.ot1;
+    }
+
     void get_case(Collider collider0, Collider collider1, FCLCase& fcl_case, SupportMode support_mode){
 
-        Transform3f transform0 = get_transform(collider0);
-        Transform3f transform1 = get_transform(collider1);
+        Transform3s transform0 = get_transform(collider0);
+        Transform3s transform1 = get_transform(collider1);
 
         get_collider(collider0, fcl_case.collider0, support_mode);
         get_collider(collider1, fcl_case.collider1, support_mode);
 
-        // HPP-FCL uses hill climbing for meshes with more than linear_log_convex_threshold vertices
-        if (support_mode == SupportMode::Linear) {
-            fcl_case.mink_diff.linear_log_convex_threshold = INT32_MAX;
-        }
         fcl_case.mink_diff.set(fcl_case.collider0.shape, fcl_case.collider1.shape, transform0, transform1);
+        if (support_mode == SupportMode::Linear) {
+            fcl_case.mink_diff.getSupportFunc = &linear_support;
+        }
     }
 
     void get_cases(Case* base_cases, FCLCase* fcl_cases, int length, SupportMode support_mode){
@@ -148,70 +145,67 @@ namespace compare::FCL {
         }
     }
 
-    float get_distance_nesterov(FCLCase& fcl_case){
-        unsigned int max_iterations = 128;
-        FCL_REAL tolerance = 1e-6;
-        GJK gjk(max_iterations, tolerance);
-        gjk.gjk_variant = GJKVariant::NesterovAcceleration;
-
-        // use origin of collider 1 in the frame of collider 0 as initial support function guess
-        Vec3f init_guess = -fcl_case.mink_diff.ot1;
-        GJK::Status res_gjk = gjk.evaluate(fcl_case.mink_diff, init_guess);
-
-        if (res_gjk  == GJK::Status::Failed){
-            std::cerr << "HPP-FCL failed to converge while calculating distance" << std::endl;
+    namespace {
+        // GJK with the same parameters for all variants: at most 128 iterations, relative tolerance 1e-6 of van den
+        // Bergen's convergence criterion (Coal's default), initial guess: origin of collider 1 in the frame of
+        // collider 0. normalize: normalized support directions of Nesterov acceleration (Coal sets them only for
+        // pairs of convex meshes, here they are set explicitly as in the benchmarks of Montaut et al.)
+        GJK::Status run_gjk(FCLCase& fcl_case, GJK& gjk, GJKVariant variant, bool normalize) {
+            gjk.gjk_variant = variant;
+            fcl_case.mink_diff.normalize_support_direction = normalize;
+            const Vec3s init_guess = -fcl_case.mink_diff.ot1;
+            return gjk.evaluate(fcl_case.mink_diff, init_guess);
         }
-        return  gjk.distance;
-    }
 
-    bool get_intersection_nesterov(FCLCase& fcl_case){
-        unsigned int max_iterations = 128;
-        FCL_REAL tolerance = 1e-6;
-        GJK gjk(max_iterations, tolerance);
-        gjk.gjk_variant = GJKVariant::NesterovAcceleration;
-        gjk.setDistanceEarlyBreak(0);   // if the distance was proven to be more than 0, exit early
-
-        // use origin of collider 1 in the frame of collider 0 as initial support function guess
-        Vec3f init_guess = -fcl_case.mink_diff.ot1;
-        GJK::Status res_gjk = gjk.evaluate(fcl_case.mink_diff, init_guess);
-
-        if (res_gjk  == GJK::Status::Failed){
-            std::cerr << "HPP-FCL failed to converge while calculating intersection" << std::endl;
+        float distance(FCLCase& fcl_case, GJKVariant variant, bool normalize) {
+            GJK gjk(128, 1e-6);
+            const GJK::Status status = run_gjk(fcl_case, gjk, variant, normalize);
+            if (status == GJK::Status::Failed) {
+                std::cerr << "Coal failed to converge while calculating distance" << std::endl;
+            }
+            return gjk.distance;
         }
-        return res_gjk == GJK::Status::Inside;
+
+        bool intersection(FCLCase& fcl_case, GJKVariant variant, bool normalize) {
+            GJK gjk(128, 1e-6);
+            gjk.setDistanceEarlyBreak(0);   // if the distance was proven to be more than 0, exit early
+            const GJK::Status status = run_gjk(fcl_case, gjk, variant, normalize);
+            if (status == GJK::Status::Failed) {
+                std::cerr << "Coal failed to converge while calculating intersection" << std::endl;
+            }
+            return status == GJK::Status::Collision || status == GJK::Status::CollisionWithPenetrationInformation;
+        }
     }
 
     float get_distance_default(FCLCase& fcl_case){
-        unsigned int max_iterations = 128;
-        FCL_REAL tolerance = 1e-6;
-        GJK gjk(max_iterations, tolerance);
-        gjk.gjk_variant = GJKVariant::DefaultGJK;
-
-        // use origin of collider 1 in the frame of collider 0 as initial support function guess
-        Vec3f init_guess = -fcl_case.mink_diff.ot1;
-        GJK::Status res_gjk = gjk.evaluate(fcl_case.mink_diff, init_guess);
-
-        if (res_gjk  == GJK::Status::Failed){
-            std::cerr << "HPP-FCL failed to converge while calculating distance" << std::endl;
-        }
-        return  gjk.distance;
+        return distance(fcl_case, GJKVariant::DefaultGJK, false);
     }
 
     bool get_intersection_default(FCLCase& fcl_case){
-        unsigned int max_iterations = 128;
-        FCL_REAL tolerance = 1e-6;
-        GJK gjk(max_iterations, tolerance);
-        gjk.gjk_variant = GJKVariant::DefaultGJK;
-        gjk.setDistanceEarlyBreak(0);   // if the distance was proven to be more than 0, exit early
+        return intersection(fcl_case, GJKVariant::DefaultGJK, false);
+    }
 
-        // use origin of collider 1 in the frame of collider 0 as initial support function guess
-        Vec3f init_guess = -fcl_case.mink_diff.ot1;
-        GJK::Status res_gjk = gjk.evaluate(fcl_case.mink_diff, init_guess);
+    float get_distance_nesterov(FCLCase& fcl_case){
+        return distance(fcl_case, GJKVariant::NesterovAcceleration, false);
+    }
 
-        if (res_gjk  == GJK::Status::Failed){
-            std::cerr << "HPP-FCL failed to converge while calculating intersection" << std::endl;
-        }
-        return res_gjk == GJK::Status::Inside;
+    bool get_intersection_nesterov(FCLCase& fcl_case){
+        return intersection(fcl_case, GJKVariant::NesterovAcceleration, false);
+    }
+
+    float get_distance_nesterov_normalized(FCLCase& fcl_case){
+        return distance(fcl_case, GJKVariant::NesterovAcceleration, true);
+    }
+
+    bool get_intersection_nesterov_normalized(FCLCase& fcl_case){
+        return intersection(fcl_case, GJKVariant::NesterovAcceleration, true);
+    }
+
+    float get_distance_polyak(FCLCase& fcl_case){
+        return distance(fcl_case, GJKVariant::PolyakAcceleration, false);
+    }
+
+    bool get_intersection_polyak(FCLCase& fcl_case){
+        return intersection(fcl_case, GJKVariant::PolyakAcceleration, false);
     }
 }
-

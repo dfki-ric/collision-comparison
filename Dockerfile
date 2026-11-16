@@ -7,7 +7,7 @@ SHELL ["/bin/bash", "-c"]
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Build tools and libraries for the C++ benchmark (HPP-FCL needs Eigen, Boost and assimp, Bullet needs OpenGL headers)
+# Build tools and libraries for the C++ benchmark (Coal needs Eigen, Boost and assimp, Bullet needs OpenGL headers)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     clang \
@@ -40,7 +40,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # the repository is mounted from the host and belongs to another user than root:
-# allow git to work in it (e.g., for the submodules of HPP-FCL)
+# allow git to work in it (e.g., for the submodules of Coal)
 RUN git config --global --add safe.directory '*'
 
 # Rust

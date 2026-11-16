@@ -2,6 +2,7 @@
 #include "collider.h"
 #include "jolt.h"
 #include "fcl.h"
+#include "hppfcl.h"
 #include "fcl_original.h"
 #include "mujoco.h"
 #include "bullet.h"
@@ -87,6 +88,67 @@ int main(){
 
     std::vector<FCLCase> fcl_cases_default_intersection_extremes(cases_length);
     compare::FCL::get_cases(&base_cases[0], &fcl_cases_default_intersection_extremes[0], cases_length, SupportMode::CachedExtremes);
+
+    std::vector<FCLCase> fcl_cases_polyak(cases_length);
+    compare::FCL::get_cases(&base_cases[0], &fcl_cases_polyak[0], cases_length, SupportMode::HillClimbing);
+
+    std::vector<FCLCase> fcl_cases_polyak_lin_support(cases_length);
+    compare::FCL::get_cases(&base_cases[0], &fcl_cases_polyak_lin_support[0], cases_length, SupportMode::Linear);
+
+    std::vector<FCLCase> fcl_cases_polyak_extremes(cases_length);
+    compare::FCL::get_cases(&base_cases[0], &fcl_cases_polyak_extremes[0], cases_length, SupportMode::CachedExtremes);
+
+    std::vector<FCLCase> fcl_cases_polyak_intersection(cases_length);
+    compare::FCL::get_cases(&base_cases[0], &fcl_cases_polyak_intersection[0], cases_length, SupportMode::HillClimbing);
+
+    std::vector<FCLCase> fcl_cases_polyak_intersection_lin_support(cases_length);
+    compare::FCL::get_cases(&base_cases[0], &fcl_cases_polyak_intersection_lin_support[0], cases_length, SupportMode::Linear);
+
+    std::vector<FCLCase> fcl_cases_polyak_intersection_extremes(cases_length);
+    compare::FCL::get_cases(&base_cases[0], &fcl_cases_polyak_intersection_extremes[0], cases_length, SupportMode::CachedExtremes);
+
+    std::vector<FCLCase> fcl_cases_nesterov_normalized(cases_length);
+    compare::FCL::get_cases(&base_cases[0], &fcl_cases_nesterov_normalized[0], cases_length, SupportMode::HillClimbing);
+
+    std::vector<FCLCase> fcl_cases_nesterov_normalized_lin_support(cases_length);
+    compare::FCL::get_cases(&base_cases[0], &fcl_cases_nesterov_normalized_lin_support[0], cases_length, SupportMode::Linear);
+
+    std::vector<FCLCase> fcl_cases_nesterov_normalized_extremes(cases_length);
+    compare::FCL::get_cases(&base_cases[0], &fcl_cases_nesterov_normalized_extremes[0], cases_length, SupportMode::CachedExtremes);
+
+    std::vector<FCLCase> fcl_cases_nesterov_normalized_intersection(cases_length);
+    compare::FCL::get_cases(&base_cases[0], &fcl_cases_nesterov_normalized_intersection[0], cases_length, SupportMode::HillClimbing);
+
+    std::vector<FCLCase> fcl_cases_nesterov_normalized_intersection_lin_support(cases_length);
+    compare::FCL::get_cases(&base_cases[0], &fcl_cases_nesterov_normalized_intersection_lin_support[0], cases_length, SupportMode::Linear);
+
+    std::vector<FCLCase> fcl_cases_nesterov_normalized_intersection_extremes(cases_length);
+    compare::FCL::get_cases(&base_cases[0], &fcl_cases_nesterov_normalized_intersection_extremes[0], cases_length, SupportMode::CachedExtremes);
+
+    // the HPP-FCL fork of the earlier runs (hppfcl.h), for the comparison with Coal
+    std::vector<compare::HPPFCL::HPPFCLCase> hppfcl_default(cases_length);
+    compare::HPPFCL::get_cases(&base_cases[0], &hppfcl_default[0], cases_length, SupportMode::HillClimbing);
+
+    std::vector<compare::HPPFCL::HPPFCLCase> hppfcl_default_extremes(cases_length);
+    compare::HPPFCL::get_cases(&base_cases[0], &hppfcl_default_extremes[0], cases_length, SupportMode::CachedExtremes);
+
+    std::vector<compare::HPPFCL::HPPFCLCase> hppfcl_default_intersection(cases_length);
+    compare::HPPFCL::get_cases(&base_cases[0], &hppfcl_default_intersection[0], cases_length, SupportMode::HillClimbing);
+
+    std::vector<compare::HPPFCL::HPPFCLCase> hppfcl_default_intersection_extremes(cases_length);
+    compare::HPPFCL::get_cases(&base_cases[0], &hppfcl_default_intersection_extremes[0], cases_length, SupportMode::CachedExtremes);
+
+    std::vector<compare::HPPFCL::HPPFCLCase> hppfcl_nesterov(cases_length);
+    compare::HPPFCL::get_cases(&base_cases[0], &hppfcl_nesterov[0], cases_length, SupportMode::HillClimbing);
+
+    std::vector<compare::HPPFCL::HPPFCLCase> hppfcl_nesterov_extremes(cases_length);
+    compare::HPPFCL::get_cases(&base_cases[0], &hppfcl_nesterov_extremes[0], cases_length, SupportMode::CachedExtremes);
+
+    std::vector<compare::HPPFCL::HPPFCLCase> hppfcl_nesterov_intersection(cases_length);
+    compare::HPPFCL::get_cases(&base_cases[0], &hppfcl_nesterov_intersection[0], cases_length, SupportMode::HillClimbing);
+
+    std::vector<compare::HPPFCL::HPPFCLCase> hppfcl_nesterov_intersection_extremes(cases_length);
+    compare::HPPFCL::get_cases(&base_cases[0], &hppfcl_nesterov_intersection_extremes[0], cases_length, SupportMode::CachedExtremes);
 
     std::vector<FCLOriginalCase> fcl_original_cases(cases_length);
     compare::FCLOriginal::get_cases(&base_cases[0], &fcl_original_cases[0], cases_length);
@@ -184,75 +246,195 @@ int main(){
         }
     });
 
-    run("FCL distance", [&] {
+    run("Coal distance nesterov", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_distance_nesterov(fcl_cases_nesterov[i]));
         }
     });
 
-    if (has_mesh) run("FCL distance linear support", [&] {
+    if (has_mesh) run("Coal distance nesterov linear support", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_distance_nesterov(fcl_cases_nesterov_lin_support[i]));
         }
     });
 
-    if (has_mesh) run("FCL distance cached extremes", [&] {
+    if (has_mesh) run("Coal distance nesterov cached extremes", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_distance_nesterov(fcl_cases_nesterov_extremes[i]));
         }
     });
 
-    run("FCL intersection", [&] {
+    run("Coal intersection nesterov", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_intersection_nesterov(fcl_cases_nesterov_intersection[i]));
         }
     });
 
-    if (has_mesh) run("FCL intersection linear support", [&] {
+    if (has_mesh) run("Coal intersection nesterov linear support", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_intersection_nesterov(fcl_cases_nesterov_intersection_lin_support[i]));
         }
     });
 
-    if (has_mesh) run("FCL intersection cached extremes", [&] {
+    if (has_mesh) run("Coal intersection nesterov cached extremes", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_intersection_nesterov(fcl_cases_nesterov_intersection_extremes[i]));
         }
     });
 
-    run("FCL distance defaultGJK", [&] {
+    run("Coal distance", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_distance_default(fcl_cases_default[i]));
         }
     });
 
-    if (has_mesh) run("FCL distance defaultGJK linear support", [&] {
+    if (has_mesh) run("Coal distance linear support", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_distance_default(fcl_cases_default_lin_support[i]));
         }
     });
 
-    if (has_mesh) run("FCL distance defaultGJK cached extremes", [&] {
+    if (has_mesh) run("Coal distance cached extremes", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_distance_default(fcl_cases_default_extremes[i]));
         }
     });
 
-    run("FCL intersection defaultGJK", [&] {
+    run("Coal intersection", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_intersection_default(fcl_cases_default_intersection[i]));
         }
     });
 
-    if (has_mesh) run("FCL intersection defaultGJK linear support", [&] {
+    if (has_mesh) run("Coal intersection linear support", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_intersection_default(fcl_cases_default_intersection_lin_support[i]));
         }
     });
 
-    if (has_mesh) run("FCL intersection defaultGJK cached extremes", [&] {
+    if (has_mesh) run("Coal intersection cached extremes", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_intersection_default(fcl_cases_default_intersection_extremes[i]));
+        }
+    });
+
+    run("Coal distance polyak", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_distance_polyak(fcl_cases_polyak[i]));
+        }
+    });
+
+    if (has_mesh) run("Coal distance polyak linear support", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_distance_polyak(fcl_cases_polyak_lin_support[i]));
+        }
+    });
+
+    if (has_mesh) run("Coal distance polyak cached extremes", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_distance_polyak(fcl_cases_polyak_extremes[i]));
+        }
+    });
+
+    run("Coal intersection polyak", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_intersection_polyak(fcl_cases_polyak_intersection[i]));
+        }
+    });
+
+    if (has_mesh) run("Coal intersection polyak linear support", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_intersection_polyak(fcl_cases_polyak_intersection_lin_support[i]));
+        }
+    });
+
+    if (has_mesh) run("Coal intersection polyak cached extremes", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_intersection_polyak(fcl_cases_polyak_intersection_extremes[i]));
+        }
+    });
+
+    run("Coal distance nesterov normalized", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_distance_nesterov_normalized(fcl_cases_nesterov_normalized[i]));
+        }
+    });
+
+    if (has_mesh) run("Coal distance nesterov normalized linear support", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_distance_nesterov_normalized(fcl_cases_nesterov_normalized_lin_support[i]));
+        }
+    });
+
+    if (has_mesh) run("Coal distance nesterov normalized cached extremes", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_distance_nesterov_normalized(fcl_cases_nesterov_normalized_extremes[i]));
+        }
+    });
+
+    run("Coal intersection nesterov normalized", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_intersection_nesterov_normalized(fcl_cases_nesterov_normalized_intersection[i]));
+        }
+    });
+
+    if (has_mesh) run("Coal intersection nesterov normalized linear support", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_intersection_nesterov_normalized(fcl_cases_nesterov_normalized_intersection_lin_support[i]));
+        }
+    });
+
+    if (has_mesh) run("Coal intersection nesterov normalized cached extremes", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::FCL::get_intersection_nesterov_normalized(fcl_cases_nesterov_normalized_intersection_extremes[i]));
+        }
+    });
+
+    run("HPP-FCL distance", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::HPPFCL::get_distance_default(hppfcl_default[i]));
+        }
+    });
+
+    if (has_mesh) run("HPP-FCL distance cached extremes", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::HPPFCL::get_distance_default(hppfcl_default_extremes[i]));
+        }
+    });
+
+    run("HPP-FCL intersection", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::HPPFCL::get_intersection_default(hppfcl_default_intersection[i]));
+        }
+    });
+
+    if (has_mesh) run("HPP-FCL intersection cached extremes", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::HPPFCL::get_intersection_default(hppfcl_default_intersection_extremes[i]));
+        }
+    });
+
+    run("HPP-FCL distance nesterov", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::HPPFCL::get_distance_nesterov(hppfcl_nesterov[i]));
+        }
+    });
+
+    if (has_mesh) run("HPP-FCL distance nesterov cached extremes", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::HPPFCL::get_distance_nesterov(hppfcl_nesterov_extremes[i]));
+        }
+    });
+
+    run("HPP-FCL intersection nesterov", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::HPPFCL::get_intersection_nesterov(hppfcl_nesterov_intersection[i]));
+        }
+    });
+
+    if (has_mesh) run("HPP-FCL intersection nesterov cached extremes", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::HPPFCL::get_intersection_nesterov(hppfcl_nesterov_intersection_extremes[i]));
         }
     });
 
@@ -342,17 +524,17 @@ int main(){
         << "\tlibccd (lin supp.)    Intersect: " << compare::libccd::get_intersection(libccd_cases_lin_support[i]) << "\n"
         << "\tlibccd (extremes)     Intersect: " << compare::libccd::get_intersection(libccd_cases_extremes[i]) << "\n"
         << "\tlibccd (adaptive)     Intersect: " << compare::libccd::get_intersection(libccd_cases_adaptive[i]) << "\n"
-        << "\tHPP-FCL               Intersect: " << compare::FCL::get_intersection_nesterov(fcl_cases_nesterov_intersection[i]) << "\n"
-        << "\tHPP-FCL (lin supp.)   Intersect: " << compare::FCL::get_intersection_nesterov(fcl_cases_nesterov_intersection_lin_support[i]) << "\n"
-        << "\tHPP-FCL (extremes)    Intersect: " << compare::FCL::get_intersection_nesterov(fcl_cases_nesterov_intersection_extremes[i]) << "\n"
+        << "\tCoal Nest.              Intersect: " << compare::FCL::get_intersection_nesterov(fcl_cases_nesterov_intersection[i]) << "\n"
+        << "\tCoal Nest.(lin supp.)   Intersect: " << compare::FCL::get_intersection_nesterov(fcl_cases_nesterov_intersection_lin_support[i]) << "\n"
+        << "\tCoal Nest.(extremes)    Intersect: " << compare::FCL::get_intersection_nesterov(fcl_cases_nesterov_intersection_extremes[i]) << "\n"
         << "\tJolt                  Intersect: " << compare::Jolt::get_intersection(jolt_cases[i]) << "\n"
         << "\tMuJoCo                Intersect: " << compare::MuJoCo::get_intersection(mujoco_cases[i]) << "\n"
         << "\tMuJoCo (lin supp.)    Intersect: " << compare::MuJoCo::get_intersection(mujoco_cases_lin_support[i]) << "\n"
         << "\tMuJoCo (hill climb.)  Intersect: " << compare::MuJoCo::get_intersection(mujoco_cases_hill_climbing[i]) << "\n"
         << "Distance Algorithms:" << "\n"
-        << "\tHPP-FCL               Distance: " << compare::FCL::get_distance_nesterov(fcl_cases_nesterov[i]) << "\n"
-        << "\tHPP-FCL (lin supp.)   Distance: " << compare::FCL::get_distance_nesterov(fcl_cases_nesterov_lin_support[i]) << "\n"
-        << "\tHPP-FCL (extremes)    Distance: " << compare::FCL::get_distance_nesterov(fcl_cases_nesterov_extremes[i]) << "\n"
+        << "\tCoal Nest.              Distance: " << compare::FCL::get_distance_nesterov(fcl_cases_nesterov[i]) << "\n"
+        << "\tCoal Nest.(lin supp.)   Distance: " << compare::FCL::get_distance_nesterov(fcl_cases_nesterov_lin_support[i]) << "\n"
+        << "\tCoal Nest.(extremes)    Distance: " << compare::FCL::get_distance_nesterov(fcl_cases_nesterov_extremes[i]) << "\n"
         << "\tFCL (original)        Distance: " << compare::FCLOriginal::get_distance(fcl_original_cases[i]) << "\n"
         << "\tMuJoCo                Distance: " << compare::MuJoCo::get_distance(mujoco_cases[i]) << "\n"
         << "\tMuJoCo (lin supp.)    Distance: " << compare::MuJoCo::get_distance(mujoco_cases_lin_support[i]) << "\n"
