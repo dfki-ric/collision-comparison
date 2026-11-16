@@ -117,6 +117,10 @@ def main():
              "Linear support function (X) compared to the logarithmic one (Y)"),
             ("nesterov", nesterov,
              "Nesterov-accelerated GJK (X) compared to vanilla GJK (Y) of the same library"),
+            ("polyak", comparisons.polyak(group, **options),
+             "Polyak-accelerated GJK (X) compared to vanilla GJK (Y) of Coal"),
+            ("nesterov_normalized", comparisons.nesterov_normalized(group, **options),
+             "Nesterov-accelerated GJK with normalized support directions (X) compared to vanilla GJK (Y) of Coal"),
         ]:
             if len(table) == 0:  # e.g., no linear support function in primitive benchmarks
                 continue

@@ -46,12 +46,20 @@ def _family(title, default, default_variant="hill climbing"):
 
 FAMILIES = [
     _family("libccd: intersection", "libccd intersection"),
-    _family("HPP-FCL Nest.: intersection", "FCL intersection"),
-    _family("HPP-FCL: intersection", "FCL intersection defaultGJK"),
+    _family("HPP-FCL Nest.: intersection", "HPP-FCL intersection nesterov"),
+    _family("HPP-FCL: intersection", "HPP-FCL intersection"),
+    _family("Coal Nest.: intersection", "Coal intersection nesterov"),
+    _family("Coal: intersection", "Coal intersection"),
+    _family("Coal Polyak: intersection", "Coal intersection polyak"),
+    _family("Coal Nest. norm.: intersection", "Coal intersection nesterov normalized"),
     _family("MuJoCo: intersection", "MuJoCo intersection", default_variant="cached extremes"),
     _family("OpenGJK: distance", "openGJK distance"),
-    _family("HPP-FCL Nest.: distance", "FCL distance"),
-    _family("HPP-FCL: distance", "FCL distance defaultGJK"),
+    _family("HPP-FCL Nest.: distance", "HPP-FCL distance nesterov"),
+    _family("HPP-FCL: distance", "HPP-FCL distance"),
+    _family("Coal Nest.: distance", "Coal distance nesterov"),
+    _family("Coal: distance", "Coal distance"),
+    _family("Coal Polyak: distance", "Coal distance polyak"),
+    _family("Coal Nest. norm.: distance", "Coal distance nesterov normalized"),
     _family("MuJoCo: distance", "MuJoCo distance", default_variant="cached extremes"),
 ]
 

@@ -16,13 +16,34 @@ from speedup import speedup, speedup_ci
 
 # (Nesterov-accelerated GJK, vanilla GJK) of the same library
 NESTEROV_PAIRS = [
-    ("FCL intersection", "FCL intersection defaultGJK"),
-    ("FCL intersection linear support", "FCL intersection defaultGJK linear support"),
-    ("FCL distance", "FCL distance defaultGJK"),
-    ("FCL distance linear support", "FCL distance defaultGJK linear support"),
+    ("HPP-FCL intersection nesterov", "HPP-FCL intersection"),
+    ("HPP-FCL intersection nesterov linear support", "HPP-FCL intersection linear support"),
+    ("HPP-FCL distance nesterov", "HPP-FCL distance"),
+    ("HPP-FCL distance nesterov linear support", "HPP-FCL distance linear support"),
+    ("HPP-FCL intersection nesterov cached extremes", "HPP-FCL intersection cached extremes"),
+    ("HPP-FCL distance nesterov cached extremes", "HPP-FCL distance cached extremes"),
+    ("Coal intersection nesterov", "Coal intersection"),
+    ("Coal intersection nesterov linear support", "Coal intersection linear support"),
+    ("Coal distance nesterov", "Coal distance"),
+    ("Coal distance nesterov linear support", "Coal distance linear support"),
+    ("Coal intersection nesterov cached extremes", "Coal intersection cached extremes"),
+    ("Coal distance nesterov cached extremes", "Coal distance cached extremes"),
     ("collision-rs_nasterov_gjk", "collision-rs_distance_gjk"),
     ("distance3d Nesterov (with acceleration)", "distance3d Nesterov"),
 ]
+
+# (Polyak-accelerated GJK, vanilla GJK) of Coal
+POLYAK_PAIRS = [
+    ("Coal intersection polyak", "Coal intersection"),
+    ("Coal intersection polyak linear support", "Coal intersection linear support"),
+    ("Coal intersection polyak cached extremes", "Coal intersection cached extremes"),
+    ("Coal distance polyak", "Coal distance"),
+    ("Coal distance polyak linear support", "Coal distance linear support"),
+    ("Coal distance polyak cached extremes", "Coal distance cached extremes"),
+]
+
+# (Nesterov-accelerated GJK with normalized support directions, vanilla GJK) of Coal
+NESTEROV_NORMALIZED_PAIRS = [(x.replace("polyak", "nesterov normalized"), y) for x, y in POLYAK_PAIRS]
 
 
 def complete_algorithms(df):
@@ -105,6 +126,21 @@ def nesterov(df, **kwargs):
     algorithms = set(complete_algorithms(df))
     return pd.DataFrame([{"variant": "Nesterov acceleration", **compare(df, x, y, **kwargs)}
                          for x, y in NESTEROV_PAIRS if x in algorithms and y in algorithms])
+
+
+def polyak(df, **kwargs):
+    """Polyak-accelerated GJK (X) against vanilla GJK (Y) of Coal (speedup > 1: Polyak is faster)."""
+    algorithms = set(complete_algorithms(df))
+    return pd.DataFrame([{"variant": "Polyak acceleration", **compare(df, x, y, **kwargs)}
+                         for x, y in POLYAK_PAIRS if x in algorithms and y in algorithms])
+
+
+def nesterov_normalized(df, **kwargs):
+    """Nesterov-accelerated GJK with normalized support directions (X) against vanilla GJK (Y) of Coal (speedup > 1:
+    the accelerated variant is faster)."""
+    algorithms = set(complete_algorithms(df))
+    return pd.DataFrame([{"variant": "Nesterov acceleration (normalized)", **compare(df, x, y, **kwargs)}
+                         for x, y in NESTEROV_NORMALIZED_PAIRS if x in algorithms and y in algorithms])
 
 
 def speedup_vs_fastest(df, n_resamples=5000, confidence_level=0.95, random_state=None):

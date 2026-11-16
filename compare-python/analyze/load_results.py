@@ -92,9 +92,19 @@ def _merge_runs(tables):
     return merged
 
 
+# Names of the HPP-FCL fork in the results of earlier runs (before the comparison with Coal): "FCL" was the fork with
+# Nesterov acceleration, "FCL ... defaultGJK" the fork with vanilla GJK
+LEGACY_COLUMNS = {
+    f"FCL {query}{gjk}{support}": f"HPP-FCL {query}{'' if gjk else ' nesterov'}{support}"
+    for query in ("distance", "intersection")
+    for gjk in ("", " defaultGJK")
+    for support in ("", " linear support", " cached extremes")
+}
+
+
 def load_results(csv_paths):
     """Load CSV files (one per benchmark, computer and run) to one table with one row per case file and task."""
-    tables = [(path, pd.read_csv(path)) for path in csv_paths]
+    tables = [(path, pd.read_csv(path).rename(columns=LEGACY_COLUMNS)) for path in csv_paths]
     for path, table in tables:
         for column in ["benchmark", "computer"]:
             if column not in table.columns:
