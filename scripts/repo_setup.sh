@@ -95,25 +95,28 @@ git -C glm checkout -q 6f14f4792a0cde5d0cf2c910506724d61cb95834
 # optimization. Jolt is built with g++ like the other libraries: under clang, Jolt enforces -ffp-model=precise.
 OPT_FLAGS="-march=native -ffast-math -flto=auto"
 
+# Jolt and libccd are built as shared libraries (as HPP-FCL and MuJoCo): statically linked with link-time
+# optimization, their speed changed by up to 1.5 times between builds of the benchmark binary that only differed in
+# other code; -fno-semantic-interposition allows direct calls within each shared library
 (cd JoltPhysics/Build \
- && sh ./cmake_linux_clang_gcc.sh Distribution g++ -DCMAKE_CXX_FLAGS="$OPT_FLAGS" \
+ && sh ./cmake_linux_clang_gcc.sh Distribution g++ -DBUILD_SHARED_LIBS=ON \
+    -DCMAKE_CXX_FLAGS="$OPT_FLAGS -fno-semantic-interposition" \
  && cd Linux_Distribution \
  && make -j "$(nproc)")
 
 # libccd must be built in double precision: in single precision, its GJK misses most intersections of small meshes.
-# It is linked statically.
 (mkdir -p libccd/build \
  && cd libccd/build \
- && cmake -G "Unix Makefiles" -DENABLE_DOUBLE_PRECISION=ON -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="$OPT_FLAGS" .. \
+ && cmake -G "Unix Makefiles" -DENABLE_DOUBLE_PRECISION=ON -DBUILD_SHARED_LIBS=ON \
+    -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="$OPT_FLAGS -fno-semantic-interposition" .. \
  && make -j "$(nproc)")
 
-# FCL is linked statically, with libccd from above and without tests and OctoMap
+# FCL is linked statically, with the shared libccd from above and without tests and OctoMap
 (mkdir -p fcl/build \
  && cd fcl/build \
  && cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="$OPT_FLAGS -I$PWD/../../libccd/build/src" \
     -DFCL_STATIC_LIBRARY=ON -DFCL_WITH_OCTOMAP=OFF -DBUILD_TESTING=OFF \
-    -DCCD_INCLUDE_DIR="$PWD/../../libccd/src" -DCCD_LIBRARY="$PWD/../../libccd/build/src/libccd.a" .. \
+    -DCCD_INCLUDE_DIR="$PWD/../../libccd/src" -DCCD_LIBRARY="$PWD/../../libccd/build/src/libccd.so" .. \
  && cmake --build . --target fcl -j "$(nproc)")
 
 # MuJoCo is built as shared library without examples, simulate and tests. It enables link-time optimization and

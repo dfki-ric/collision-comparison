@@ -38,7 +38,9 @@ include_directories(${CMAKE_SOURCE_DIR}/../glm)
 # Jolt
 include_directories(${CMAKE_SOURCE_DIR}/../JoltPhysics)
 
-target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../JoltPhysics/Build/Linux_Distribution/libJolt.a)
+# shared library (see scripts/repo_setup.sh)
+target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../JoltPhysics/Build/Linux_Distribution/libJolt.so)
+target_compile_definitions(compare PRIVATE JPH_SHARED_LIBRARY)
 
 # FCL
 find_package (Eigen3 REQUIRED NO_MODULE)
@@ -73,7 +75,8 @@ target_link_libraries(compare libbulletlinearmath)
 # libccd
 include_directories(${CMAKE_SOURCE_DIR}/../libccd/build/src/)
 include_directories(${CMAKE_SOURCE_DIR}/../libccd/src)
-target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../libccd/build/src/libccd.a)
+# shared library (see scripts/repo_setup.sh)
+target_link_libraries(compare ${CMAKE_SOURCE_DIR}/../libccd/build/src/libccd.so)
 
 # FCL (the original, with its own GJK), static library built by scripts/repo_setup.sh (it cannot be built together
 # with HPP-FCL: both define the target "uninstall")
