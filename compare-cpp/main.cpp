@@ -132,11 +132,17 @@ int main(){
     std::vector<compare::HPPFCL::HPPFCLCase> hppfcl_default_extremes(cases_length);
     compare::HPPFCL::get_cases(&base_cases[0], &hppfcl_default_extremes[0], cases_length, SupportMode::CachedExtremes);
 
+    std::vector<compare::HPPFCL::HPPFCLCase> hppfcl_default_linear(cases_length);
+    compare::HPPFCL::get_cases(&base_cases[0], &hppfcl_default_linear[0], cases_length, SupportMode::Linear);
+
     std::vector<compare::HPPFCL::HPPFCLCase> hppfcl_default_intersection(cases_length);
     compare::HPPFCL::get_cases(&base_cases[0], &hppfcl_default_intersection[0], cases_length, SupportMode::HillClimbing);
 
     std::vector<compare::HPPFCL::HPPFCLCase> hppfcl_default_intersection_extremes(cases_length);
     compare::HPPFCL::get_cases(&base_cases[0], &hppfcl_default_intersection_extremes[0], cases_length, SupportMode::CachedExtremes);
+
+    std::vector<compare::HPPFCL::HPPFCLCase> hppfcl_default_intersection_linear(cases_length);
+    compare::HPPFCL::get_cases(&base_cases[0], &hppfcl_default_intersection_linear[0], cases_length, SupportMode::Linear);
 
     std::vector<compare::HPPFCL::HPPFCLCase> hppfcl_nesterov(cases_length);
     compare::HPPFCL::get_cases(&base_cases[0], &hppfcl_nesterov[0], cases_length, SupportMode::HillClimbing);
@@ -144,11 +150,17 @@ int main(){
     std::vector<compare::HPPFCL::HPPFCLCase> hppfcl_nesterov_extremes(cases_length);
     compare::HPPFCL::get_cases(&base_cases[0], &hppfcl_nesterov_extremes[0], cases_length, SupportMode::CachedExtremes);
 
+    std::vector<compare::HPPFCL::HPPFCLCase> hppfcl_nesterov_linear(cases_length);
+    compare::HPPFCL::get_cases(&base_cases[0], &hppfcl_nesterov_linear[0], cases_length, SupportMode::Linear);
+
     std::vector<compare::HPPFCL::HPPFCLCase> hppfcl_nesterov_intersection(cases_length);
     compare::HPPFCL::get_cases(&base_cases[0], &hppfcl_nesterov_intersection[0], cases_length, SupportMode::HillClimbing);
 
     std::vector<compare::HPPFCL::HPPFCLCase> hppfcl_nesterov_intersection_extremes(cases_length);
     compare::HPPFCL::get_cases(&base_cases[0], &hppfcl_nesterov_intersection_extremes[0], cases_length, SupportMode::CachedExtremes);
+
+    std::vector<compare::HPPFCL::HPPFCLCase> hppfcl_nesterov_intersection_linear(cases_length);
+    compare::HPPFCL::get_cases(&base_cases[0], &hppfcl_nesterov_intersection_linear[0], cases_length, SupportMode::Linear);
 
     std::vector<FCLOriginalCase> fcl_original_cases(cases_length);
     compare::FCLOriginal::get_cases(&base_cases[0], &fcl_original_cases[0], cases_length);
@@ -402,6 +414,12 @@ int main(){
         }
     });
 
+    if (has_mesh) run("HPP-FCL distance linear support", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::HPPFCL::get_distance_default(hppfcl_default_linear[i]));
+        }
+    });
+
     run("HPP-FCL intersection", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::HPPFCL::get_intersection_default(hppfcl_default_intersection[i]));
@@ -411,6 +429,12 @@ int main(){
     if (has_mesh) run("HPP-FCL intersection cached extremes", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::HPPFCL::get_intersection_default(hppfcl_default_intersection_extremes[i]));
+        }
+    });
+
+    if (has_mesh) run("HPP-FCL intersection linear support", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::HPPFCL::get_intersection_default(hppfcl_default_intersection_linear[i]));
         }
     });
 
@@ -426,6 +450,12 @@ int main(){
         }
     });
 
+    if (has_mesh) run("HPP-FCL distance nesterov linear support", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::HPPFCL::get_distance_nesterov(hppfcl_nesterov_linear[i]));
+        }
+    });
+
     run("HPP-FCL intersection nesterov", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::HPPFCL::get_intersection_nesterov(hppfcl_nesterov_intersection[i]));
@@ -435,6 +465,12 @@ int main(){
     if (has_mesh) run("HPP-FCL intersection nesterov cached extremes", [&] {
         for (int i = 0; i < cases_length; i++) {
             ankerl::nanobench::doNotOptimizeAway(compare::HPPFCL::get_intersection_nesterov(hppfcl_nesterov_intersection_extremes[i]));
+        }
+    });
+
+    if (has_mesh) run("HPP-FCL intersection nesterov linear support", [&] {
+        for (int i = 0; i < cases_length; i++) {
+            ankerl::nanobench::doNotOptimizeAway(compare::HPPFCL::get_intersection_nesterov(hppfcl_nesterov_intersection_linear[i]));
         }
     });
 
