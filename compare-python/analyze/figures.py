@@ -148,11 +148,13 @@ def _tick_label(exponent):
     return f"{10.0 ** exponent:.2g}"
 
 
-def _decade_axis(ax, low, high, label, axis_high=None):
+def _decade_axis(ax, low, high, label, axis_high=None, label_loc="right"):
     """Log x axis (data in linear units) with labeled ticks (see _decade_ticks()) and unlabeled minor ticks.
 
     axis_high : float, optional
         End of the axis line and the ticks if the axis extends beyond the data (space for labels), default: high
+    label_loc : str, optional
+        Alignment of the axis label: "left", "center", or "right"
     """
     ax.set_xscale("log")
     axis_high = high if axis_high is None else axis_high
@@ -166,7 +168,7 @@ def _decade_axis(ax, low, high, label, axis_high=None):
         ax.xaxis.set_minor_locator(FixedLocator([t for t in ax.xaxis.get_minor_locator().tick_values(low, axis_high)
                                                  if t <= axis_high]))
         ax.spines["bottom"].set_bounds(low, axis_high)
-    ax.set_xlabel(label, loc="right")
+    ax.set_xlabel(label, loc=label_loc)
 
 
 def _format_factor(value, unit="×"):
@@ -307,8 +309,10 @@ def slowdown_by_query_chart(tables, path, xlabel):
                             color=TEXT_SECONDARY, linewidth=0.9, clip_on=False)
                 ax.axvline(1.0, color=AXIS, linewidth=0.6, zorder=0)
                 ax.set_title(title, loc="left")
-                # the same axis in all columns: 1 to 10^4, with space for the labels of the points
-                _decade_axis(ax, 0.8, 2.5e4, xlabel if k == len(tables) - 1 else "", axis_high=1e4)
+                # the same axis in all columns: 1 to 10^4, with space for the labels of the points; the axis label
+                # centered below the middle column (the center of the columns)
+                _decade_axis(ax, 0.8, 2.5e4, xlabel if k == (len(tables) - 1) // 2 else "", axis_high=1e4,
+                             label_loc="center")
                 ax.set_ylim(len(order) - 0.5, -0.5)
             axes[0].set_yticks(range(len(order)), order)
         _language_legend(fig, set().union(*(set(t["language"]) for _, t in tables)))
@@ -418,8 +422,8 @@ def violin_by_query_plot(long, columns, path):
                     FixedLocator(np.log10(np.outer(10.0 ** np.arange(low, high), np.arange(1, 10)).ravel())))
                 ax.set_xticklabels([_tick_label(t) for t in ticks])
                 ax.set_xlim(low, high)
-                if k == len(columns) - 1:
-                    ax.set_xlabel("Time per case file [µs] (white: median)", loc="right")
+                if k == (len(columns) - 1) // 2:  # centered below the middle column (the center of the columns)
+                    ax.set_xlabel("Time per case file [µs] (white: median)", loc="center")
                 ax.set_ylim(len(order) - 0.5, -0.5)
             axes[0].set_yticks(range(len(order)), order)
         _language_legend(fig, set().union(*(set(m["language"]) for _, m in data)))
@@ -522,7 +526,8 @@ def probability_heatmaps_by_query(columns, path):
     column_width = max(len(order) - 1 for _, _, order in rows) * cell + 0.15
     fig_width = label_width + len(columns) * column_width
     heights = [title_height + number_height + len(order) * cell + 0.1 for _, _, order in rows]
-    fig_height = sum(heights) + 0.3 * len(CATEGORIES) + panel_gap * (len(CATEGORIES) - 1) + 0.35
+    # the meaning of the cells and colors is explained in the caption of the article, not in the figure
+    fig_height = sum(heights) + 0.3 * len(CATEGORIES) + panel_gap * (len(CATEGORIES) - 1)
     with plt.rc_context(STYLE):
         fig = plt.figure(figsize=(fig_width, fig_height))
         top = fig_height - 0.05
@@ -573,9 +578,6 @@ def probability_heatmaps_by_query(columns, path):
                     fig.text((x0 - 0.06) / fig_width, (y0 + n * cell + number_height + 0.02) / fig_height, language,
                              ha="right", va="bottom", fontweight="bold", color=TEXT_SECONDARY)
             top -= height
-        fig.text(0.0, 0.0, "Cell (row i, column j): probability (%) that implementation i is faster than "
-                 "implementation j.\nUnlabeled: above 99 % (blue) or below 1 % (red). Gray: not benchmarked.",
-                 color=TEXT_SECONDARY, va="bottom")
         _save(fig, path)
 
 
