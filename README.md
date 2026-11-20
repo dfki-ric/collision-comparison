@@ -96,7 +96,7 @@ BENCHMARK_LANGUAGES=cpp BENCHMARK_FILTER="^FCL original" RESULTS_DIR=results_fcl
 The analysis merges the CSV files of the same benchmark and computer (see below).
 
 ## Results
-Results on PC1 (2026-11-01), as in the paper. libccd and OpenGJK use an adaptive support function for meshes (see
+libccd and OpenGJK use an adaptive support function for meshes (see
 the support function study), HPP-FCL is also shown with cached extremes in the dual-arm and TIAGo scenes.
 The figures are written by `compare-python/analyze/run_analysis.py`,
 `support_study.py`, and `case_statistics.py`.
@@ -118,7 +118,7 @@ and meshes (dual-arm scene). The rows are ordered by the median in the mixed ben
 
 **Slowdown relative to the fastest implementation** of the same query type (geometric mean of the paired ratios;
 brackets join implementations whose 95 % bootstrap confidence interval of the paired speedup includes 1):
-(A) intersection, (B) distance, with the columns mixed (TIAGo self-collision, PC1, 2026-11-06), primitives, and
+(A) intersection, (B) distance, with the columns mixed (TIAGo self-collision), primitives, and
 meshes. The rows are ordered by the mixed benchmark; n/a: not benchmarked with this geometry.
 
 <img src="./doc/results/speedup_vs_fastest_PC1.png" width="800" />
