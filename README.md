@@ -1,5 +1,6 @@
-
 # Benchmarking Convex-Convex Collision Detection for Robotics: Implementation Matters More Than the Algorithm
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24393008.svg)](https://doi.org/10.5281/zenodo.24393008)
 
 Thilo Umland $^1$,
 Maarten Behn $^2$,
